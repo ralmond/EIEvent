@@ -1,0 +1,22 @@
+import(methods)
+
+#importFrom("grDevices", "col2rgb", "grey.colors", "hsv", "rgb2hsv")
+
+
+export(Event)
+exportClasses(Event)
+exportMethods(app,uid,verb,object,timestamp,details)
+
+export(Timer)
+exportClass(Timer)
+exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,reset)
+
+export(Status)
+exportClasses(Status)
+exportMethods(context,timer,"timer<-",startTimer,pauseTimer,resumeTimer,
+              flag,"flag<-",obs,"obs<-")
+
+
+
+
+
