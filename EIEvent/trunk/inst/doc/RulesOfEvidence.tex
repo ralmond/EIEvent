@@ -1,0 +1,239 @@
+\documentclass{article}
+\usepackage{amsmath,graphicx}
+%\usepackage{rgadefs}
+%\usepackage{rgafigs}
+\usepackage{indentfirst}
+\usepackage{url}
+\usepackage{apacite}
+\usepackage{alltt}
+\usepackage{algorithmicx}
+
+\def\logit{\mathop{\rm logit}\nolimits}
+\def\mean{\mathop{\rm mean}\nolimits}
+\def\Var{\mathop{\rm Var}\nolimits}
+%
+\def\cat{\mathop{\rm cat}\nolimits}
+\def\Dirichlet{\mathop{\rm Dirichlet}\nolimits}
+\def\lognormal{\mathop{\rm lognormal}\nolimits}
+%% BF greek
+\def\bfalpha{\boldsymbol\alpha}
+\def\bfbeta{\boldsymbol\beta}
+\def\bfgamma{\boldsymbol\gamma}
+\def\bfdelta{\boldsymbol\delta}
+\def\bfepsilon{\boldsymbol\epsilon}
+\def\bfzeta{\boldsymbol\zeta}
+\def\bfeta{\boldsymbol\eta}
+\def\bftheta{\boldsymbol\theta}
+\def\bfiota{\boldsymbol\iota}
+\def\bfkappa{\boldsymbol\kappa}
+\def\bflambda{\boldsymbol\lambda}
+\def\bfmu{\boldsymbol\mu}
+\def\bfnu{\boldsymbol\nu}
+\def\bfxi{\boldsymbol\xi}
+\def\bfpi{\boldsymbol\pi}
+\def\bfrho{\boldsymbol\rho}
+\def\bfsigma{\boldsymbol\sigma}
+\def\bftau{\boldsymbol\tau}
+\def\bfupsilon{\boldsymbol\upsilon}
+\def\bfphi{\boldsymbol\phi}
+\def\bfchi{\boldsymbol\chi}
+\def\bfpsi{\boldsymbol\psi}
+\def\bfomega{\boldsymbol\omega}
+\def\bfOmega{\boldsymbol\Omega}
+
+%--------------------------------------------
+%JSON listing mode, from
+% https://tex.stackexchange.com/questions/83085/how-to-improve-listings-display-of-json-files#83100
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{background},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
+
+
+%************************* Title & Authors ******************************
+\title{\large{\bf Rule of Evidence for Parsing Event Logs}}
+\author{Russell G. Almond\\ Florida State University\\ }
+%******************************* Abstract *****************************
+
+\begin{document}
+
+  \section{Introduction}
+
+  \citeA{Proc4} defined a generalized model for assessment that
+  consists of four processes:
+  \begin{describe}
+    \item[Presentation Process (PP)]{Presents stimulus material to examinee
+      and captures work product.}
+    \item[Evidence Identification (EIP)]{Extracts evidence in the form of
+      observed outcome variables from the raw work product.}
+    \item[Evidence Accumulation (EAP)]{Combines observable outcomes from
+      several tasks to produce statistics about examinee
+      competencies.}
+    \item[Activity Selection (AS)]{Assigns the next task based on current
+      competency estimates and previous observations.}
+  \end{describe}
+  This paper focuses on the second of these, the evidence
+  identification process.  In many cases, evidence identification is
+  almost trivially simple.  For mulitple choice tests it simiply
+  matches the work product (the selected answer) to the key.  Many
+  short answer question types also have simple pattern matching keys.
+  However, complex work products, paraticularly event logs from
+  simulators, require much more complex EIP.
+
+  \citeA{OnTheStructure} defined an evidence model with two parts:
+  the staticial model or \textit{weights of evidence}---which
+  correspond to the EAP,---and the \textit{rules of evidence}---which
+  corresponds to the EIP.  Although \textit{rules of evidence} is 
+  obviously a pun on the legal term, literal rules of evidence were
+  used in HyDRIVE \cite{HyDRIVE}, one of the exemplars used in
+  building the original evidence-centered design framework.  HyDRIVE
+  was a simulation of maintaining the hydraulics system of the F-15
+  aircraft.  The evidence identification system was written in
+  prologue, and consisted of ``rules'' that would fire if certain
+  conditions were met.
+
+  For game and simulation based assessments, this rule-based approach
+  to defining the evidence identification process works fairly well.
+  Conceptually a rule looks something like:
+  \begin{equation*}
+    \begin{alltt} WHEN \emph{context} IF \emph{condition} THEN
+      \emph{observable} = \emph{value}.
+    \end{alltt}
+  \end{equation*}
+  Here \emph{context} is the context in which the evidence is
+  gathered; in simple systems this is the task.  In simulator systems
+  the task can be an emergent property of the simulator;
+  Section~\ref{sec:context} explores this in more detail. The
+  \emph{condition} often involves querying the state of the system,
+  this in turn requires that the state of the system be monitored.
+  Section~\ref{sec:stateMachine} describes the use of a state machine
+  to track the state of the simulator.
+
+  This paper looks specifically at the problems of create rule sets
+  for processing log files.  In particular, it assumes that the game
+  or simulator is logging to a learning record store (essentially a
+  database) event descriptions that look something like:
+  
+  \begin{algorithm}
+    \caption{Generic Event Record, JSON format.}
+    \label{json:event}
+    \begin{listing}
+      {
+        app:"Assessment Name",
+        uid:"Student/User ID",
+        timestamp:"Time at which event occured",
+        verb:"Action Keyword",
+        object:"Object Keyword",
+        data:{
+          field1:"Value",
+          field2:["list","of","values"],
+          field3:{part1:"complex",part2:"object"}
+        }
+      }
+  \end{listing}
+  \end{algorithm}
+
+  The format of Example~\ref{json:event} is JSON (java scrip object
+  notation).  This is list of key--value pairs with the key and value
+  separated by a colon (:).  The values can be numeric values,
+  strings, date-time objects, arrays (using the square brackets, []),
+  or objects (using curly braces, \{\}).  This event format is a
+  simplified version of the xAPI\footnote{The simplification is mainly
+    replacing the \emph{verb} and \emph{object} values with strings
+    where xAPI uses more complex objects.  In particular, xAPI uses a
+    full URL to uniquely define the verb and object, as the same word
+    could have different meanings in the context of the application.
+    In the simplified version, the vocabulary is defined by the
+    application, allowing the message itself to be simpler.} format
+  used by Learning Locker \cite{xAPI}.  The first five header fields
+  are common to every event while the format of the data field is
+  completely open and can contain arbitrarily complex status data.
+
+  The assumption is that the the work product the EIP receives from
+  the PP is an ordered sequence of these event records.  (This could
+  either be directly sent from the PP to the EIP or the EIP could
+  retreive them on demand from a learning record store.)  The EIP
+  processes these one at a time, updating the state of the system.  In
+  the end, the EIP must send one (or more) message to the EAP stating
+  providing values for the observables seen in a particular context.
+  This is what the EAP uses to update the student model.
+  
+  \section{Tasks and Contexts}
+  \label{sec:context}
+
+
+
+
+  \section{State Machine}
+  \label{sec:stateMachine}
+
+  \subsection{Observables}
+  \label{sub:obs}
+  
+  \subsection{Flags and Timers}
+  \label{sub:flags}
+
+  \subsection{Events}
+  \label{sub:events}
+
+  \subsection{Dot notation}
+  \label{sub:dot}
+
+  \section{Rules}
+  \label{sec:Rules}
+
+  \subsection{Types and Timing}
+  \label{sub:types}
+
+  \subsection{Conditions}
+  \label{sub:cond}
+
+  \subsection{Predicates}
+  \label{sub:pred}
+
+  \subsection{Rule Set Maintenance}
+  \label{sub:ruleSet}
+
+  \section{Examples}
+  \label{sec:examples}
+  
+  \section{Software}
+  \label{sec:software}
+
+  \bibliographystyle{apacite}
+  \bibliography{EIRefs}
+  
+\end{document}
