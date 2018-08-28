@@ -1,11 +1,12 @@
 import(methods)
+import(Proc4)
 
 #importFrom("grDevices", "col2rgb", "grey.colors", "hsv", "rgb2hsv")
 
 
-export(Event)
+export(Event,verb,object)
 exportClasses(Event)
-exportMethods(app,uid,verb,object,timestamp,details)
+exportMethods(as.jlist,verb,object)
 
 export(Timer)
 exportClass(Timer)
