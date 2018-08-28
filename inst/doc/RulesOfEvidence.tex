@@ -102,7 +102,7 @@
     \item[Evidence Accumulation (EAP)]{Combines observable outcomes from
       several tasks to produce statistics about examinee
       competencies.}
-    \item[Activity Selection (AS)]{Assigns the next task based on current
+    \item[Activity Selection (ASP)]{Assigns the next task based on current
       competency estimates and previous observations.}
   \end{describe}
   This paper focuses on the second of these, the evidence
@@ -152,7 +152,7 @@
     \label{json:event}
     \begin{listing}
       {
-        app:"Assessment Name",
+        app:"ecd://coe.fsu.edu/EPLS/AssessmentName",
         uid:"Student/User ID",
         timestamp:"Time at which event occured",
         verb:"Action Keyword",
@@ -194,23 +194,402 @@
   \section{Tasks and Contexts}
   \label{sec:context}
 
+  \citeA{OnTheStructure} deliberately used the term \textit{task}
+  instead of the more familiar \texit{item} to encourage test
+  designers to think beyond the common multiple-choice and
+  short-answer task types. In particular, even in 2003 it was obvious
+  that assessments using more complex simulation tasks would be an
+  important part of the future of assessment.  
 
+  \citeA{Proc4} had a more operational defintion for \textit{task}:  a
+  task was the grain size at which information was passed between the
+  four processes.  The PP would present a task to a student and
+  send the work product for that task to the EIP.  The EIP would
+  process the work product and sent the observable for that task to
+  the EAP.  The EAP would signal to the ASP that the task was
+  complete, and it would select the next task to present and send that
+  information to the PP.  Depending on the application, a task could
+  be a single item, a group of items with a common stimulus, or a more
+  complex constructed response and simulation task.
 
+  \citeA{ECGD} noted that in simulation and game-based assessments,
+  tasks do not necessarily come in clean units as in more traditional
+  assessments.  Often a task will be a subsequence of events that
+  happen in the course of a larger simulation or game.  In this case,
+  the term task is no longer quite appropriate because several
+  measurement contexts might occur in the course of the player
+  completing a single game task.
+  
+  \subsection{Three Examples}
+
+  To address the more complex situations, in this paper, the unit of
+  movement around the four process architecture is termed a
+  \textit{context}.  The exact definition of a context depends on the
+  assessment application.  This section provides three examples of
+  increasing complexity.
+
+  \noindent\textit{Computer Adaptive Test}.  Consider first a computer
+  adaptive test similar to ETS's Graduate Record Exam (GRE{\registered}) as
+  it was around 2003.  In this assesment, the \textit{context} or
+  \textit{task} is equivalent to an item.  The ASP selects a single
+  item, which the PP displays, the EIP scores and the EAP updates the
+  estimate of student ability.  The ASP then trys to select a new item
+  that maximizes information about the examinee while balancing
+  content constraints and minimizing item exposures.
+
+  Item sets, such as a reading passage followed by several items,
+  presented a problem for the item as task design.  If one item was
+  chosen from a set, then the next couple of items were constrained to
+  also be chosen from the same set.  These items could be sub-optimal
+  for satisfying information targets or content and exposures control
+  constraints.  A better solution would be to make the task for such
+  set-based items the item set, so an optimal item set could be
+  chosen.
+
+  It is interesting to note that more recent version of the GRE have
+  gone from using a single item as the task to using a testlet
+  containing 10 items or so as the task.  With this kind of task, it
+  is easier to balance information properties, content constraint and
+  exposure control as well as to better control context effects of
+  items.
+
+  However, in this example, the context is the same as the task, both
+  are engineered by the test designers.
+
+  \noindent\textit{Physics Playground}.  The game \textit{Physics
+    Playground} \cite{ShuteVentura2013,KimPhysicsPlayground} is a
+  game for teaching knowledge of Newtonian physics with an embedded
+  stealth assessment.  The game is level-based, where each game level
+  is a puzzle where players must manuever a ball to reach a target
+  balloon.  In sketching levels, players draw objects which can be
+  used to apply forces to the ball.  In manipulation levels, the
+  players manipulate the forces on the ball through the use of
+  sliders. Like in the computer adapative assessment, the
+  \textit{Physics Playground} task is engineered by the designers.  In
+  this case it is the game level.
+
+  However, even in a level-based game, the task boundary is not
+  clear.  Is a task a single attempt at a game level or all attempts
+  at a game level in a playing session?  How are the boundaries of an
+  attempt defined?  What if a player restarts the level?  Leaves the
+  level and then returns?  The right answer to these questions will
+  depend on the purpose of the assessment, but unlike the computer
+  adaptive test, there is no submit answer button to define the
+  context boundary.
+
+  Note also that in \textit{Physics Playground}, there are multiple
+  observed outcomes per task.  The game notes not only whether the
+  level was successfully completed, but also if the player used a
+  particular tool to solve a level.  This information must be
+  extracted from the game logs by the EIP.
+
+  The \textit{Physics Playground} PP logs events to a Learning Locker
+  learning store \cite{LearningLocker}.  These events are recorded as
+  JSON objects similar to the one shown in Example~\ref{json:event}.
+  Note that this format does not have a field for task or context.  It
+  must be inferred from the events.  In particular, certain events in
+  the sequence mark the start and the end of the level.  So the EIP
+  must infer the context from the information stream and must
+  internally keep track of where the context is.
+
+  \noindent\textit{Flight Simulator}.  Consider a person training to
+  be a pilot using a flight simulator.  The task in this situation
+  might consist of flying the plane from an origin airport to a
+  destination airport.  There might be several contexts that emerge
+  within this single task.  For example, the takeoff is one task while
+  flying the plane after it reaches cruising altitude is another.  If
+  a thunderstorm occurs along the route that might change the context
+  to handling the weather event, after which the simulator returns to
+  the cruising context.  Finally, the approach and the landing might
+  also be contexts.
+
+  This example makes clear the need for moving from task to context as
+  the unit that goes around the four process loop.  Here many
+  variables about the state of the system may be related to the
+  definition of the context.
+
+  \subsection{Context as an Emerging Status}
+
+  In the third example above, one way to detect a context change is to
+  keep track of the state of the simulator.  When the state changes in
+  such a way as to define a new context, then the context changes.  In
+  a complete system, the EIP needs two kinds of rules to support
+  this.  First, it nees a collection of \textit{context rule} which
+  defines when a context changes.  Second, it needs \textit{trigger
+    rules} to indicate when it should send the observables for a given
+  context to the EAP (or other listeners).  At this point, these are
+  rules in the loose sense of \citeA{OnTheStructure}:  requirements
+  for the EIP.  Section~\ref{sec:Rules} will introduce a notation for
+  operationally specifying those rules.
+
+  In addition to taking the role of \textit{task} in the four process
+  architecture, contexts play another roll in the EIP.  In particular,
+  each context has an associate set of specific rules.  For example,
+  evidence rules appropriate for a manipulation level in
+  \textit{Physics Playground} are not necessarily appropriate for a
+  sketching level.  Tagging rules by the contexts in which they are
+  applicable allows the EIP to filter the rule set to just those which
+  are interesting and appropriate in the current context.
+
+  The second and third examples have a certain similarity in the work
+  product.  In both cases, the game or simulator log consists of a
+  series of events.  (Section~\ref{sub:events} describes a proposed
+  structure for those event records.)  To process these events, often
+  it is necessary to recreate information about the state of the
+  system in the EIP.  Section~\ref{sec:stateMachine} describes a state
+  machine architecture.
 
   \section{State Machine}
   \label{sec:stateMachine}
 
+  The identification of evidence often requires fairly detailed
+  information about what is happening in the game.  Often, the best
+  evidence is when the player performs an action which changes the
+  state of the system.  To assess such evidence, the EIP often needs
+  to at least partially recreate the state of the system. The
+  architecture for the EIP describe in this paper, therefore starts
+  with the idea that the EIP is a finite state machine.  Each user
+  (player or student) has an associated state object.  These state
+  objects have collections of observables, timers and flags which
+  change in response to events.  These are described in more detail
+  below.
+
+  Note that the state machine approach to EIP is useful even in
+  contextes which are not simulations or games.  In particular,
+  \citeA{KeystrokeRR} used a finite state machine to analyze keystroke
+  timing data.  It was necessary to parse the stream of characters
+  recorded by the logger to associate pause events with individual
+  words or with between word or sentence spaces.  This is potentially
+  a robust approach.
+
   \subsection{Observables}
   \label{sub:obs}
+
+  Consider the game-based assessment \textit{Physics Playground}.  As
+  described above, the context for this model is a game level.  In
+  each game level the player attempts to move a ball to the target
+  (balloon).  The player may draw objects on the screen (sketching
+  levels) to reach the target or manipulate physics parameters or the
+  strength of blowers producing force (manipulation levels).  For each
+  game level, the game engine determines whether or not the game level
+  has been passed (solved) and whether a gold or silver coin was
+  awarded for the solution.  (Efficient solutions earn gold coins, and
+  inefficient solutions earn silver coins.)
+
+  Here are several observables identified in version 2 of
+  \textit{Physics Playground}:
+  \begin{describe}
+    \item[Obs1]{What is the maximum value coin (gold, silver or none)
+      that the player has earned for this level?}
+    \item[Obs2]{Did the player manipulate the gravity slider?}
+    \item[Obs3]{How many objects did the player draw?}
+    \item[Obs4]{How much time (excluding time spent on learning
+      supports) did the player spend on the level?}
+    \item[Obs5]{Did the player attempt to draw a springboard?}
+  \end{describe}
+
+  The first two are fairly simple.  The state machine needs an
+  \textit{observable variable} which keeps track of the coin reward
+  (Obs1) or the use of the gravity slider (Obs2).  The when an
+  appropriate event comes through the log, an evidence rule will
+  update the appropriate variable.  Obs3 is similar; in this case, the
+  observable is a counter and it is incremented each time an even
+  comes through indicating that an object was drawn.
+
+  The timing observable (Obs4) need a bit more work.  The timer must
+  be started when the level starts and paused every time the player
+  starts using a learning support, resuming when the player returns
+  from the learning support.  The next section describes timers in
+  more detail.
+  
+  Detecting springboards is actually quite tricky.  Obs5 requires
+  determining if each object that the player has drawn is a
+  springboard or not.  However, a springboard has several elements
+  (the springboard, the anchor holding one end fixed, and usually a
+  weight which gives it elastic potential energy).  Many of these
+  might require details of the object stored in the underlying physics
+  engine.  In this case, the PP of \textit{Physics Playground}
+  contains code to identify agents of motion.  The PP then sends an
+  event saying that the agent identification system triggered, which
+  the EIP can use to build up observables.
+
+  Although generally, evidence rules are placed in the EIP, in come
+  cases it may make sense to place them in other processes.  In the
+  example above, it was easier to implement the agent identification
+  system in the PP as it had access to the details of the physics
+  playground.  Similiarly in the case of a multiple choice test, it is
+  is probably best to have the PP send a message containing which
+  option was selected as the event, rather than the lower level event
+  of where the student clicked on the screen.  The latter requires
+  details of how the item is layed out in the screen that are needed
+  in the PP but not the EIP.  Finally, there may be cases where the
+  EAP can handle the evidence rule.  For example, consider Obs3 (which
+  is a count) and Obs4 (which is a time).  If these are to be used in
+  a model with discrete observables (e.g., a Bayesian network) then
+  the continuous or count variable might need to be cut into
+  categories (e.g., low, medium, high).  This might be easier to do in
+  the EAP.
   
   \subsection{Flags and Timers}
   \label{sub:flags}
 
+  Not all potential observables need to be reported out of the EIP.
+  In general, an observable is reported for one of three reasons:
+  \begin{enumerate}
+  \item It will be used by the EAP to accumulate a score for the
+    student.
+  \item It will be used to customize feedback presented to the
+    students.
+  \item It will be logged to a data base for future analysis
+      (for scientific research or to improve the performance
+    algorithms). 
+  \end{enumerate}
+
+  Observables taking on one or more of these roles are \textit{final
+    observables}, as opposed to \textit{intermediate observables}
+  whose role is to aid in the computation of final observable values.
+  ETS's e-rater{\registered} system \cite{eRater} is a good example.
+  The system has low level code that identifies likely grammar, usage,
+  mechanics or style errors.  (These low level observables are
+  sometimes used to give students feedback on their writing).  These
+  are accumulated into count variables providing the number of
+  grammar, usage, mechanics and style errors the writer made.  These
+  count variables (after suitable normalization) along with other
+  variables related to vocabulary and discourse fed into a regression
+  model to produce the final score.  Note that there are observables a
+  number of different levels in this system:  any of which could be
+  intermediate or final depending on the requirements of the
+  assessment.
+  
+  Because EIP designers may want to separate out the intermediate and
+  final observables, the model design has two collections of
+  observables:  the observables collection for storing final
+  observables and the flags collection for storing intermediate
+  observables.  However, this distinction is not strictly enforced:
+  variables in both the flags and observable collections may play the
+  role of intermediate observables.
+
+  Timing variable are special.  Looking at the definition of Obs4, it
+  is clear that the timer must be started at the beginning of the
+  level, paused when the player enters the learning support and resume
+  when the player leaves the learning support.  In order to do this,
+  the timer object must support the following operations:
+  \begin{describe}
+  \item[resume]{Continue accumulating time.}
+  \item[pause]{Stop accumulating time.}
+  \item[reset]{Set the accumulated time to zero.}
+  \item[restart]{Combination of reset and resume.}
+  \item[value]{Return the time accumulated so far.}
+  \end{describe}
+
+  These operations can be triggered by rules.  Also, the current value
+  of a timer can be copied into an observable or flag variable.
+  Finally, the current value of a timer can be queried in the
+  condition part of the rule.
+
+  Thus, a state object contains:
+  \begin{describe}
+  \item[uid]{An identifier for the user (student, player)}
+  \item[context]{An identifier for the current context.}
+  \item[observables]{A collection of observable variables.}
+  \item[timers]{A collection of timers.}
+  \item[flags]{A collection of other (intermediate observable)
+    variables.}
+  \end{describe}
+  
+
   \subsection{Events}
   \label{sub:events}
 
+  Look once more at the format of the event record in
+  Example~\ref{json:event} (reproduced in Example~\ref{json:event1}).
+  There are five fields in the header---\texttt{app}, \texttt{uid},
+  \texttt{timestamp}, \texttt{verb}, and \texttt{object}---and a
+  \texttt{data} container that can contain an arbitrary number of
+  fields.  The \texttt{data} field allows the PP to pass arbitrary
+  information to the EIP.
+
+  \begin{algorithm}
+    \caption{Generic Event Record, JSON format.}
+    \label{json:event1}
+    \begin{listing}
+      {
+        app:"ecd://coe.fsu.edu/EPLS/AssessmentName",
+        uid:"Student/User ID",
+        timestamp:"Time at which event occured",
+        verb:"Action Keyword",
+        object:"Object Keyword",
+        data:{
+          field1:"Value",
+          field2:["list","of","values"],
+          field3:{part1:"complex",part2:"object"}
+        }
+      }
+  \end{listing}
+  \end{algorithm}
+
+  The \texttt{verb} and \texttt{object} fields should be keywords
+  appropriate to the application.  These fields are taken from the
+  xAPI \cite{xAPI} data structure.  The verb and object together
+  should define what is happening.  Some example pairs from
+  \textit{Physics Playground} include $\{ (\texttt{"snapshot"},
+  \texttt{"ball"}), (\texttt{"exited"}, \texttt{"learning support"}), 
+  (\texttt{"exited"}, \texttt{"level"}), (\texttt{"identified"},
+  \texttt{"game object"}) \}$.  Note that in some cases, the object is
+  necessary to distinguish what the verb is operating on (``exited
+  learning support'' versus ``exited level'').  In all cases, the
+  extra data provides additional information (the position of the ball
+  for a snapshot event, the learning support or level exited, what the
+  object was identified as).
+
+  The PP and the EIP need to agree on what are the valid values for
+  the verb and object fields.  This is the role of the \texttt{app}
+  (short for application) field.  Note that this is a long URL-like
+  structure giving the name of both the specific vocabulary set and
+  the organization that defined the vocabulary.  (This is a
+  simplification from the xAPI format, where both the \texttt{verb}
+  and \texttt{object} values were more complex objects which provide
+  information about the vocabulary used.  In most cases, the 
+  application defines the verbs, objects and the expected data
+  components for each verb object pair.)
+
+  The remaining two header fields are straightforward.  The
+  \texttt{uid} field is matched with the state object, so that the
+  system can track many users at the same time.  The
+  \texttt{timestamp} is just the time at which the event occurred.
+
   \subsection{Dot notation}
   \label{sub:dot}
+
+  In general, rules need to be able to reference both the state object
+  and the event object.  In particular, they need to reference
+  specific fields in those objects.  The javascript dot notation
+  provides a simple mechanism for doing this.  The dots define
+  subcomponents of objects.  Starting with the \texttt{state} and
+  \texttt{event} objects, the legal fields are:
+  \begin{describe}
+    \item[\texttt{state.context}]{The current context that the state
+      object is in.}
+    \item[\texttt{state.observables.\textit{name}}]{The value of the
+      observable named \textit{name}.}
+    \item[\texttt{state.timers.\textit{name}}]{The current elapsed
+      time of the timer named \textit{name}.}
+    \item[\texttt{state.flags.\textit{name}}]{The value of the
+      observable named \textit{name}.}
+    \item[\texttt{event.verb}]{The verb associated with the current event.}
+    \item[\texttt{event.object}]{The object associated with the current event.}
+    \item[\texttt{event.timestamp}]{The time at which the event
+      occurred.}
+    \item[\texttt{event.data.\textit{name}}]{The value of the
+      extra data field named \textit{name}.}
+  \end{describe}
+
+  Note that there potentially can be further dots after the name
+  object.  In particular, if the value of the observable, flag or
+  extra data element is itself a compound object, the the dot notation
+  can be used to refer to its fields.  Also, the dot notation applied
+  to timers allows access to the pause, resume and reset operations in
+  the predicate of rules.
 
   \section{Rules}
   \label{sec:Rules}

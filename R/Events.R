@@ -2,25 +2,43 @@
 ###  This roughy follow a combination of the xAPI format.
 
 setClass("Event",
-         slots=c(app="character",       #Application ID
-                 uid="character",       #User (student) ID
-                 verb="character",      #Action Identifier
-                 object="string",       #Direct Object ID
-                 context="string",      #If context is calculated by PP
-                 timestamp="POSIXt",      #When action took place.
-                 details="list"))        #More details.
-setMethod("app","Event", function(x) x@app)
-setMethod("uid","Event", function(x) x@uid)
+         slots=c(verb="character",      #Action Identifier
+                 object="string"),       #Direct Object ID
+         contains="P4Message")
+
+
+setGeneric("verb",function(x) standardGeneric("verb"))
+setGeneric("object",function(x) standardGeneric("object"))
+
 setMethod("verb","Event", function(x) x@verb)
 setMethod("object","Event", function(x) x@object)
-setMethod("context","Event", function(x) x@context)
-setMethod("timestamp","Event", function(x) x@timestamp)
-setMethod("details","Event", function(x) x@details)
+
 
 Event <- function(uid,verb,object="",timestamp=Sys.time(),
                   details=list(),app="default",context="") {
   new("Event",app=app,uid=uid,verb=verb,object=object,
-      timestamp=timetimestamp,context=context,details=details)
+      timestamp=timetimestamp,context=context,data=details)
 }
 
+setMethod("toString","Event", function(x, ...) {
+  paste('Event:{ uid:',x@uid,', context:',x@context,
+        ', (',x@verb,x@object')}')
+})
+setMethod("show","Event",function(object) {
+  cat(toString(object),"\n")
+})
+
+setMethod("as.jlist","Event", function(obj,ml) {
+  evl <- callNextMethod()
+  evl$verb <- unbox(evl$verb)
+  evl$object <- unbox(evl$object)
+  evl
+}
+
+parseEvent<- function (rec) {
+  new("Event","_id"=rec$"_id", app=rec$app, uid=rec$uid,
+      context=rec$context,verb=rec$verb,object=rec$object,
+      timestamp=rec$timestamp,
+      data=parseData(rec$data))
+}
 
