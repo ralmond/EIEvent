@@ -142,10 +142,12 @@
   Section~\ref{sec:stateMachine} describes the use of a state machine
   to track the state of the simulator.
 
-  This paper looks specifically at the problems of create rule sets
-  for processing log files.  In particular, it assumes that the game
-  or simulator is logging to a learning record store (essentially a
-  database) event descriptions that look something like:
+  This paper defines the EI-Event protocol for handling evidence
+  identification.  It processes a collection of events in a log files
+  by running a collection of rules.  In particular, it assumes that
+  the game or simulator is logging to a learning record store
+  (essentially a database) event descriptions that look something
+  like:
   
   \begin{algorithm}
     \caption{Generic Event Record, JSON format.}
@@ -166,7 +168,7 @@
   \end{listing}
   \end{algorithm}
 
-  The format of Example~\ref{json:event} is JSON (java scrip object
+  The format of Example~\ref{json:event} is JSON (java script object
   notation).  This is list of key--value pairs with the key and value
   separated by a colon (:).  The values can be numeric values,
   strings, date-time objects, arrays (using the square brackets, []),
@@ -197,9 +199,9 @@
   \citeA{OnTheStructure} deliberately used the term \textit{task}
   instead of the more familiar \texit{item} to encourage test
   designers to think beyond the common multiple-choice and
-  short-answer task types. In particular, even in 2003 it was obvious
-  that assessments using more complex simulation tasks would be an
-  important part of the future of assessment.  
+  short-answer task types. In 2003, it was obvious that assessments
+  using more complex simulation tasks would be an important part of
+  the future of assessment.
 
   \citeA{Proc4} had a more operational defintion for \textit{task}:  a
   task was the grain size at which information was passed between the
@@ -210,7 +212,7 @@
   complete, and it would select the next task to present and send that
   information to the PP.  Depending on the application, a task could
   be a single item, a group of items with a common stimulus, or a more
-  complex constructed response and simulation task.
+  complex constructed response or simulation task.
 
   \citeA{ECGD} noted that in simulation and game-based assessments,
   tasks do not necessarily come in clean units as in more traditional
@@ -230,7 +232,7 @@
 
   \noindent\textit{Computer Adaptive Test}.  Consider first a computer
   adaptive test similar to ETS's Graduate Record Exam (GRE{\registered}) as
-  it was around 2003.  In this assesment, the \textit{context} or
+  it operated around 2003.  In this assesment, the \textit{context} or
   \textit{task} is equivalent to an item.  The ASP selects a single
   item, which the PP displays, the EIP scores and the EAP updates the
   estimate of student ability.  The ASP then trys to select a new item
@@ -238,7 +240,7 @@
   content constraints and minimizing item exposures.
 
   Item sets, such as a reading passage followed by several items,
-  presented a problem for the item as task design.  If one item was
+  presented a problem for the item-as-task design.  If one item was
   chosen from a set, then the next couple of items were constrained to
   also be chosen from the same set.  These items could be sub-optimal
   for satisfying information targets or content and exposures control
@@ -253,32 +255,32 @@
   exposure control as well as to better control context effects of
   items.
 
-  However, in this example, the context is the same as the task, both
-  are engineered by the test designers.
+  In this example, as in most classical assessement, the context is
+  the same as the task---both are engineered by the test designers.
 
   \noindent\textit{Physics Playground}.  The game \textit{Physics
     Playground} \cite{ShuteVentura2013,KimPhysicsPlayground} is a
   game for teaching knowledge of Newtonian physics with an embedded
-  stealth assessment.  The game is level-based, where each game level
+  stealth assessment.  The game is level-based: each game level
   is a puzzle where players must manuever a ball to reach a target
   balloon.  In sketching levels, players draw objects which can be
   used to apply forces to the ball.  In manipulation levels, the
   players manipulate the forces on the ball through the use of
-  sliders. Like in the computer adapative assessment, the
+  sliders. As in the computer adapative assessment, the
   \textit{Physics Playground} task is engineered by the designers.  In
   this case it is the game level.
 
-  However, even in a level-based game, the task boundary is not
-  clear.  Is a task a single attempt at a game level or all attempts
-  at a game level in a playing session?  How are the boundaries of an
-  attempt defined?  What if a player restarts the level?  Leaves the
-  level and then returns?  The right answer to these questions will
-  depend on the purpose of the assessment, but unlike the computer
-  adaptive test, there is no submit answer button to define the
-  context boundary.
+  Even in a level-based game, the task boundary is not clear.  Is a
+  task a single attempt at a game level or all attempts at a game
+  level in a playing session?  How are the boundaries of an attempt
+  defined?  What if a player restarts the level?  Leaves the level and
+  then returns?  The right answer to these questions will depend on
+  the purpose of the assessment, but unlike the computer adaptive
+  test, there is no submit answer button to define the context
+  boundary.
 
-  Note also that in \textit{Physics Playground}, there are multiple
-  observed outcomes per task.  The game notes not only whether the
+  Note that in \textit{Physics Playground}, there are multiple
+  observed outcomes per task.  The game records not only whether the
   level was successfully completed, but also if the player used a
   particular tool to solve a level.  This information must be
   extracted from the game logs by the EIP.
@@ -310,22 +312,22 @@
 
   \subsection{Context as an Emerging Status}
 
-  In the third example above, one way to detect a context change is to
-  keep track of the state of the simulator.  When the state changes in
-  such a way as to define a new context, then the context changes.  In
-  a complete system, the EIP needs two kinds of rules to support
-  this.  First, it nees a collection of \textit{context rule} which
-  defines when a context changes.  Second, it needs \textit{trigger
-    rules} to indicate when it should send the observables for a given
-  context to the EAP (or other listeners).  At this point, these are
-  rules in the loose sense of \citeA{OnTheStructure}:  requirements
-  for the EIP.  Section~\ref{sec:Rules} will introduce a notation for
-  operationally specifying those rules.
+  One way to detect a context change is to keep track of the state of
+  the simulator.  When the state changes in such a way as to define a
+  new context, then the context changes.  In a complete system, the
+  EIP needs two kinds of rules to support this.  First, it nees a
+  collection of \textit{context rules} which defines when a context
+  changes.  Second, it needs \textit{trigger rules} to indicate when
+  it should send the observables for a given context to the EAP (or
+  other listeners).  At this point, these are rules in the loose sense
+  of \citeA{OnTheStructure}:  requirements for the EIP.
+  Section~\ref{sec:Rules} will introduce a notation for operationally
+  specifying those rules.
 
   In addition to taking the role of \textit{task} in the four process
   architecture, contexts play another roll in the EIP.  In particular,
-  each context has an associate set of specific rules.  For example,
-  evidence rules appropriate for a manipulation level in
+  each context has an associated set of specific evidence rules.  For
+  example, evidence rules appropriate for a manipulation level in
   \textit{Physics Playground} are not necessarily appropriate for a
   sketching level.  Tagging rules by the contexts in which they are
   applicable allows the EIP to filter the rule set to just those which
@@ -347,7 +349,7 @@
   evidence is when the player performs an action which changes the
   state of the system.  To assess such evidence, the EIP often needs
   to at least partially recreate the state of the system. The
-  architecture for the EIP describe in this paper, therefore starts
+  architecture for the EI-Event protocol, therefore starts
   with the idea that the EIP is a finite state machine.  Each user
   (player or student) has an associated state object.  These state
   objects have collections of observables, timers and flags which
@@ -355,7 +357,7 @@
   below.
 
   Note that the state machine approach to EIP is useful even in
-  contextes which are not simulations or games.  In particular,
+  contexts which are not simulations or games.  In particular,
   \citeA{KeystrokeRR} used a finite state machine to analyze keystroke
   timing data.  It was necessary to parse the stream of characters
   recorded by the logger to associate pause events with individual
@@ -366,8 +368,8 @@
   \label{sub:obs}
 
   Consider the game-based assessment \textit{Physics Playground}.  As
-  described above, the context for this model is a game level.  In
-  each game level the player attempts to move a ball to the target
+  described above, the context for this application is a game level.
+  In each game level the player attempts to move a ball to the target
   (balloon).  The player may draw objects on the screen (sketching
   levels) to reach the target or manipulate physics parameters or the
   strength of blowers producing force (manipulation levels).  For each
@@ -413,22 +415,24 @@
   event saying that the agent identification system triggered, which
   the EIP can use to build up observables.
 
-  Although generally, evidence rules are placed in the EIP, in come
+  Although generally, evidence rules are placed in the EIP, in some
   cases it may make sense to place them in other processes.  In the
   example above, it was easier to implement the agent identification
-  system in the PP as it had access to the details of the physics
-  playground.  Similiarly in the case of a multiple choice test, it is
-  is probably best to have the PP send a message containing which
-  option was selected as the event, rather than the lower level event
-  of where the student clicked on the screen.  The latter requires
-  details of how the item is layed out in the screen that are needed
-  in the PP but not the EIP.  Finally, there may be cases where the
-  EAP can handle the evidence rule.  For example, consider Obs3 (which
-  is a count) and Obs4 (which is a time).  If these are to be used in
-  a model with discrete observables (e.g., a Bayesian network) then
-  the continuous or count variable might need to be cut into
-  categories (e.g., low, medium, high).  This might be easier to do in
-  the EAP.
+  system in the PP as it had access to the details of the screen
+  layout, and object placement and movement.  Similiarly in the case
+  of a multiple choice test, it is is probably best to have the PP
+  send a message containing which option was selected as the event,
+  rather than the lower level event of where the student clicked on
+  the screen.  The latter requires details of how the item is laid
+  out in the screen that are needed in the PP but not the EIP.
+
+  There may also be cases where the EAP can handle the evidence rule.
+  For example, consider Obs3 (which is a count) and Obs4 (which is a
+  time).  If these are to be used in a model with discrete observables
+  (e.g., a Bayesian network) then the continuous or count variable
+  might need to be cut into categories (e.g., low, medium, high).
+  This might be easier to do in the EAP, espeically if the Bayes net
+  software can associate ranges of numeric values with states.
   
   \subsection{Flags and Timers}
   \label{sub:flags}
@@ -442,7 +446,7 @@
     students.
   \item It will be logged to a data base for future analysis
       (for scientific research or to improve the performance
-    algorithms). 
+    of the assessment). 
   \end{enumerate}
 
   Observables taking on one or more of these roles are \textit{final
@@ -451,15 +455,15 @@
   ETS's e-rater{\registered} system \cite{eRater} is a good example.
   The system has low level code that identifies likely grammar, usage,
   mechanics or style errors.  (These low level observables are
-  sometimes used to give students feedback on their writing).  These
-  are accumulated into count variables providing the number of
-  grammar, usage, mechanics and style errors the writer made.  These
-  count variables (after suitable normalization) along with other
-  variables related to vocabulary and discourse fed into a regression
-  model to produce the final score.  Note that there are observables a
-  number of different levels in this system:  any of which could be
-  intermediate or final depending on the requirements of the
-  assessment.
+  sometimes used to give students feedback on their writing.)  These
+  low-level errors are accumulated into count variables providing the
+  number of grammar, usage, mechanics and style errors the writer
+  made.  These count variables (after suitable normalization), along
+  with other variables related to vocabulary and discourse, are fed
+  into a regression model to produce the final score.  Note that there
+  are observables a number of different levels in this system:  any of
+  which could be intermediate or final depending on the requirements
+  of the assessment.
   
   Because EIP designers may want to separate out the intermediate and
   final observables, the model design has two collections of
@@ -471,7 +475,7 @@
 
   Timing variable are special.  Looking at the definition of Obs4, it
   is clear that the timer must be started at the beginning of the
-  level, paused when the player enters the learning support and resume
+  level, paused when the player enters the learning support and resumed
   when the player leaves the learning support.  In order to do this,
   the timer object must support the following operations:
   \begin{describe}
@@ -551,7 +555,8 @@
   and \texttt{object} values were more complex objects which provide
   information about the vocabulary used.  In most cases, the 
   application defines the verbs, objects and the expected data
-  components for each verb object pair.)
+  components for each verb object pair, so longer identifiers for
+  verbs and objects are not needed.)
 
   The remaining two header fields are straightforward.  The
   \texttt{uid} field is matched with the state object, so that the
@@ -584,21 +589,180 @@
       extra data field named \textit{name}.}
   \end{describe}
 
-  Note that there potentially can be further dots after the name
-  object.  In particular, if the value of the observable, flag or
-  extra data element is itself a compound object, the the dot notation
-  can be used to refer to its fields.  Also, the dot notation applied
-  to timers allows access to the pause, resume and reset operations in
-  the predicate of rules.
+  Note that there potentially can be further dots after the
+  \textit{name} of the value.  In particular, if the value of the
+  observable, flag or extra data element is itself a compound object,
+  the the dot notation can be used to refer to its fields.  Also, in
+  the predicate of rules, the dot notation applied to timers allows
+  access to the pause, resume and reset operations.
 
   \section{Rules}
   \label{sec:Rules}
 
+  Conceptually a rule has the following format:  \texttt{WHEN
+    \textit{context}, \textit{verb}, \textit{object} IF
+    \textit{condition} THEN \textit{predicate}}.  The
+  \textit{condition} is logical expression involving the fields of the
+  state and the current event.  If this is true, then the
+  \textit{predicate} is excuted.  The \textit{context}, \textit{verb}
+  and \textit{object} are really part of the condition.  Separating
+  them into separate components allows the rule set to be indexed by
+  those fields, which should improve the speed of execution.
+  Example~\ref{json:rule} shows a rule set in JSON format.
+
+  \begin{algorithm}
+    \caption{Generic Rule, JSON format.}
+    \label{json:Rule}
+    \begin{listing}
+      {
+        context:"Context Keyword",
+        verb:"Action Keyword",
+        object:"Object Keyword",
+        type:"Type Keyword",
+        priority:"Numeric Value",
+        condition:{...},
+        predicate:{...}
+      }
+  \end{listing}
+  \end{algorithm}
+  
+  The condition (Section~ref{sub:cond}) and predicate
+  (Section~\ref{sub:pred}) are also JSON objects.  They are adapted
+  from the query language used by the Mongo database \cite{mongo}.
+  The \textit{type} and \textit{priority} fields are used to determine
+  the sequence in which rules are run.  Sections~\ref{sub:types}
+  and~\ref{sub:ruleSet} describe managing rule sets in more detail.
+
   \subsection{Types and Timing}
   \label{sub:types}
 
+  For the most part, the predicates of the rules change the state
+  object or have other side effects.  This means that the sequence in
+  which the rules are executed may have an effect on the final state
+  of the system.  When constructing a rule set for a given
+  application, the designer needs to be able to provide a partial
+  ordering on the rules:  forcing the order when sequence is
+  important.
+
+  The EI-Event protocol provides two mechanisms for sequencing rules:
+  type and priority.  The type mechanism ensures that rules that
+  affect the state of the system are run before rules that report on
+  the state.  The priority mechanism controls sequencing within a
+  type.
+
+  There are five types of rules, which are run in the following
+  sequence:
+  \begin{enumerate}
+  \item \textit{State Rules}.  These rules should have predicates
+    which set flag variables and manipulate timers.  These rules are
+    run first.
+  \item \textit{Observable Rules}.  These rules should have predicates
+    that set observable values, they are run immediately after the
+    state rules.
+  \item \textit{Context Rules}.  These rules return a new value for
+    the \textit{context} field, if this needs to be changed.  These
+    are run until either the set of context rules is exhausted or one
+    of the rules returns a value other than the current context.  Note
+    that the priority is potentially important for determining which
+    of several rules govern the new context.
+  \item \textit{Trigger Rules}.  These rules have a special predicate
+    which sends a message to a process listening to the EIP.  These
+    rules are given both the old and new context values as often they
+    will trigger when the context changes.
+  \item \textit{Reset Rules}.  These rules run only if the context
+    changes.  They are used to reset values of various timers and
+    flags that should be reset for the new context.
+  \end{enumerate}
+
+  As mentioned above, the context, verb, and object for an implicit
+  part of the condition of the rule.  These can take either a specific
+  value, as defined by the application vocabulary, or the special
+  keyword \texttt{All} indicating that this rule should be run no
+  matter what the value of the corresponding field in the event or
+  state.  Thus for each event the EIP checks five collections of
+  rules, each collection corresponding to the current context, verb
+  and object as well as the type representing the phase of the event
+  processing.
+
+  There is still a potential for sequence issues within each of these
+  collections.\footnote{My recollection from trying to program in
+    Prolog, that these sequencing issues were often the hardest part
+    of a program to debug.}  This is where the priority mechanism
+  comes into play. The priority should be a positive integer.  The
+  rules are run in order of priority, lowest numbers going first.
+  Ties are broken arbitrarily (and possibly in an implementation
+  dependent way).  By adjusting the priorities, the designer should be
+  able to avoid potential conflicts and race conditions.
+
   \subsection{Conditions}
   \label{sub:cond}
+
+  The condition notation is adapted from the query documents used by
+  the Mongo database \cite{Mongo}.  The basic form looks like \texttt{
+    \{ \textit{field1}:\textit{value1}, ... \}}.  The field should be
+  either a field of the state or the event, using the notation
+  described in Section~\ref{sub:dot}.  The simplest form has the value
+  as a simple value.  The condition is satisfied if all of the fields
+  have the indicated values, and not satistified if one of them does
+  not.  Fields of the event or state which are not mentioned in the
+  query document are ignored.
+
+  Instead of a simple value, the value part of the query document can
+  be a more complex JSON object (enclosed in curly braces).  The
+  simplest version has the format:  \texttt{\{ \textit{field1}:\{
+    \$\textit{op}:\textit{value1} \}, ... \}}.  The simple operators
+  are: \texttt{\$eq} (equality, usually omitted), \texttt{\$ne} (not
+  equals), \texttt{\$gt} (greater than), \texttt{\$gte} (greater than
+  or equals), \texttt{\$lt} (less than), and \texttt{\$lte}.  Note
+  that these can be combined.  For example
+  \verb|{ state.flag.objCount: { $gt:5, $lt:10}}| returns true when
+  the \texttt{objCount} flag is between 5 and 10.
+
+  A slightly more complex version uses the form \texttt{\{ \textit{field1}:\{
+    \$\textit{op}:[\textit{value1a}, \textit{value1b},...] \},
+    ... \}}.  Here \textit{op} should be either \texttt{\$in} or
+  \texttt{\$nin} (not in).  These conditions are satisifed if the
+  value of the field is (not) in the list.  A shortcut is available
+  for the \texttt{\$in} operator:  the expression \texttt{\{
+    \textit{field1}: [\textit{value1a}, \textit{value1b},...], ... \}}
+  is equivalent to more complicated version using \texttt{\$in}.
+
+  Three special operators---\texttt{\$exists}, \texttt{\$isnull}, and
+  \texttt{\$isna}---test the state of the field.  The first tests if
+  the field exists, the second tests for a null value for the field
+  and the third tests for a not-applicable or not-a-number value.  In
+  each case, the value should be either \texttt{true} or
+  \texttt{false}.  If true, the condition is satisfied if the field
+  has the appropriate state, and if false, then if the field does not
+  have that state.
+
+  The \texttt{\$not}, \texttt{\$all} and \texttt{\$any} operators can
+  be used to build more complex queries.  The value for \texttt{\$not}
+  should be another query document; the not query is satisfied if the
+  inner query is not satisfied.  The \texttt{\$all} and \texttt{\$any}
+  operators take an array (enclosed in \texttt{[]}).  These are
+  satisfied if all (or any) of the query documents in the array are
+  satisfied.
+
+  The last two operators produce implementation dependent extensions.
+  The first is \texttt{\$regex}.  For this one the value should be a
+  regular expression and the field should normally contain a string
+  value.  This is implemenation dependent because different
+  implementations will likely use the host regular expression engine,
+  many of which have slight variations.  (Simple regular expressions
+  will likely work well in most implementations, but Perl or other
+  extensions may or may not be supported.) 
+
+  The final operator is \texttt{\$where}, which actually appers as a
+  field and not a value in the query document.  The value should be a
+  string giving the name of a function (with arguments \texttt{state}
+  and \texttt{event}) which evaluates the state and event and returns
+  true or false.  This allows the handling of cases which cannot be
+  easily handled by the query language (at the cost of being
+  implementation dependent).  It is strongly recommended that these
+  query functions have not side effects (except for logging used when
+  debugging).  
+
 
   \subsection{Predicates}
   \label{sub:pred}
