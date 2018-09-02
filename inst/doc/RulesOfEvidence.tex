@@ -7,6 +7,8 @@
 \usepackage{apacite}
 \usepackage{alltt}
 \usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{listing}
 
 \def\logit{\mathop{\rm logit}\nolimits}
 \def\mean{\mathop{\rm mean}\nolimits}
@@ -94,7 +96,7 @@
 
   \citeA{Proc4} defined a generalized model for assessment that
   consists of four processes:
-  \begin{describe}
+  \begin{description}
     \item[Presentation Process (PP)]{Presents stimulus material to examinee
       and captures work product.}
     \item[Evidence Identification (EIP)]{Extracts evidence in the form of
@@ -104,7 +106,7 @@
       competencies.}
     \item[Activity Selection (ASP)]{Assigns the next task based on current
       competency estimates and previous observations.}
-  \end{describe}
+  \end{description}
   This paper focuses on the second of these, the evidence
   identification process.  In many cases, evidence identification is
   almost trivially simple.  For mulitple choice tests it simiply
@@ -129,9 +131,8 @@
   to defining the evidence identification process works fairly well.
   Conceptually a rule looks something like:
   \begin{equation*}
-    \begin{alltt} WHEN \emph{context} IF \emph{condition} THEN
-      \emph{observable} = \emph{value}.
-    \end{alltt}
+    \texttt{ WHEN \emph{context} IF \emph{condition} THEN
+      \emph{observable} = \emph{value}}.
   \end{equation*}
   Here \emph{context} is the context in which the evidence is
   gathered; in simple systems this is the task.  In simulator systems
@@ -197,7 +198,7 @@
   \label{sec:context}
 
   \citeA{OnTheStructure} deliberately used the term \textit{task}
-  instead of the more familiar \texit{item} to encourage test
+  instead of the more familiar \textit{item} to encourage test
   designers to think beyond the common multiple-choice and
   short-answer task types. In 2003, it was obvious that assessments
   using more complex simulation tasks would be an important part of
@@ -380,7 +381,7 @@
 
   Here are several observables identified in version 2 of
   \textit{Physics Playground}:
-  \begin{describe}
+  \begin{description}
     \item[Obs1]{What is the maximum value coin (gold, silver or none)
       that the player has earned for this level?}
     \item[Obs2]{Did the player manipulate the gravity slider?}
@@ -388,7 +389,7 @@
     \item[Obs4]{How much time (excluding time spent on learning
       supports) did the player spend on the level?}
     \item[Obs5]{Did the player attempt to draw a springboard?}
-  \end{describe}
+  \end{description}
 
   The first two are fairly simple.  The state machine needs an
   \textit{observable variable} which keeps track of the coin reward
@@ -478,13 +479,13 @@
   level, paused when the player enters the learning support and resumed
   when the player leaves the learning support.  In order to do this,
   the timer object must support the following operations:
-  \begin{describe}
+  \begin{description}
   \item[resume]{Continue accumulating time.}
   \item[pause]{Stop accumulating time.}
   \item[reset]{Set the accumulated time to zero.}
   \item[restart]{Combination of reset and resume.}
   \item[value]{Return the time accumulated so far.}
-  \end{describe}
+  \end{description}
 
   These operations can be triggered by rules.  Also, the current value
   of a timer can be copied into an observable or flag variable.
@@ -492,14 +493,14 @@
   condition part of the rule.
 
   Thus, a state object contains:
-  \begin{describe}
+  \begin{description}
   \item[uid]{An identifier for the user (student, player)}
   \item[context]{An identifier for the current context.}
   \item[observables]{A collection of observable variables.}
   \item[timers]{A collection of timers.}
   \item[flags]{A collection of other (intermediate observable)
     variables.}
-  \end{describe}
+  \end{description}
   
 
   \subsection{Events}
@@ -572,7 +573,7 @@
   provides a simple mechanism for doing this.  The dots define
   subcomponents of objects.  Starting with the \texttt{state} and
   \texttt{event} objects, the legal fields are:
-  \begin{describe}
+  \begin{description}
     \item[\texttt{state.context}]{The current context that the state
       object is in.}
     \item[\texttt{state.observables.\textit{name}}]{The value of the
@@ -587,7 +588,7 @@
       occurred.}
     \item[\texttt{event.data.\textit{name}}]{The value of the
       extra data field named \textit{name}.}
-  \end{describe}
+  \end{description}
 
   Note that there potentially can be further dots after the
   \textit{name} of the value.  In particular, if the value of the
