@@ -8,7 +8,7 @@
 \usepackage{alltt}
 \usepackage{algorithmicx}
 \usepackage{algorithm}
-\usepackage{listing}
+\floatname{algorithm}{Example}
 
 \def\logit{\mathop{\rm logit}\nolimits}
 \def\mean{\mathop{\rm mean}\nolimits}
@@ -92,6 +92,24 @@
 
 \begin{document}
 
+  \maketitle
+\begin{abstract}
+A common need in game- and simulation-based assessments is to parse a
+log made up of many event records either as the assessment is running
+or afterwards to score this process.  The end result of this
+processing is define a collection of \textit{observable} outcome
+variables which are then used for summary scoring, task based feedback
+or other analytics.  In evidence-centered assessment design (ECD)
+these observable are defined by \textit{rules of evidence}.  This
+manual describes the specification for a language, called
+\textit{EI-Event} (evidence identification from events) which
+specifies rules of evidence in a JavaScript query format, similar to
+that used by the Mongo database.
+\end{abstract}
+\vspace{1cm} \noindent{Key words}: Event Logs, JSON, Evidence
+Identification, Test Scoring
+
+
   \section{Introduction}
 
   \citeA{Proc4} defined a generalized model for assessment that
@@ -109,23 +127,23 @@
   \end{description}
   This paper focuses on the second of these, the evidence
   identification process.  In many cases, evidence identification is
-  almost trivially simple.  For mulitple choice tests it simiply
+  almost trivially simple.  For multiple choice tests it simply
   matches the work product (the selected answer) to the key.  Many
   short answer question types also have simple pattern matching keys.
-  However, complex work products, paraticularly event logs from
+  However, complex work products, particularly event logs from
   simulators, require much more complex EIP.
 
   \citeA{OnTheStructure} defined an evidence model with two parts:
-  the staticial model or \textit{weights of evidence}---which
+  the statistical model or \textit{weights of evidence}---which
   correspond to the EAP,---and the \textit{rules of evidence}---which
-  corresponds to the EIP.  Although \textit{rules of evidence} is 
-  obviously a pun on the legal term, literal rules of evidence were
-  used in HyDRIVE \cite{HyDRIVE}, one of the exemplars used in
+  corresponds to the EIP.  Although the term \textit{rules of
+    evidence} is a pun on the legal term, literal rules of evidence
+  were used in HyDRIVE \cite{HyDRIVE}, one of the exemplars used in
   building the original evidence-centered design framework.  HyDRIVE
   was a simulation of maintaining the hydraulics system of the F-15
-  aircraft.  The evidence identification system was written in
-  prologue, and consisted of ``rules'' that would fire if certain
-  conditions were met.
+  aircraft.  The evidence identification system for HyDRIVE was
+  written in Prolog, and consisted of ``rules'' that would fire if
+  certain conditions were met.
 
   For game and simulation based assessments, this rule-based approach
   to defining the evidence identification process works fairly well.
@@ -153,11 +171,11 @@
   \begin{algorithm}
     \caption{Generic Event Record, JSON format.}
     \label{json:event}
-    \begin{listing}
+    \begin{lstlisting}[language=json]
       {
         app:"ecd://coe.fsu.edu/EPLS/AssessmentName",
         uid:"Student/User ID",
-        timestamp:"Time at which event occured",
+        timestamp:"Time at which event occurred",
         verb:"Action Keyword",
         object:"Object Keyword",
         data:{
@@ -166,7 +184,7 @@
           field3:{part1:"complex",part2:"object"}
         }
       }
-  \end{listing}
+  \end{lstlisting}
   \end{algorithm}
 
   The format of Example~\ref{json:event} is JSON (java script object
@@ -188,7 +206,7 @@
   The assumption is that the the work product the EIP receives from
   the PP is an ordered sequence of these event records.  (This could
   either be directly sent from the PP to the EIP or the EIP could
-  retreive them on demand from a learning record store.)  The EIP
+  retrieve them on demand from a learning record store.)  The EIP
   processes these one at a time, updating the state of the system.  In
   the end, the EIP must send one (or more) message to the EAP stating
   providing values for the observables seen in a particular context.
@@ -204,18 +222,19 @@
   using more complex simulation tasks would be an important part of
   the future of assessment.
 
-  \citeA{Proc4} had a more operational defintion for \textit{task}:  a
+  \citeA{Proc4} had a more operational definition for \textit{task}:  a
   task was the grain size at which information was passed between the
   four processes.  The PP would present a task to a student and
   send the work product for that task to the EIP.  The EIP would
-  process the work product and sent the observable for that task to
+  process the work product and send the observable for that task to
   the EAP.  The EAP would signal to the ASP that the task was
   complete, and it would select the next task to present and send that
   information to the PP.  Depending on the application, a task could
   be a single item, a group of items with a common stimulus, or a more
   complex constructed response or simulation task.
 
-  \citeA{ECGD} noted that in simulation and game-based assessments,
+  \citeA{ECGD} \cite<also>{Mislevy2013} noted that in simulation and
+  game-based assessments, 
   tasks do not necessarily come in clean units as in more traditional
   assessments.  Often a task will be a subsequence of events that
   happen in the course of a larger simulation or game.  In this case,
@@ -232,13 +251,14 @@
   increasing complexity.
 
   \noindent\textit{Computer Adaptive Test}.  Consider first a computer
-  adaptive test similar to ETS's Graduate Record Exam (GRE{\registered}) as
-  it operated around 2003.  In this assesment, the \textit{context} or
-  \textit{task} is equivalent to an item.  The ASP selects a single
-  item, which the PP displays, the EIP scores and the EAP updates the
-  estimate of student ability.  The ASP then trys to select a new item
-  that maximizes information about the examinee while balancing
-  content constraints and minimizing item exposures.
+  adaptive test similar to ETS's Graduate Record Exam
+  (GRE{\textregistered}) as it operated around 2003.  In this
+  assessment, the \textit{context} or \textit{task} is equivalent to
+  an item.  The ASP selects a single item, which the PP displays, the
+  EIP scores and the EAP updates the estimate of student ability.  The
+  ASP then tries to select a new item that maximizes information about
+  the examinee while balancing content constraints and minimizing item
+  exposures.
 
   Item sets, such as a reading passage followed by several items,
   presented a problem for the item-as-task design.  If one item was
@@ -256,18 +276,18 @@
   exposure control as well as to better control context effects of
   items.
 
-  In this example, as in most classical assessement, the context is
+  In this example, as in most classical assessment, the context is
   the same as the task---both are engineered by the test designers.
 
   \noindent\textit{Physics Playground}.  The game \textit{Physics
     Playground} \cite{ShuteVentura2013,KimPhysicsPlayground} is a
   game for teaching knowledge of Newtonian physics with an embedded
   stealth assessment.  The game is level-based: each game level
-  is a puzzle where players must manuever a ball to reach a target
+  is a puzzle where players must maneuver a ball to reach a target
   balloon.  In sketching levels, players draw objects which can be
   used to apply forces to the ball.  In manipulation levels, the
   players manipulate the forces on the ball through the use of
-  sliders. As in the computer adapative assessment, the
+  sliders. As in the computer adaptive assessment, the
   \textit{Physics Playground} task is engineered by the designers.  In
   this case it is the game level.
 
@@ -316,7 +336,7 @@
   One way to detect a context change is to keep track of the state of
   the simulator.  When the state changes in such a way as to define a
   new context, then the context changes.  In a complete system, the
-  EIP needs two kinds of rules to support this.  First, it nees a
+  EIP needs two kinds of rules to support this.  First, it needs a
   collection of \textit{context rules} which defines when a context
   changes.  Second, it needs \textit{trigger rules} to indicate when
   it should send the observables for a given context to the EAP (or
@@ -332,7 +352,10 @@
   \textit{Physics Playground} are not necessarily appropriate for a
   sketching level.  Tagging rules by the contexts in which they are
   applicable allows the EIP to filter the rule set to just those which
-  are interesting and appropriate in the current context.
+  are interesting and appropriate in the current context.  Note that
+  there is also a need here for context sets, as the list of contexts
+  for which a particular rule is needed may change as tasks are added
+  and removed from the assessment.
 
   The second and third examples have a certain similarity in the work
   product.  In both cases, the game or simulator log consists of a
@@ -420,7 +443,7 @@
   cases it may make sense to place them in other processes.  In the
   example above, it was easier to implement the agent identification
   system in the PP as it had access to the details of the screen
-  layout, and object placement and movement.  Similiarly in the case
+  layout, and object placement and movement.  Similarly in the case
   of a multiple choice test, it is is probably best to have the PP
   send a message containing which option was selected as the event,
   rather than the lower level event of where the student clicked on
@@ -432,7 +455,7 @@
   time).  If these are to be used in a model with discrete observables
   (e.g., a Bayesian network) then the continuous or count variable
   might need to be cut into categories (e.g., low, medium, high).
-  This might be easier to do in the EAP, espeically if the Bayes net
+  This might be easier to do in the EAP, especially if the Bayes net
   software can associate ranges of numeric values with states.
   
   \subsection{Flags and Timers}
@@ -453,7 +476,7 @@
   Observables taking on one or more of these roles are \textit{final
     observables}, as opposed to \textit{intermediate observables}
   whose role is to aid in the computation of final observable values.
-  ETS's e-rater{\registered} system \cite{eRater} is a good example.
+  ETS's e-rater{\textregistered} system \cite{eRater} is a good example.
   The system has low level code that identifies likely grammar, usage,
   mechanics or style errors.  (These low level observables are
   sometimes used to give students feedback on their writing.)  These
@@ -517,11 +540,11 @@
   \begin{algorithm}
     \caption{Generic Event Record, JSON format.}
     \label{json:event1}
-    \begin{listing}
+    \begin{lstlisting}[language=json]
       {
         app:"ecd://coe.fsu.edu/EPLS/AssessmentName",
         uid:"Student/User ID",
-        timestamp:"Time at which event occured",
+        timestamp:"Time at which event occurred",
         verb:"Action Keyword",
         object:"Object Keyword",
         data:{
@@ -530,7 +553,7 @@
           field3:{part1:"complex",part2:"object"}
         }
       }
-  \end{listing}
+  \end{lstlisting}
   \end{algorithm}
 
   The \texttt{verb} and \texttt{object} fields should be keywords
@@ -538,9 +561,9 @@
   xAPI \cite{xAPI} data structure.  The verb and object together
   should define what is happening.  Some example pairs from
   \textit{Physics Playground} include $\{ (\texttt{"snapshot"},
-  \texttt{"ball"}), (\texttt{"exited"}, \texttt{"learning support"}), 
-  (\texttt{"exited"}, \texttt{"level"}), (\texttt{"identified"},
-  \texttt{"game object"}) \}$.  Note that in some cases, the object is
+  \texttt{"ball"})$, $(\texttt{"exited"}, \texttt{"level"})$, 
+  $(\texttt{"exited"}, \texttt{"learning support"})$, $(\texttt{"identified"}$,
+  $\texttt{"game object"}) \}$.  Note that in some cases, the object is
   necessary to distinguish what the verb is operating on (``exited
   learning support'' versus ``exited level'').  In all cases, the
   extra data provides additional information (the position of the ball
@@ -569,13 +592,17 @@
 
   In general, rules need to be able to reference both the state object
   and the event object.  In particular, they need to reference
-  specific fields in those objects.  The javascript dot notation
+  specific fields in those objects.  The JavaScript dot notation
   provides a simple mechanism for doing this.  The dots define
   subcomponents of objects.  Starting with the \texttt{state} and
   \texttt{event} objects, the legal fields are:
   \begin{description}
     \item[\texttt{state.context}]{The current context that the state
       object is in.}
+    \item[\texttt{state.oldContext}]{The the context of the state at
+      the end of the previous event.  In particular, this can be
+      compared to the context to check if the context has changed as a
+      result of the event.} 
     \item[\texttt{state.observables.\textit{name}}]{The value of the
       observable named \textit{name}.}
     \item[\texttt{state.timers.\textit{name}}]{The current elapsed
@@ -605,7 +632,7 @@
     \textit{condition} THEN \textit{predicate}}.  The
   \textit{condition} is logical expression involving the fields of the
   state and the current event.  If this is true, then the
-  \textit{predicate} is excuted.  The \textit{context}, \textit{verb}
+  \textit{predicate} is executed.  The \textit{context}, \textit{verb}
   and \textit{object} are really part of the condition.  Separating
   them into separate components allows the rule set to be indexed by
   those fields, which should improve the speed of execution.
@@ -614,20 +641,20 @@
   \begin{algorithm}
     \caption{Generic Rule, JSON format.}
     \label{json:Rule}
-    \begin{listing}
+    \begin{lstlisting}[language=json]
       {
-        context:"Context Keyword",
-        verb:"Action Keyword",
-        object:"Object Keyword",
+        context:"Context Keyword, Context Group Keyword or ALL",
+        verb:"Action Keyword" or ALL,
+        object:"Object Keyword or ALL",
         type:"Type Keyword",
         priority:"Numeric Value",
         condition:{...},
         predicate:{...}
       }
-  \end{listing}
+  \end{lstlisting}
   \end{algorithm}
   
-  The condition (Section~ref{sub:cond}) and predicate
+  The condition (Section~\ref{sub:cond}) and predicate
   (Section~\ref{sub:pred}) are also JSON objects.  They are adapted
   from the query language used by the Mongo database \cite{mongo}.
   The \textit{type} and \textit{priority} fields are used to determine
@@ -680,14 +707,15 @@
   value, as defined by the application vocabulary, or the special
   keyword \texttt{All} indicating that this rule should be run no
   matter what the value of the corresponding field in the event or
-  state.  Thus for each event the EIP checks five collections of
-  rules, each collection corresponding to the current context, verb
-  and object as well as the type representing the phase of the event
-  processing.
+  state.  The context keyword can also be a context group defining a
+  set of contexts to which this rule applies.  Thus, for each event
+  the EIP checks five collections of rules, each collection
+  corresponding to the current context, verb and object as well as the
+  type representing the phase of the event processing.
 
   There is still a potential for sequence issues within each of these
   collections.\footnote{My recollection from trying to program in
-    Prolog, that these sequencing issues were often the hardest part
+    Prolog is that these sequencing issues were often the hardest part
     of a program to debug.}  This is where the priority mechanism
   comes into play. The priority should be a positive integer.  The
   rules are run in order of priority, lowest numbers going first.
@@ -699,14 +727,26 @@
   \label{sub:cond}
 
   The condition notation is adapted from the query documents used by
-  the Mongo database \cite{Mongo}.  The basic form looks like \texttt{
-    \{ \textit{field1}:\textit{value1}, ... \}}.  The field should be
+  the Mongo database \cite{mongo}.  The basic form is shown in
+  Example~\ref{json:cond}.  The field should be
   either a field of the state or the event, using the notation
   described in Section~\ref{sub:dot}.  The simplest form has the value
   as a simple value.  The condition is satisfied if all of the fields
-  have the indicated values, and not satistified if one of them does
+  have the indicated values, and not satisfied if one of them does
   not.  Fields of the event or state which are not mentioned in the
   query document are ignored.
+
+  \begin{algorithm}
+    \caption{Basic Condition Query Document}
+    \label{json:cond}
+    \begin{lstlisting}[language=json]
+      condition:{
+        <field1>:<value1>,
+        <field2>:<value2>,
+        ...
+      }
+    \end{lstlisting}
+  \end{algorithm}
 
   Instead of a simple value, the value part of the query document can
   be a more complex JSON object (enclosed in curly braces).  The
@@ -722,7 +762,7 @@
   A slightly more complex version uses the form \texttt{\{ \textit{field1}:\{
     \$\textit{op}:[\textit{value1a}, \textit{value1b},...] \},
     ... \}}.  Here \textit{op} should be either \texttt{\$in} or
-  \texttt{\$nin} (not in).  These conditions are satisifed if the
+  \texttt{\$nin} (not in).  These conditions are satisfied if the
   value of the field is (not) in the list.  A shortcut is available
   for the \texttt{\$in} operator:  the expression \texttt{\{
     \textit{field1}: [\textit{value1a}, \textit{value1b},...], ... \}}
@@ -737,24 +777,30 @@
   has the appropriate state, and if false, then if the field does not
   have that state.
 
-  The \texttt{\$not}, \texttt{\$all} and \texttt{\$any} operators can
+  The \texttt{\$not}, \texttt{\$and}, and \texttt{\$or} operators can
   be used to build more complex queries.  The value for \texttt{\$not}
   should be another query document; the not query is satisfied if the
-  inner query is not satisfied.  The \texttt{\$all} and \texttt{\$any}
-  operators take an array (enclosed in \texttt{[]}).  These are
-  satisfied if all (or any) of the query documents in the array are
-  satisfied.
+  inner query is not satisfied.  The \texttt{\$and} and \texttt{\$or}
+  operators take an array (enclosed in \texttt{[]}) of query
+  documents.  These are satisfied if all (or any) of the query
+  documents in the array are satisfied.
 
+  The \texttt{\$any} and \texttt{\$all} operators are used when the
+  value being tested is an array.  The \texttt{\$any} test is
+  satisfied if any of the elements of the array satisfy the test
+  and the \texttt{\$all} test is satisfied only if all of the
+  elements of the array satisfy the test.
+  
   The last two operators produce implementation dependent extensions.
   The first is \texttt{\$regex}.  For this one the value should be a
   regular expression and the field should normally contain a string
-  value.  This is implemenation dependent because different
+  value.  This is implementation dependent because different
   implementations will likely use the host regular expression engine,
   many of which have slight variations.  (Simple regular expressions
   will likely work well in most implementations, but Perl or other
   extensions may or may not be supported.) 
 
-  The final operator is \texttt{\$where}, which actually appers as a
+  The final operator is \texttt{\$where}, which actually appears as a
   field and not a value in the query document.  The value should be a
   string giving the name of a function (with arguments \texttt{state}
   and \texttt{event}) which evaluates the state and event and returns
@@ -764,18 +810,191 @@
   query functions have not side effects (except for logging used when
   debugging).  
 
-
   \subsection{Predicates}
   \label{sub:pred}
+
+  The predicate takes the generic form shown in
+  Example~\ref{json:pred}. The big difference is update operators,
+  which control how the fields are modified.  Fields should reference
+  fields of the state object (dot notation beginning with
+  \texttt{state}), although values can reference fields of the
+  events. 
+
+  \begin{algorithm}
+    \caption{Basic Predicate Update Document}
+    \label{json:pred}
+    \begin{lstlisting}[language=json]
+      predicate:{
+        <update operator1>:{ <field1>:<value1>, ... },
+        <update operator2>:{ <field2>:<value2>, ... },
+        ...
+      }
+    \end{lstlisting}
+  \end{algorithm}
+
+  The simplest update operator is the \texttt{\$set} operator.  In
+  this case the field is set to the value (or if the value references
+  an event or flag variable, to the value of that field).  If the
+  state object does not have a flag or observable of that name, it
+  will be created. 
+
+  The \texttt{\$unset} operator is an inverse.  For this the
+  \textit{value} should be one of \texttt{"NULL"}, \texttt{"NA"}, or
+  \texttt{"Delete"}.  The first two set the values to NULL and NA (not
+  applicable) respectively.  The rules for these values are
+  implementation dependent.  The third removes the flag or observable
+  from the state object.
+
+  The \texttt{\$incr}, \texttt{\$decr}, \texttt{\$mult},
+  \texttt{\$div}, \texttt{\$min}, and \texttt{\$max} operators modify
+  the existing field (which should be numeric) based on the operator
+  and the argument value.  The first four add, subtract, multiply or
+  divide the value of the field by the argument value and set the
+  field to the result.   The \texttt{\$min} and \texttt{\$max}
+  operators set the field to the largest or smallest of the current
+  value and the argument argument value.
+
+  The \texttt{\$addToSet} and \texttt{\$pullFromSet} operate on fields
+  which are arrays.  In the first case, the argument value is added to
+  the set (if it is not already present), and in the second case it is
+  removed from the set.
+
+  The \texttt{\$push} and \texttt{\$pop} operators also operate on
+  array fields; however, they treat the arrays like stacks and not
+  sets.  The \texttt{\$push} operator adds the argument value to the
+  front of the list, and the \texttt{\$pop} operator removes the first
+  element, or if the value is a positive integer, it removes the that
+  many elements from the front of the stack.
+
+  Timers are treated specially by the \texttt{\$set} operator.  In
+  particular, there are two fields of the timer object which can be
+  set, \texttt{state.timers.\textit{name}.value} and
+  \texttt{state.timers.\textit{name}.running}.  The latter value can
+  be set to \texttt{true} or \texttt{false} which causes it to resume
+  or pause respectively.  The \texttt{.value} field of the timer sets
+  the current time; this is assumed if the field is omitted.  This can
+  be treated like a numeric value with the time in seconds, or it can
+  be set as an object of the form \texttt{\{time:\textit{number},
+    units:\textit{unit}\}}, where \textit{unit} is one of
+  \texttt{"sec"}, \texttt{"min"}, \texttt{"hr"}, \texttt{"day"} and so
+  forth.  Example~\ref{json:time} gives a few examples:
+  
+  \begin{algorithm}
+    \caption{Setting Timers}
+    \label{json:time}
+    \begin{lstlisting}[language=json]
+      predicate:{
+        //Set pause learning support timer
+        $set:{ state.timers.learnSup.running: false},
+        //Resume level timer
+        $set:{ state.timers.level.running:true},
+        //Restart last play timer
+        $set:{ state.timers.lastPlay.value: 0,
+               state.timers.lastPlay.running: true},
+        //Add 1 minute to the penalized time timer.
+        $incr:{ state.timers.penTime : {time:1,
+                                        units:"min"}},
+        ...
+      }
+    \end{lstlisting}
+  \end{algorithm}
+  
+  Finally, the \texttt{\$setCall} operator provides an implementation
+  dependent extension mechanism.  The \textit{value} should be a
+  string giving the name of a function with three arguments:  the name
+  of the field being set, the state object and the event object.  The
+  named field will be set to the value returned by this function.
+
+  \subsection{Special Predicates for Context and Trigger Rules}
+  \label{sub:specRule}
+
+  The context and trigger rules need special treatment.  Context
+  rules, if they fire return a string value naming the context.
+  Consequently, the \texttt{predicate} component of
+  Example~\ref{json:pred} is replaced by a new \texttt{context}
+  component.  This should have a single value.  It can be one of three
+  things:  (1)~a string value for the new context, (2)~the name of a
+  field which provides the value for the new context, or (3)~an
+  expression of the form \texttt{\{\$call:\textit{funname}\}} which
+  calls a program of the given name in the implementation language.
+  This function should have two arguments, the state and the event,
+  and return a string providing the name of the new context.
+  
+  The role of the trigger rule is to send a message.  The basic output
+  message format looks like Example~\ref{json:message}.  These are
+  called \texttt{Proc4 messages} because the basic format came from an
+  early implementation of the four process architecture \cite{Proc4}.
+  When the message is sent, the \texttt{app} and \texttt{uid} values
+  are set from the \texttt{state} object.  The \texttt{timestamp}
+  field is also set from the current time.  The \texttt{context} field
+  is often the value of \texttt{state.oldContext}, although that might
+  be overridden.
+
+  \begin{algorithm}
+    \caption{Proc4 Message Format}
+    \label{json:send}
+    \begin{lstlisting}[language=json]
+      {
+        app:<appid>,
+        uid:<uid>,
+        context:<contextVariable>,
+        message:<message>,
+        timestamp:<date-time>,
+        data:{<field1>:<value1>, <field2>:<value2>, ...}
+      }
+    \end{lstlisting}
+  \end{algorithm}
+
+
+  Consequently, the \texttt{predicate} component of a trigger rule is
+  replaced with the \texttt{send} component, which specifies parts of
+  the message.  Example~\ref{json:send} provides the basic layout.
+  The \texttt{message} field is required and should be a string.  If
+  the \texttt{context} field is omitted, it will default to the
+  current value of \texttt{state.oldContext}.  If the \texttt{data}
+  field is omitted, it will default to all of the observables.
+
+  \begin{algorithm}
+    \caption{Special Send Predicate for Trigger Rules}
+    \label{json:send}
+    \begin{lstlisting}[language=json]
+      send:{
+        message:<message>,
+        listeners:<nameOrList>,
+        context:<contextVariable>,
+        data:{<field1>:<value1>, <field2>:<value2>, ...}
+      }
+    \end{lstlisting}
+  \end{algorithm}
+
+  The \texttt{listeners} field requires more explanation.  A number of
+  other processes can register as listeners to messages send from the
+  EIP.  Normally, the EAP is a registered listener, but there might be
+  other processes involved in logging, feedback generation and
+  reporting, or event the ASP which want to listen to the messages.
+  If this field is omitted, then the message is sent to all
+  listeners.  If a name of a specific listener or an array of listener
+  names is supplied, then the message will be sent only two those
+  listeners.  This might be useful for error or debugging messages.
 
   \subsection{Rule Set Maintenance}
   \label{sub:ruleSet}
 
+  Queries, adding rules to set.  Removing rules from sets.
+
+  Defining context groups.
+
   \section{Examples}
   \label{sec:examples}
+
+  Please help me make some examples.
   
   \section{Software}
   \label{sec:software}
+
+  The SVN repository for the current (very incomplete) implementation
+  in R is available at
+  \url{https://pluto.coe.fsu.edu/svn/common/EIEvent/}.
 
   \bibliographystyle{apacite}
   \bibliography{EIRefs}
