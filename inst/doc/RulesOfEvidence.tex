@@ -643,10 +643,12 @@ Identification, Test Scoring
     \label{json:Rule}
     \begin{lstlisting}[language=json]
       {
+        ruleName:"Human readable identifier",
+        doc:"Human language description",
         context:"Context Keyword, Context Group Keyword or ALL",
         verb:"Action Keyword" or ALL,
         object:"Object Keyword or ALL",
-        type:"Type Keyword",
+        ruleType:"Type Keyword",
         priority:"Numeric Value",
         condition:{...},
         predicate:{...}
@@ -751,25 +753,25 @@ Identification, Test Scoring
   Instead of a simple value, the value part of the query document can
   be a more complex JSON object (enclosed in curly braces).  The
   simplest version has the format:  \texttt{\{ \textit{field1}:\{
-    \$\textit{op}:\textit{value1} \}, ... \}}.  The simple operators
-  are: \texttt{\$eq} (equality, usually omitted), \texttt{\$ne} (not
-  equals), \texttt{\$gt} (greater than), \texttt{\$gte} (greater than
-  or equals), \texttt{\$lt} (less than), and \texttt{\$lte}.  Note
+    ?\textit{op}:\textit{value1} \}, ... \}}.  The simple operators
+  are: \texttt{?eq} (equality, usually omitted), \texttt{?ne} (not
+  equals), \texttt{?gt} (greater than), \texttt{?gte} (greater than
+  or equals), \texttt{?lt} (less than), and \texttt{?lte}.  Note
   that these can be combined.  For example
   \verb|{ state.flag.objCount: { $gt:5, $lt:10}}| returns true when
   the \texttt{objCount} flag is between 5 and 10.
 
   A slightly more complex version uses the form \texttt{\{ \textit{field1}:\{
-    \$\textit{op}:[\textit{value1a}, \textit{value1b},...] \},
-    ... \}}.  Here \textit{op} should be either \texttt{\$in} or
-  \texttt{\$nin} (not in).  These conditions are satisfied if the
+    ?\textit{op}:[\textit{value1a}, \textit{value1b},...] \},
+    ... \}}.  Here \textit{op} should be either \texttt{?in} or
+  \texttt{?nin} (not in).  These conditions are satisfied if the
   value of the field is (not) in the list.  A shortcut is available
-  for the \texttt{\$in} operator:  the expression \texttt{\{
+  for the \texttt{?in} operator:  the expression \texttt{\{
     \textit{field1}: [\textit{value1a}, \textit{value1b},...], ... \}}
-  is equivalent to more complicated version using \texttt{\$in}.
+  is equivalent to more complicated version using \texttt{?in}.
 
-  Three special operators---\texttt{\$exists}, \texttt{\$isnull}, and
-  \texttt{\$isna}---test the state of the field.  The first tests if
+  Three special operators---\texttt{?exists}, \texttt{?isnull}, and
+  \texttt{?isna}---test the state of the field.  The first tests if
   the field exists, the second tests for a null value for the field
   and the third tests for a not-applicable or not-a-number value.  In
   each case, the value should be either \texttt{true} or
@@ -777,30 +779,32 @@ Identification, Test Scoring
   has the appropriate state, and if false, then if the field does not
   have that state.
 
-  The \texttt{\$not}, \texttt{\$and}, and \texttt{\$or} operators can
-  be used to build more complex queries.  The value for \texttt{\$not}
-  should be another query document; the not query is satisfied if the
-  inner query is not satisfied.  The \texttt{\$and} and \texttt{\$or}
-  operators take an array (enclosed in \texttt{[]}) of query
-  documents.  These are satisfied if all (or any) of the query
-  documents in the array are satisfied.
-
-  The \texttt{\$any} and \texttt{\$all} operators are used when the
-  value being tested is an array.  The \texttt{\$any} test is
+  The \texttt{?any} and \texttt{?all} operators are used when the
+  value being tested is an array.  The argument for these operators
+  should be a query with a single query.  The \texttt{?any} test is
   satisfied if any of the elements of the array satisfy the test
-  and the \texttt{\$all} test is satisfied only if all of the
+  and the \texttt{?all} test is satisfied only if all of the
   elements of the array satisfy the test.
+
+  The \texttt{?not}, \texttt{?and}, and \texttt{?or} operators can
+  be used to build more complex queries.  The value for \texttt{?not}
+  should be another query involving the target field; the not query is
+  satisfied if the inner query is not satisfied.  The \texttt{?and}
+  and \texttt{?or} operators take an array (enclosed in \texttt{[]})
+  of queries about the current field.  These are satisfied if all (or
+  any) of the query documents in the array are satisfied.  Note that
+  unlike the Mongo database queries, the \texttt{?not}, \texttt{?and},
+  and \texttt{?or} operators apply only to a single field.
   
-  The last two operators produce implementation dependent extensions.
-  The first is \texttt{\$regex}.  For this one the value should be a
-  regular expression and the field should normally contain a string
-  value.  This is implementation dependent because different
+  The \texttt{?regex} does regular expression matching: the argument
+  should be a regular expression and the field should normally contain
+  a string value.  This is implementation dependent because different
   implementations will likely use the host regular expression engine,
   many of which have slight variations.  (Simple regular expressions
   will likely work well in most implementations, but Perl or other
-  extensions may or may not be supported.) 
+  extensions may or may not be supported.)
 
-  The final operator is \texttt{\$where}, which actually appears as a
+  The final operator is \texttt{?where}, which actually appears as a
   field and not a value in the query document.  The value should be a
   string giving the name of a function (with arguments \texttt{state}
   and \texttt{event}) which evaluates the state and event and returns
@@ -832,41 +836,41 @@ Identification, Test Scoring
     \end{lstlisting}
   \end{algorithm}
 
-  The simplest update operator is the \texttt{\$set} operator.  In
+  The simplest update operator is the \texttt{!set} operator.  In
   this case the field is set to the value (or if the value references
   an event or flag variable, to the value of that field).  If the
   state object does not have a flag or observable of that name, it
   will be created. 
 
-  The \texttt{\$unset} operator is an inverse.  For this the
+  The \texttt{!unset} operator is an inverse.  For this the
   \textit{value} should be one of \texttt{"NULL"}, \texttt{"NA"}, or
   \texttt{"Delete"}.  The first two set the values to NULL and NA (not
   applicable) respectively.  The rules for these values are
   implementation dependent.  The third removes the flag or observable
   from the state object.
 
-  The \texttt{\$incr}, \texttt{\$decr}, \texttt{\$mult},
-  \texttt{\$div}, \texttt{\$min}, and \texttt{\$max} operators modify
+  The \texttt{!incr}, \texttt{!decr}, \texttt{!mult},
+  \texttt{!div}, \texttt{!min}, and \texttt{!max} operators modify
   the existing field (which should be numeric) based on the operator
   and the argument value.  The first four add, subtract, multiply or
   divide the value of the field by the argument value and set the
-  field to the result.   The \texttt{\$min} and \texttt{\$max}
+  field to the result.   The \texttt{!min} and \texttt{!max}
   operators set the field to the largest or smallest of the current
   value and the argument argument value.
 
-  The \texttt{\$addToSet} and \texttt{\$pullFromSet} operate on fields
+  The \texttt{!addToSet} and \texttt{!pullFromSet} operate on fields
   which are arrays.  In the first case, the argument value is added to
   the set (if it is not already present), and in the second case it is
   removed from the set.
 
-  The \texttt{\$push} and \texttt{\$pop} operators also operate on
+  The \texttt{!push} and \texttt{!pop} operators also operate on
   array fields; however, they treat the arrays like stacks and not
-  sets.  The \texttt{\$push} operator adds the argument value to the
-  front of the list, and the \texttt{\$pop} operator removes the first
+  sets.  The \texttt{!push} operator adds the argument value to the
+  front of the list, and the \texttt{!pop} operator removes the first
   element, or if the value is a positive integer, it removes the that
   many elements from the front of the stack.
 
-  Timers are treated specially by the \texttt{\$set} operator.  In
+  Timers are treated specially by the \texttt{!set} operator.  In
   particular, there are two fields of the timer object which can be
   set, \texttt{state.timers.\textit{name}.value} and
   \texttt{state.timers.\textit{name}.running}.  The latter value can
@@ -885,21 +889,21 @@ Identification, Test Scoring
     \begin{lstlisting}[language=json]
       predicate:{
         //Set pause learning support timer
-        $set:{ state.timers.learnSup.running: false},
+        !set:{ state.timers.learnSup.running: false},
         //Resume level timer
-        $set:{ state.timers.level.running:true},
+        !set:{ state.timers.level.running:true},
         //Restart last play timer
-        $set:{ state.timers.lastPlay.value: 0,
+        !set:{ state.timers.lastPlay.value: 0,
                state.timers.lastPlay.running: true},
         //Add 1 minute to the penalized time timer.
-        $incr:{ state.timers.penTime : {time:1,
+        !incr:{ state.timers.penTime : {time:1,
                                         units:"min"}},
         ...
       }
     \end{lstlisting}
   \end{algorithm}
   
-  Finally, the \texttt{\$setCall} operator provides an implementation
+  Finally, the \texttt{!setCall} operator provides an implementation
   dependent extension mechanism.  The \textit{value} should be a
   string giving the name of a function with three arguments:  the name
   of the field being set, the state object and the event object.  The
@@ -915,7 +919,7 @@ Identification, Test Scoring
   component.  This should have a single value.  It can be one of three
   things:  (1)~a string value for the new context, (2)~the name of a
   field which provides the value for the new context, or (3)~an
-  expression of the form \texttt{\{\$call:\textit{funname}\}} which
+  expression of the form \texttt{\{!call:\textit{funname}\}} which
   calls a program of the given name in the implementation language.
   This function should have two arguments, the state and the event,
   and return a string providing the name of the new context.

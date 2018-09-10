@@ -2,7 +2,7 @@ import(methods)
 import(Proc4)
 
 #importFrom("grDevices", "col2rgb", "grey.colors", "hsv", "rgb2hsv")
-
+importFrom("jsonlite","toJSON")
 
 export(Event,verb,object)
 exportClasses(Event)
