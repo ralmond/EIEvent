@@ -1,64 +1,74 @@
 ## Rule Tables are collections of rules.
 
-########################################
-## Rules are just functions.
-setClassUnion("Rule",c("function","character"))
-valid.Rule <- function(object) {
-  if (is.function(object)) TRUE
-  if (length(object) >1)) {
-    return(paste("Rules must be a single name"))
-  }
-  if (exists(object,mode="function")) TRUE
-  paste("Name ",object,"is not bound to a function.")
+setClass("Rule",
+         slots=c(name="character",      #Human idenfier
+                 doc="character",       #Human description
+                 context="character",   #Applicable context
+                 verb="character",      #Applicable verb
+                 object="character",    #Applicable object
+                 ruleType="character",  #Type of rule
+                 priority="numeric",    #Rule Sequence
+                 condition="list",      #Rule Protaxis
+                 predicate="list"       #Rule apodosis
+                 ))
+
+setGeneric("ruleName",function(x) standardGeneric("RuleName"))
+setGeneric("doc",function(x) standardGeneric("cod"))
+setGeneric("ruleType",function(x) standardGeneric("ruleType"))
+setGeneric("priority",function(x) standardGeneric("priority"))
+setGeneric("condition",function(x) standardGeneric("condition"))
+setGeneric("predicate",function(x) standardGeneric("predicate"))
+
+setMethod("context","Rule", function(x) x@context)
+setMethod("verb","Rule", function(x) x@verb)
+setMethod("object","Rule", function(x) x@object)
+setMethod("ruleName","Rule", function(x) x@name)
+setMethod("ruleType","Rule", function(x) x@ruleType)
+setMethod("condition","Rule", function(x) x@condition)
+setMethod("predicate","Rule", function(x) x@predicate)
+
+Rule <- function(context="ALL",verb="ALL",object="ALL",
+                 ruleType=c("StatusRule","ObservableRule","ContextRule",
+                            "TriggerRule","ResetRule"),
+                 priority=5, doc="",
+                 name=paste("When in",context,",",verb, object, ruleType),
+                 condition=list(),predicate=list())
+  new("Rule",name=name,doc=doc,context=contect,verb=verb,object=object,
+      ruleType=ruleType,priority=priority,condition=condition,
+      predicate=predicate)
 }
 
-setClass("StatusRule",contains="Rule")
-valid.StatusRule <- function(object) {
-  vr <- valid.Rule(object)
-  if (vr != TRUE) return (vr)
-  fun <- object
-  if (is.character(object)) fun <- get(object,mode="function")
-  expArgs <- c("current","status")
-  if (all.equal(formalArgs(fun)==expArgs)) TRUE
-  else paste("StatusRule must have args ",expArgs)
+setMethod("toString","Rule", function(x, ...) {
+  paste('Rule:{',x@name,'}')
+})
+setMethod("show","Rule",function(object) {
+  cat(toString(object),"\n")
+})
+
+setMethod("as.json","Rule", function(x) {
+  jlist <- as.jlist(x,attributes(x))
+  toJSON(jlist,POSIXt="mongo")
 }
 
+setMethod("as.jlist",c("Rule","list"), function(obj,ml) {
+  ml$"_id" <- NULL
+  ml$class <-NULL
 
-setClass("ContextRule",contains="Rule")
-valid.ContextRule <- function(object) {
-  vr <- valid.Rule(object)
-  if (vr != TRUE) return (vr)
-  fun <- object
-  if (is.character(object)) fun <- get(object,mode="function")
-  expArgs <- c("current","status")
-  if (all.equal(formalArgs(fun)==expArgs)) TRUE
-  else paste("ContextRule must have args ",expArgs)
-  }
-
-setClass("ObsRule",contains="Rule")
-valid.ObsRule <- function(object) {
-  vr <- valid.Rule(object)
-  if (vr != TRUE) return (vr)
-  fun <- object
-  if (is.character(object)) fun <- get(object,mode="function")
-  expArgs <- c("current","status","oldContext")
-  if (all.equal(formalArgs(fun)==expArgs)) TRUE
-  else paste("ObsRule must have args ",expArgs)
+  ml$name <- unbox(ml$name)
+  ml$verb <- unbox(ml$verb)
+  ml$object <- unbox(ml$object)
+  ml$object <- unbox(ml$ruleType)
+  ml$object <- unbox(ml$priority)
+  ml
 }
 
-setClass("TriggerRule",contains="Rule")
-valid.TriggerRule <- function(object) {
-  vr <- valid.Rule(object)
-  if (vr != TRUE) return (vr)
-  fun <- object
-  if (is.character(object)) fun <- get(object,mode="function")
-  expArgs <- c("current","status","oldContext")
-  if (all.equal(formalArgs(fun)==expArgs)) TRUE
-  else paste("TriggerRule must have args ",expArgs)
+parseRule<- function (rec) {
+  new("Rule",name=rec$name,doc=rec$doc,context=rec$contect,
+      verb=rec$verb,object=rec$object,ruleType=rec$ruleType,
+      priority=rec$priority,condition=parseData(rec$condition),
+      predicate=parseData(rec$predicate))
 }
 
-### These tests are fairly weak as they don't test the output or input
-### types, but that is hard to do given R's polymorphism.
 
 ####################################################################
 ## Rule Table
