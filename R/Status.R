@@ -56,16 +56,19 @@ setMethod("reset","Timer" function(timer) {
 ### Status -- Maintains state for one user in one context.
 
 setClass("Status",
-         slots=c(uid="character",
+         slots=c(app="character",
+                 uid="character",
                  context="character",
                  timers="list",
                  flags="list",
-                 observables="list"))
+                 observables="list",
+                 timestamp=POSIXt))
 Status <- function (uid,context,timerNames=character(),
-                    flags=list(),observables=list()) {
+                    flags=list(),observables=list(),timestamp=Sys.time(),
+                    app="default") {
   timers <- sapply(timerNames, Timer)
-  new("Status",uid=uid,context=context,timers=timers,
-      flags=flags,observables=observables)
+  new("Status",app=app,uid=uid,context=context,timers=timers,
+      flags=flags,observables=observables,timestamp=timestamp)
 })
 
 setMethod("uid","Status", function(x) x@uid)
@@ -110,7 +113,8 @@ setMethod("obs<-","Status", function(x,name,val) {
 setMethod("copy","Status", function(prototype,uid) {
   new("Status",uid=uid,context=prototype@context,
       timers=prototype@timers, flags=prototype@flags,
-      observables=prototype@observables)
+      observables=prototype@observables,
+      timestamp=prototype@timestamp)
 })
 
 
