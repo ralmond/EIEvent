@@ -1,7 +1,8 @@
 ## Rule Tables are collections of rules.
 
 setClass("Rule",
-         slots=c(name="character",      #Human idenfier
+         slots=c(app="character",       #Application Identifier
+                 name="character",      #Human idenfier
                  doc="character",       #Human description
                  context="character",   #Applicable context
                  verb="character",      #Applicable verb
@@ -32,8 +33,8 @@ Rule <- function(context="ALL",verb="ALL",object="ALL",
                             "TriggerRule","ResetRule"),
                  priority=5, doc="",
                  name=paste("When in",context,",",verb, object, ruleType),
-                 condition=list(),predicate=list())
-  new("Rule",name=name,doc=doc,context=contect,verb=verb,object=object,
+                 condition=list(),predicate=list(),app="default")
+  new("Rule",app=app,name=name,doc=doc,context=contect,verb=verb,object=object,
       ruleType=ruleType,priority=priority,condition=condition,
       predicate=predicate)
 }
@@ -63,7 +64,7 @@ setMethod("as.jlist",c("Rule","list"), function(obj,ml) {
 }
 
 parseRule<- function (rec) {
-  new("Rule",name=rec$name,doc=rec$doc,context=rec$contect,
+  new("Rule",app=rec$app,name=rec$name,doc=rec$doc,context=rec$contect,
       verb=rec$verb,object=rec$object,ruleType=rec$ruleType,
       priority=rec$priority,condition=parseData(rec$condition),
       predicate=parseData(rec$predicate))

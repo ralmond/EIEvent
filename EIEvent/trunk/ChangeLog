@@ -1,3 +1,9 @@
+2018-09-27  Russell Almond  <ralmond@Limu>
+
+	* R/RuleTables.R (Rule): Added app to Rule.
+
+	* R/Status.R (Status): Added app and timestamp to Status.
+
 2018-08-14  Rusell Almond  <ralmond@Cherry>
 
 	* DESCRIPTION (Package): Renamed from EIEngine
