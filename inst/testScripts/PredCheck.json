@@ -1,0 +1,42 @@
+[
+    {
+        state:{
+            uid: "Test",
+            context: "Test",
+            timers:{},
+            flags:{},
+            observables:{}
+        },
+        event:{
+            app:"https://epls.coe.fsu.edu/EIEvent/Selftest",
+            uid: "Test",
+            verb: "Equals",
+            object: "Event Data",
+            context: "Test",
+            timestamp:"2018-09-25 12:12:28 EDT",
+            data:{
+                color: "red"
+            }
+        },
+        rule:{
+            name: "Color it Red",
+            doc: "Sets the color to Red",
+            verb: "ANY",
+            object: "ANY",
+            ruleType: "Status",
+            priority: 5,
+            condition:{},
+            predicate:{
+                "!set": {state.flags.color: "red"}
+            }
+        },
+        result:{
+            uid: "Test",
+            context: "Test",
+            timers:{},
+            flags:{ color:"red"},
+            observables:{}
+        },
+
+    }
+]
