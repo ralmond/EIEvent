@@ -1,0 +1,68 @@
+[
+    {
+        state:{
+            uid: "Test",
+            context: "Test",
+            timers:{},
+            flags:{},
+            observables:{}
+        },
+        event:{
+            app:"https://epls.coe.fsu.edu/EIEvent/Selftest",
+            uid: "Test",
+            verb: "Equals",
+            object: "Event Data",
+            context: "Test",
+            timestamp:"2018-09-25 12:12:28 EDT",
+            data:{
+                color: "red"
+            }
+        },
+        rule:{
+            name: "color = red",
+            doc: "Checks if the color is red",
+            verb: "ANY",
+            object: "ANY",
+            ruleType: "Status",
+            priority: 5,
+            condition:{
+                event.data.color: "red"
+            },
+            predicate:{}
+        },
+        result:true
+    },
+    {
+        state:{
+            uid: "Test",
+            context: "Test",
+            timers:{},
+            flags:{},
+            observables:{}
+        },
+        event:{
+            app:"https://epls.coe.fsu.edu/EIEvent/Selftest",
+            uid: "Test",
+            verb: "Equals",
+            object: "Event Data",
+            context: "Test",
+            timestamp:"2018-09-25 12:12:28 EDT",
+            data:{
+                color: "blue"
+            }
+        },
+        rule:{
+            name: "color = red",
+            doc: "Checks if the color is red",
+            verb: "ANY",
+            object: "ANY",
+            ruleType: "Status",
+            priority: 5,
+            condition:{
+                event.data.color: "red"
+            },
+            predicate:{}
+        },
+        result:false
+    }
+]
