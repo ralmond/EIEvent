@@ -11,7 +11,7 @@ checkCondition <- function (conditions, state, event) {
     if (fieldexp[1]=="event") target <- event
     else stop("Field name must start with 'state' or 'event':",field)
     for (i in 2:length(feildexp)) {
-      target <- target[[field]]
+      target <- target[[fieldexp[i]]]
     }
     if (!checkOneCondition(conditions[[field]],target))
       return(FALSE)

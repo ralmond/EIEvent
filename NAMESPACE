@@ -15,7 +15,7 @@ exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,reset)
 export(Status)
 exportClasses(Status)
 exportMethods(context,timer,"timer<-",startTimer,pauseTimer,resumeTimer,
-              flag,"flag<-",obs,"obs<-")
+              flag,"flag<-",obs,"obs<-",timerTime)
 
 
 
