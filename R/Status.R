@@ -13,8 +13,8 @@ Timer <- function(name) {
 }
 
 setMethod("start","Timer",
-          function(timer,time,restartOK=FALSE) {
-            if (!restartOK && isRunning(timer)) {
+          function(timer,time,runningCheck=TRUE) {
+            if (runningCheck && isRunning(timer)) {
               stop("Timer ",name,"is already running.")
             }
             timer@startTime <- as.POSIXct(time)
@@ -45,6 +45,14 @@ setMethod("timeSoFar","Timer",
             } else {
               timer@totalTime
             }})
+setMethod("timeSoFar<-","Timer",
+          function(timer,now,value) {
+            if (isRunning(timer)) {
+              timer@startTime <- as.POSIXct(now)
+            }
+            timer@totalTime <- now
+            timer})
+
 
 setMethod("reset","Timer" function(timer) {
   timer@startTime <- as.POSIXct(NA)
@@ -59,6 +67,7 @@ setClass("Status",
          slots=c(app="character",
                  uid="character",
                  context="character",
+                 oldContext="character",
                  timers="list",
                  flags="list",
                  observables="list",
@@ -67,16 +76,14 @@ Status <- function (uid,context,timerNames=character(),
                     flags=list(),observables=list(),timestamp=Sys.time(),
                     app="default") {
   timers <- sapply(timerNames, Timer)
-  new("Status",app=app,uid=uid,context=context,timers=timers,
-      flags=flags,observables=observables,timestamp=timestamp)
+  new("Status",app=app,uid=uid,context=context,oldContext=context,
+      timers=timers, flags=flags,observables=observables,timestamp=timestamp)
 })
 
 setMethod("uid","Status", function(x) x@uid)
 setMethod("context","Status", function(x) x@context)
 
 setMethod("timer","Status", function(x,name) x@timers[[name]])
-setMethod("timerTime","Status", function(x,name,name)
-  timeSoFar(x@timers[[name]],now))
 setMethod("timer<-","Status", function(x,name,val) {
   if (!is.null(val) && !is(val,"Timer")) {
     stop("Attempting to set timer ",name," to non-timer object")
@@ -85,20 +92,40 @@ setMethod("timer<-","Status", function(x,name,val) {
   x
 })
 
-setMethod("startTimer","Status", function(x,name,time,restartOK=FALSE)
-{
-  timer(x,name) <- start(timer(x,name),time,restartOK)
+setMethod("setTimer","Status", function(x,name,value,running,now) {
+  fieldlist <- splitfield(name)
+  if (fieldlist[1] != "state" || fieldlist[2] !="timers")
+    stop ("Can only !start and !reset timers:  ",name)
+  name <- fieldlist[3]
+  if (is.null(timer(x,name))) {
+    timer(x,name) <- Timer(name)
+  }
+  timerTime(x,name) <- value
+  timerRunning(x,name,now) <- running
   x
 })
-setMethod("resumeTimer","Status", function(x,name,time) {
-  timer(x,name) <- resume(timer(x,name),time)
+
+
+
+setMethod("timerTime","Status", function(x,name,now)
+  timeSoFar(x@timers[[name]],now))
+setMethod("timerTime<-","Status", function(x,name,now,value)
+  timeSoFar(x@timers[[name]],now)<-value
+  x)
+setMethod("timerRunning","Status", function(x,name,now) {
+  isRunning(timer(x,name))
+}
+setMethod("timerRunning<-","Status", function(x,name,now,value) {
+  if (value == TRUE) {
+    start(timer(x,name),now,FALSE)
+  } else if (value == FALSE) {
+    pause(timer(x,name),now,FALSE)
+  } else {
+    stop ("Trying to set running state of timer ",name," to illogical value.")
+  }
   x
 }
-setMethod("pauseTimer","Status", function(x,name,time,runningCheck=TRUE)
-{
-  timer(x,name) <- pause(timer(x,name),time,runningCheck)
-  x
-})
+
 
 setMethod("flag","Status", function(x,name) x@flags[[name]])
 setMethod("flag<-","Status", function(x,name,val) {
@@ -123,6 +150,9 @@ splitfield <- function (field) {
   strsplit(gsub("]","",field),"[.[]")[[1]]
 }
 
+## !set for timers is treated specially.
+## !set: {<timer>: <time>}  | {<timer>.time: <time>}
+## !set: {<timer>: <true/false>} | {<timer>.running: <true/false>}
 
 getJS <- function (field,state,event) {
   fieldexp <- splitfield(field)
@@ -134,9 +164,24 @@ getJS <- function (field,state,event) {
                   flags=getJSfield(flag(state,fieldexp[3]),fieldexp[-(1:3)]),
                   observables=getJSfield(obs(state,fieldexp[3]),
                                          fieldexp[-(1:3)]),
-                  timers=timerTime(timerTime(state,fieldexp[3],
-                                             timestamp(event))),
-                  uid=uid(event),
+                  timers={
+                    if (length(fieldexp) == 3L) {
+                      timerTime(state,fieldexp[3],
+                                timestamp(event))
+                    } else {
+                      switch(fieldexp[4],
+                             time=, value=
+                                      timerTime(state,fieldexp[3],
+                                                timestamp(event)),
+                             run=, running=
+                                      timerRunning(state,fieldexp[3],
+                                                   timestamp(event)),
+                             stop("Timer ",fieldexp[4],
+                                  "only .time and .running allowed."))
+                    }
+                  },
+                  uid=uid(state),
+                  timestamp=timestamp(state),
                   stop("Unrecognized field ",field)
                   ),
          event=
@@ -156,7 +201,7 @@ getJS <- function (field,state,event) {
          )
 }
 
-setJS <- function (field,state,value) {
+setJS <- function (field,state,now,value) {
   fieldexp <- splitfield(field)
   if (fieldexp[1] != "state")
     stop("Only fields of the state object can be set",field)
@@ -168,10 +213,30 @@ setJS <- function (field,state,value) {
     flag(state,fieldexp[3]) <-
       setJSfield(flag(state,fieldexp[3]), fieldexp[-(1:3)], value)
   } else if (fieldexp[2]=="observables") {
-    if (length(fieldexp)<3L)
+    if (length(fieldexp)!=3L)
       stop("No observable name supplied:", field)
     obs(state,fieldexp[3]) <-
       setJSfield(obs(state,fieldexp[3]), fieldexp[-(1:3)], value)
+  } else if (fieldexp[2]=="timer"s) {
+    if (length(fieldexp)<3L)
+      stop("No timer name supplied:", field)
+    if (length(fieldexp) == 3L) {
+      if (is.logical(value))
+        timerRunning(state,fieldexp[3], timestamp(event)) <-value
+      else if (is.datetime(value))
+        timerTime(state,fieldexp[3],timestamp(event)) <- value
+      else
+        stop ("Timer ",feildexp[3],"set to a value that is not a time or logical.")
+    } else {
+      switch(fieldexp[4],
+             time=, value=
+                      timerTime(state,fieldexp[3], timestamp(event)) <-
+                      asif.difftime(value),
+             run=, running=
+                     timerRunning(state,fieldexp[3], timestamp(event)) <-value,
+             stop("Timer ",fieldexp[4],
+                  "only .time and .running allowed."))
+    }
   } else {
     stop("Unrecognized field ",field)
   }
@@ -195,7 +260,7 @@ setJSfield <- function (target,fieldlist,value) {
     target[[fieldlist]] <- value
   } else {
     target[[fieldlist[1]]] <-
-      setJSaux(fieldlist[-1],target[[fieldlist[1]]],value)
+      setJSfield(fieldlist[-1],target[[fieldlist[1]]],value)
   }
   target
 }

@@ -40,7 +40,7 @@ checkOneCondition <- function(condition,target) {
 "?gt" <- function (cond,target) { target > cond}
 "?gte" <- function (cond,target) { target >= cond}
 "?lt" <- function (cond,target) { target < cond}
-"?le" <- function (cond,target) { target <= cond}
+"?lte" <- function (cond,target) { target <= cond}
 
 "?in" <- function (cond,target) { target %in% cond}
 "?nin" <- function (cond,target) { !(target %in% cond)}

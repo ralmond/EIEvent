@@ -4,17 +4,43 @@ import(Proc4)
 #importFrom("grDevices", "col2rgb", "grey.colors", "hsv", "rgb2hsv")
 importFrom("jsonlite","toJSON")
 
-export(Event,verb,object)
+## Condition
+export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
+       "?in","?nin","?exists","?isnull","?isna","?regexp",
+       "?any","?all","?not","?and","?or")
+
+## Context
+export(Context,name,doc,cid, belongsTo, "belongsTo<-",
+       number, "number<-",applicableContexts)
+exportClasses(Context)
+exportMethods(name,doc,cid, belongsTo, "belongsTo<-",
+       number, "number<-")
+
+## Events
+export(Event,verb,object,parseEvent)
 exportClasses(Event)
 exportMethods(as.jlist,verb,object)
 
+## Predicates
+export(executePredicate, "!set", "!unset", modify,
+       "!incr", "!decr","!mult","!div","!min","!max",
+       "!addToSet","!pullFromSet","!push","!pop",
+       "!start", "!reset", "!setCall", asif.difftime)
+
+## RuleTables (Rules)
+export(Rule,)
+exportClass(Rule)
+exportMethods(context)
+
+## Status (Timer)
 export(Timer)
 exportClass(Timer)
 exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,reset)
 
+## Status (Status)
 export(Status)
 exportClasses(Status)
-exportMethods(context,timer,"timer<-",startTimer,pauseTimer,resumeTimer,
+exportMethods(timer,"timer<-",startTimer,pauseTimer,resumeTimer,
               flag,"flag<-",obs,"obs<-",timerTime)
 
 
