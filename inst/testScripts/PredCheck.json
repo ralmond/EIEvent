@@ -26,6 +26,7 @@
             ruleType: "Status",
             priority: 5,
             condition:{},
+            context: "ANY",
             predicate:{
                 "!set": {state.flags.color: "red"}
             }

@@ -1,0 +1,173 @@
+[
+{
+  state: {
+    uid: "Test0",
+    context: "Air Level 1",
+    timers:{},
+    flags:{
+      airUsed: true,
+      airOldVal: 17,
+    },
+    observables:{
+      airManip:1
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "Manipulate",
+            object: "Slider",
+            context: "Air Level 1",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "AirResistanceValueManipulator",
+      oldValue: 0,
+      newValue: 5,
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Set Up for slider manipulation",
+    doc: "Reset slider used and old value."
+    verb: "Manipulate",
+    object: "Slider",
+    context: "Mainpulation Levels",
+    ruleType: "Status",
+    priority: 2,
+    conditions: {
+    },
+    predicate: {
+      !set:{state.flags.airUsed:false},
+      !unset:{state.flags.airOldVal:NA},
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Air Level 1",
+    timers:{},
+    flags:{
+      airUsed: false,
+      airOldVal: "NA"
+    },
+    observables:{
+      airManip:1
+    }
+  }
+},
+{
+  state: {
+    uid: "Test0",
+    context: "Air Level 1",
+    timers:{},
+    flags:{
+      airUsed: false,
+      airOldVal: "NA"
+    },
+    observables:{
+      airManip:1
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "Manipulate",
+            object: "Slider",
+            context: "Air Level 1",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "AirResistanceValueManipulator",
+      oldValue: 0,
+      newValue: 5,
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Set up old value for Air Slider",
+    doc: "Set the value of the old value for the air slider."
+    verb: "Manipulate",
+    object: "Slider",
+    context: "Mainpulation Levels",
+    ruleType: "Status",
+    priority: 5,
+    conditions: {
+      event.data.gemeObjectType:"AirResistanceValueManipulator"
+    },
+    predicate: {
+      !set:{
+        state.flags.airManip:true,
+        state.flags.airOldVal:"event.data.oldValue"
+      }
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Air Level 1",
+    timers:{},
+   flags:{
+      airUsed: true,
+      airOldVal: 0
+    },
+    observables:{
+      airManip:1
+    } 
+  }
+},
+{
+  state: {
+    uid: "Test0",
+    context: "Air Level 1",
+    timers:{},
+    flags:{
+      airUsed: true,
+      airOldVal: 0
+    },
+    observables:{
+      airManip:1
+    } 
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "Manipulate",
+            object: "Slider",
+            context: "Air Level 1",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "AirResistanceValueManipulator",
+      oldValue: 0,
+      newValue: 5,
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Count Air Resistance Manipulations",
+    doc: "Increment flags.airManip every time the slider is manipulated."
+    verb: "Manipulate",
+    object: "Slider",
+    context: "Mainpulation Levels",
+    ruleType: "Observable",
+    priority: 5,
+    conditions: {
+      event.data.gemeObjectType:"AirResistanceValueManipulator",
+      state.flags.airManip:true,
+      state.flags.airOldVal:{"?ne":event.data.newValue}
+    },
+    predicate: {
+      "!incr":{state.observables.airManip:1}
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Air Level 1",
+    timers:{},
+   flags:{
+      airUsed: true,
+      airOldVal: 0
+    },
+    observables:{
+      airManip:2
+    } 
+    }
+  
+  }
+]
