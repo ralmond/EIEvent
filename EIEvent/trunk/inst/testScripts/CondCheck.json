@@ -24,6 +24,7 @@
             verb: "ANY",
             object: "ANY",
             ruleType: "Status",
+            context: "ANY",
             priority: 5,
             condition:{
                 event.data.color: "red"
