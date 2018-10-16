@@ -154,7 +154,8 @@ Identification, Test Scoring
   \end{equation*}
   Here \emph{context} is the context in which the evidence is
   gathered; in simple systems this is the task.  In simulator systems
-  the task can be an emergent property of the simulator;
+  the context can be an emergent property of the simulator, with
+  several contexts present within a single task.
   Section~\ref{sec:context} explores this in more detail. The
   \emph{condition} often involves querying the state of the system,
   this in turn requires that the state of the system be monitored.
@@ -419,7 +420,7 @@ Identification, Test Scoring
   (Obs1) or the use of the gravity slider (Obs2).  The when an
   appropriate event comes through the log, an evidence rule will
   update the appropriate variable.  Obs3 is similar; in this case, the
-  observable is a counter and it is incremented each time an even
+  observable is a counter and it is incremented each time an event
   comes through indicating that an object was drawn.
 
   The timing observable (Obs4) need a bit more work.  The timer must
@@ -430,16 +431,17 @@ Identification, Test Scoring
   
   Detecting springboards is actually quite tricky.  Obs5 requires
   determining if each object that the player has drawn is a
-  springboard or not.  However, a springboard has several elements
-  (the springboard, the anchor holding one end fixed, and usually a
-  weight which gives it elastic potential energy).  Many of these
-  might require details of the object stored in the underlying physics
-  engine.  In this case, the PP of \textit{Physics Playground}
-  contains code to identify agents of motion.  The PP then sends an
-  event saying that the agent identification system triggered, which
-  the EIP can use to build up observables.
+  springboard or not.  A springboard has several elements (the
+  springboard, the anchor holding one end fixed, and usually a weight
+  which gives it elastic potential energy); identifying these
+  springboard components requires details of the object stored in the
+  underlying physics engine.  In this case, the PP of \textit{Physics
+    Playground} contains code to identify agents of force and motion.
+  The PP then sends an event saying that the agent identification
+  system identified the creation of a springboard (or other agent),
+  which the EIP can use to build up observables.
 
-  Although generally, evidence rules are placed in the EIP, in some
+  Although generally evidence rules are placed in the EIP, in some
   cases it may make sense to place them in other processes.  In the
   example above, it was easier to implement the agent identification
   system in the PP as it had access to the details of the screen
@@ -506,7 +508,8 @@ Identification, Test Scoring
   \item[resume]{Continue accumulating time.}
   \item[pause]{Stop accumulating time.}
   \item[reset]{Set the accumulated time to zero.}
-  \item[restart]{Combination of reset and resume.}
+  \item[(re)start]{Combination of reset and resume.  This will also
+    create a timer if none has been created.}
   \item[value]{Return the time accumulated so far.}
   \end{description}
 
@@ -519,10 +522,13 @@ Identification, Test Scoring
   \begin{description}
   \item[uid]{An identifier for the user (student, player)}
   \item[context]{An identifier for the current context.}
+  \item[oldContext]{An identifier for the previous context; in the
+    event that the context has changed.}
   \item[observables]{A collection of observable variables.}
   \item[timers]{A collection of timers.}
   \item[flags]{A collection of other (intermediate observable)
     variables.}
+  \item[timestamp]{The timestamp of the last event processed by the state.}
   \end{description}
   
 
@@ -758,12 +764,12 @@ Identification, Test Scoring
   equals), \texttt{?gt} (greater than), \texttt{?gte} (greater than
   or equals), \texttt{?lt} (less than), and \texttt{?lte}.  Note
   that these can be combined.  For example
-  \verb|{ state.flag.objCount: { $gt:5, $lt:10}}| returns true when
+  \verb|{ state.flag.objCount: { ?gt:5, ?lt:10}}| returns true when
   the \texttt{objCount} flag is between 5 and 10.
 
   A slightly more complex version uses the form \texttt{\{ \textit{field1}:\{
-    ?\textit{op}:[\textit{value1a}, \textit{value1b},...] \},
-    ... \}}.  Here \textit{op} should be either \texttt{?in} or
+    \textit{?op}:[\textit{value1a}, \textit{value1b},...] \},
+    ... \}}.  Here \textit{?op} should be either \texttt{?in} or
   \texttt{?nin} (not in).  These conditions are satisfied if the
   value of the field is (not) in the list.  A shortcut is available
   for the \texttt{?in} operator:  the expression \texttt{\{

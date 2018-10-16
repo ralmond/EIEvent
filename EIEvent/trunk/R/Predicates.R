@@ -12,7 +12,7 @@ executePredicate <- function (predicate, state, event) {
     if (is.character(value) &&
         grepl("^(state|event)\\.",value) )
       value <- getJS(value,state,event)
-    state <- setJS(name,state,asif.difftime(value))
+    state <- setJS(name,state,timestamp(event),asif.difftime(value))
   }
   state
 }
@@ -24,7 +24,9 @@ executePredicate <- function (predicate, state, event) {
 ##   implementation dependent.  The third removes the flag or observable
 ##   from the state object.
 
-"!Unset" <- function (predicate, state, event) {}
+"!unset" <- function (predicate, state, event) {
+  stop("Write Me!")
+}
 
 modify <- function (predicate, state, event, op) {
   for (name in names(predicate)) {
@@ -34,7 +36,7 @@ modify <- function (predicate, state, event, op) {
         grepl("^(state|event)\\.",value) )
       value <- asif.difftime(getJS(value,state,event))
     result <- do.call(op,list(curr,value))
-    state <- setJS(name,state,result)
+    state <- setJS(name,state,timestamp(event),result)
   }
   state
 }
@@ -75,7 +77,7 @@ modify <- function (predicate, state, event, op) {
         grepl("^(state|event)\\.",value) )
       value <- getJS(value,state,event)
     value <- as.integer(value)
-    state <- setJS(name,state,curr[-(1:value)])
+    state <- setJS(name,state,timestamp(event),curr[-(1:value)])
   }
   state
 }
@@ -94,19 +96,86 @@ modify <- function (predicate, state, event, op) {
   ## forth.  Example~\ref{json:time} gives a few examples:
 
 
+## !start & !reset are treated specially.  A number of cases:
+## !start: <timer>
+## !start: {<timer>: <time>}
+## !start: {<timer>: <true/false>}
+## !start: {<timer>: {time:<time>, running:<true/false>}}
+
+
 "!start" <- function (predicate, state, event) {
-
-
-
+  if (is.character(predicate)) {
+    for (name in predicate) {
+      state <- setTimer(state,name,asif.difftime(0),TRUE,timestamp(event))
+    }
+  } else if (is.list(predicate)) {
+    for (name in names(predicate)) {
+      running <- TRUE
+      value <- asif.difftime(0)
+      val <- asif.difftime(predicate[[name]])
+      if (is.character(val))
+        val <- asif.difftime(getJS(val,state,event))
+      if (is.logical(val)) running <- val
+      else if (is.difftime(val)) value <- val
+      else if (is.list(val)) {
+        if (is.null(names(val)))
+          stop("Unrecognized value for timer ",name,":",predicate[[name]])
+        for (field in names(val)) {
+          switch (field,
+                  value=, time= {value <- as.difftime(val[[field]])},
+                  run= running= {running<-as.logical(val[[field]])},
+                  stop("Unrecognized value for timer ",name,":",
+                       predicate[[name]]))
+        }
+      } else
+        stop("Unrecognized value for timer ",name,":",predicate[[name]])
+      state <- setTimer(state,name,value,running,timestamp(event))
+    }
+  } else {
+    stop("Unknown timer ",predicate)
+  }
+  state
 }
-"!pause" <- function (predicate, state, event) {}
-"!resume" <- function (predicate, state, event) {}
+
+"!reset" <- function (predicate, state, event) {
+  if (is.character(predicate)) {
+    for (name in predicate) {
+      state <- setTimer(state,name,asif.difftime(0),FALSE,timestamp(event))
+    }
+  } else if (is.list(predicate)) {
+    for (name in names(predicate)) {
+      running <- FALSE
+      value <- asif.difftime(0)
+      val <- asif.difftime(predicate[[name]])
+      if (is.character(val))
+        val <- asif.difftime(getJS(val,state,event))
+      if (is.logical(val)) running <- val
+      else if (is.difftime(val)) value <- val
+      else if (is.list(val)) {
+        if (is.null(names(val)))
+          stop("Unrecognized value for timer ",name,":",predicate[[name]])
+        for (field in names(val)) {
+          switch (field,
+                  value=, time= {value <- as.difftime(val[[field]])},
+                  run= running= {running<-as.logical(val[[field]])},
+                  stop("Unrecognized value for timer ",name,":",
+                       predicate[[name]]))
+        }
+      } else
+        stop("Unrecognized value for timer ",name,":",predicate[[name]])
+      state <- setTimer(state,name,value,running,timestamp(event))
+    }
+  } else {
+    stop("Unknown timer ",predicate)
+  }
+  state
+}
 
 "!setCall" <- function (predicate, state, event) {
   for (name in names(predicate)) {
     fun <- predicate[[name]]
     result <- do.call(fun,list(name,state,event))
-    state <- setJS(name,state,result)
+    state <- setJS(name,state,timestamp(event),result)
   }
   state
 }

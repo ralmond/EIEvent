@@ -13,13 +13,6 @@ setClass("Rule",
                  predicate="list"       #Rule apodosis
                  ))
 
-setGeneric("ruleName",function(x) standardGeneric("RuleName"))
-setGeneric("doc",function(x) standardGeneric("cod"))
-setGeneric("ruleType",function(x) standardGeneric("ruleType"))
-setGeneric("priority",function(x) standardGeneric("priority"))
-setGeneric("condition",function(x) standardGeneric("condition"))
-setGeneric("predicate",function(x) standardGeneric("predicate"))
-
 setMethod("context","Rule", function(x) x@context)
 setMethod("verb","Rule", function(x) x@verb)
 setMethod("object","Rule", function(x) x@object)
