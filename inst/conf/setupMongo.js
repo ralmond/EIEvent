@@ -19,7 +19,7 @@ eipUser = pwds.filter(function(u) {return u.user == "EIP";})[0];
 
 con = new Mongo();
 db=con.getDB("EIRecords");                 
-db.auth(eIpUser.user,eIpUser.pwd);
+db.auth(eipUser.user,eipUser.pwd);
 db.createCollection("Events", {
     validator: {
         $jsonSchema: {
