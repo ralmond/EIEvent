@@ -1,11 +1,14 @@
 ## Put all of the generic functions in a place they will be loaded first.
 
+## Json binding
+setGeneric("as.jlist",function(obj,ml) standardGeneric("as.jlist"))
+
 ## Contexts
 setGeneric("name", function (x) standardGeneric("name"))
 setGeneric("doc", function (x) standardGeneric("doc"))
 
 ## Rules
-setGeneric("ruleName",function(x) standardGeneric("RuleName"))
+setGeneric("ruleName",function(x) standardGeneric("ruleName"))
 setGeneric("ruleType",function(x) standardGeneric("ruleType"))
 setGeneric("priority",function(x) standardGeneric("priority"))
 setGeneric("condition",function(x) standardGeneric("condition"))
@@ -17,7 +20,7 @@ setGeneric("start",
              standardGeneric("start"))
 setGeneric("pause",
            function(timer,time,runningCheck=TRUE)
-             standardGeneric("start"))
+             standardGeneric("pause"))
 setGeneric("resume",function(timer,time) standardGeneric("resume"))
 setGeneric("isRunning",function(timer) standardGeneric("isRunning"))
 setGeneric("totalTime",function(timer) standardGeneric("totalTime"))

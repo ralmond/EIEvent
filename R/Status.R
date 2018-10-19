@@ -3,6 +3,7 @@
 
 ### A timer is an object which keeps track of how long the user has
 ### spent in a particular class of activity.
+setOldClass("difftime")
 setClass("Timer",
          slots=c(name="character",
                  startTime="POSIXct",
@@ -20,7 +21,7 @@ setMethod("start","Timer",
             timer@startTime <- as.POSIXct(time)
             timer})
 
-setMethod("pause",c("Timer","POSIXt"),
+setMethod("pause",c("Timer","POSIXct"),
           function(timer,time,runningCheck=TRUE) {
             if (runningCheck && !isRunning(timer)) {
               stop("Timer ",name,"is not running.")
@@ -54,11 +55,11 @@ setMethod("timeSoFar<-","Timer",
             timer})
 
 
-setMethod("reset","Timer" function(timer) {
+setMethod("reset","Timer", function(timer) {
   timer@startTime <- as.POSIXct(NA)
   timer@totalTime <- as.difftime(0,units="secs")
   timer
-}
+})
 
 ############################################################
 ### Status -- Maintains state for one user in one context.
@@ -71,24 +72,24 @@ setClass("Status",
                  timers="list",
                  flags="list",
                  observables="list",
-                 timestamp=POSIXt))
+                 timestamp="POSIXt"))
 Status <- function (uid,context,timerNames=character(),
                     flags=list(),observables=list(),timestamp=Sys.time(),
                     app="default") {
   timers <- sapply(timerNames, Timer)
   new("Status",app=app,uid=uid,context=context,oldContext=context,
       timers=timers, flags=flags,observables=observables,timestamp=timestamp)
-})
+}
 
 setMethod("uid","Status", function(x) x@uid)
 setMethod("context","Status", function(x) x@context)
 
 setMethod("timer","Status", function(x,name) x@timers[[name]])
-setMethod("timer<-","Status", function(x,name,val) {
-  if (!is.null(val) && !is(val,"Timer")) {
+setMethod("timer<-","Status", function(x,name,value) {
+  if (!is.null(value) && !is(value,"Timer")) {
     stop("Attempting to set timer ",name," to non-timer object")
   }
-  x@timers[[name]] <- val
+  x@timers[[name]] <- value
   x
 })
 
@@ -109,12 +110,12 @@ setMethod("setTimer","Status", function(x,name,value,running,now) {
 
 setMethod("timerTime","Status", function(x,name,now)
   timeSoFar(x@timers[[name]],now))
-setMethod("timerTime<-","Status", function(x,name,now,value)
+setMethod("timerTime<-","Status", function(x,name,now,value){
   timeSoFar(x@timers[[name]],now)<-value
-  x)
+  x})
 setMethod("timerRunning","Status", function(x,name,now) {
   isRunning(timer(x,name))
-}
+})
 setMethod("timerRunning<-","Status", function(x,name,now,value) {
   if (value == TRUE) {
     start(timer(x,name),now,FALSE)
@@ -124,18 +125,18 @@ setMethod("timerRunning<-","Status", function(x,name,now,value) {
     stop ("Trying to set running state of timer ",name," to illogical value.")
   }
   x
-}
+})
 
 
 setMethod("flag","Status", function(x,name) x@flags[[name]])
-setMethod("flag<-","Status", function(x,name,val) {
-  x@flags[[name]] <- val
+setMethod("flag<-","Status", function(x,name,value) {
+  x@flags[[name]] <- value
   x
 })
 
 setMethod("obs","Status", function(x,name) x@observables[[name]])
-setMethod("obs<-","Status", function(x,name,val) {
-  x@observables[[name]] <- val
+setMethod("obs<-","Status", function(x,name,value) {
+  x@observables[[name]] <- value
   x
 })
 
@@ -156,7 +157,7 @@ splitfield <- function (field) {
 
 getJS <- function (field,state,event) {
   fieldexp <- splitfield(field)
-  switch(fieldexp[1]
+  switch(fieldexp[1],
          state=
            switch(fieldexp[2],
                   context=context(state),
@@ -217,7 +218,7 @@ setJS <- function (field,state,now,value) {
       stop("No observable name supplied:", field)
     obs(state,fieldexp[3]) <-
       setJSfield(obs(state,fieldexp[3]), fieldexp[-(1:3)], value)
-  } else if (fieldexp[2]=="timer"s) {
+  } else if (fieldexp[2]=="timers") {
     if (length(fieldexp)<3L)
       stop("No timer name supplied:", field)
     if (length(fieldexp) == 3L) {
@@ -255,7 +256,7 @@ getJSfield <- function(obj,fieldlist) {
 
 
 setJSfield <- function (target,fieldlist,value) {
-  if (length(fieldlist==OL) return (value)
+  if (length(fieldlist==OL)) return (value)
   if (length(fieldlist==1L)) {
     target[[fieldlist]] <- value
   } else {
