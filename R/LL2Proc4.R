@@ -12,7 +12,7 @@
 ## sender = "Unity Engine"
 ## mess = "Event" + Verb + Object
 
-
+## Needto fix usernames.
 LLcol <- mongo("Messages",
                  url="mongodb://test:secret@127.0.0.1:27017/test")
 
