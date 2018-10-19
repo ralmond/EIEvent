@@ -123,7 +123,7 @@ modify <- function (predicate, state, event, op) {
         for (field in names(val)) {
           switch (field,
                   value=, time= {value <- as.difftime(val[[field]])},
-                  run= running= {running<-as.logical(val[[field]])},
+                  run=, running= {running<-as.logical(val[[field]])},
                   stop("Unrecognized value for timer ",name,":",
                        predicate[[name]]))
         }
@@ -157,7 +157,7 @@ modify <- function (predicate, state, event, op) {
         for (field in names(val)) {
           switch (field,
                   value=, time= {value <- as.difftime(val[[field]])},
-                  run= running= {running<-as.logical(val[[field]])},
+                  run=, running= {running<-as.logical(val[[field]])},
                   stop("Unrecognized value for timer ",name,":",
                        predicate[[name]]))
         }

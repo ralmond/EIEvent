@@ -1,13 +1,17 @@
 ###
 ## This defines a context object
 
-setCass("Context",
+setClass("Context",
         slots=c(cid="character",       #Context ID
                 name="character",      #Longer name
                 number="integer",       #Context #
                 belongsTo="character",  #Contexts to which this belongs
                 doc="character"))
-
+Context <- function (cid,name,number,belongsTo=character(),
+                     doc="") {
+  new("Context",cid=cid,name=name,number=number,
+      belongsTo=belongsTo,doc=doc)
+}
 setGeneric("cid", function(c) standardGeneric("cid"))
 setGeneric("belongsTo", function(c) standardGeneric("belongsTo"))
 setGeneric("belongsTo<-", function(c,val) standardGeneric("belongsTo<-"))

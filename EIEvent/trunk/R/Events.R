@@ -3,7 +3,7 @@
 
 setClass("Event",
          slots=c(verb="character",      #Action Identifier
-                 object="string"),       #Direct Object ID
+                 object="character"),       #Direct Object ID
          contains="P4Message")
 
 
@@ -22,7 +22,7 @@ Event <- function(uid,verb,object="",timestamp=Sys.time(),
 
 setMethod("toString","Event", function(x, ...) {
   paste('Event:{ uid:',x@uid,', context:',x@context,
-        ', (',x@verb,x@object')}')
+        ', (',x@verb,",",x@object,')}')
 })
 setMethod("show","Event",function(object) {
   cat(toString(object),"\n")
@@ -33,7 +33,7 @@ setMethod("as.jlist","Event", function(obj,ml) {
   evl$verb <- unbox(evl$verb)
   evl$object <- unbox(evl$object)
   evl
-}
+})
 
 parseEvent<- function (rec) {
   new("Event","_id"=rec$"_id", app=rec$app, uid=rec$uid,

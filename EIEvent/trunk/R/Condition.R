@@ -16,16 +16,16 @@ checkCondition <- function (conditions, state, event) {
     if (!checkOneCondition(conditions[[field]],target))
       return(FALSE)
   }
-  return TRUE
+  return(TRUE)
 }
 
 checkOneCondition <- function(condition,target) {
   if (is.list(condition) && !is.null(names(condition))) {
     for (iop in 1:length(condition)) {
       if (!do.call(names(condition)[iop],list(condition[[iop]],target)))
-        return FALSE
+        return(FALSE)
     }
-    return TRUE
+    return (TRUE)
   } else {
     if (is.double(condition) && is.double(target)) {
       any(abs(condition-target)<.0001)
@@ -80,9 +80,9 @@ checkOneCondition <- function(condition,target) {
     subquery <- names(cond)[i]
     subcond <- cond[[i]]
     if (!do.call(subquery,list(subcond,target)))
-      return FALSE
+      return (FALSE)
   }
-  return TRUE
+  return (TRUE)
 
 }
 "?or" <- function (cond,target) {
@@ -90,8 +90,8 @@ checkOneCondition <- function(condition,target) {
     subquery <- names(cond)[i]
     subcond <- cond[[i]]
     if (do.call(subquery,list(subcond,target)))
-      return TRUE
+      return (TRUE)
   }
-  return FALSE
+  return (FALSE)
 }
 

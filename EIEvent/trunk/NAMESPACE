@@ -28,7 +28,7 @@ export(executePredicate, "!set", "!unset", modify,
        "!start", "!reset", "!setCall", asif.difftime)
 
 ## RuleTables (Rules)
-export(Rule,)
+export(Rule)
 exportClass(Rule)
 exportMethods(context)
 
@@ -40,7 +40,7 @@ exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,reset)
 ## Status (Status)
 export(Status)
 exportClasses(Status)
-exportMethods(timer,"timer<-",startTimer,pauseTimer,resumeTimer,
+exportMethods(timer,"timer<-",
               flag,"flag<-",obs,"obs<-",timerTime)
 
 
