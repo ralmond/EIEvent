@@ -244,6 +244,46 @@ setJS <- function (field,state,now,value) {
   state
 }
 
+removeJS <- function (field,state) {
+  fieldexp <- splitfield(field)
+  if (fieldexp[1] != "state")
+    stop("Only fields of the state object can be set",field)
+  if (fieldexp[2]=="flags") {
+    if (length(fieldexp)<3L)
+      stop("No flag name supplied:", field)
+    flag(state,fieldexp[3]) <-
+      setJSfield(flag(state,fieldexp[3]), fieldexp[-(1:3)], value)
+  } else if (fieldexp[2]=="observables") {
+    if (length(fieldexp)!=3L)
+      stop("No observable name supplied:", field)
+    obs(state,fieldexp[3]) <-
+      setJSfield(obs(state,fieldexp[3]), fieldexp[-(1:3)], value)
+  } else if (fieldexp[2]=="timers") {
+    if (length(fieldexp)<3L)
+      stop("No timer name supplied:", field)
+    if (length(fieldexp) == 3L) {
+      if (is.logical(value))
+        timerRunning(state,fieldexp[3], timestamp(event)) <-value
+      else if (is.datetime(value))
+        timerTime(state,fieldexp[3],timestamp(event)) <- value
+      else
+        stop ("Timer ",feildexp[3],"set to a value that is not a time or logical.")
+    } else {
+      switch(fieldexp[4],
+             time=, value=
+                      timerTime(state,fieldexp[3], timestamp(event)) <-
+                      asif.difftime(value),
+             run=, running=
+                     timerRunning(state,fieldexp[3], timestamp(event)) <-value,
+             stop("Timer ",fieldexp[4],
+                  "only .time and .running allowed."))
+    }
+  } else {
+    stop("Unrecognized field ",field)
+  }
+  state
+}
+
 getJSfield <- function(obj,fieldlist) {
   if (length(fieldlist) == 0L) return (obj)
   ## Convert integer fields into integers.
