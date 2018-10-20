@@ -28,8 +28,8 @@ setMethod("number<-","Context", function(c,val) {
   c@number <- val
   c})
 
-setMethod("name","Context", function(c) c@name)
-setMethod("doc","Context", function(c) c@doc)
+setMethod("name","Context", function(x) x@name)
+setMethod("doc","Context", function(x) x@doc)
 
 
 applicableContexts <- function (c) {c(cid(c),belongsTo(c))}

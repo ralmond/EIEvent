@@ -25,7 +25,19 @@ executePredicate <- function (predicate, state, event) {
 ##   from the state object.
 
 "!unset" <- function (predicate, state, event) {
-  stop("Write Me!")
+  for (name in names(predicate)) {
+    value <- predicate[[name]]
+    if (is.character(value) &&
+        grepl("^(state|event)\\.",value) )
+      value <- asif.difftime(getJS(value,state,event))
+    if (is.null(value) || toupper(value)=="NULL")
+      state <- setJS(name,state,timestamp(event),NULL)
+    else if (is.na(value) || toupper(value)=="NA")
+      state <- setJS(name,state,timestamp(event),NA)
+    else
+      state <- removeJS(name,state)
+  }
+  state
 }
 
 modify <- function (predicate, state, event, op) {
@@ -113,7 +125,7 @@ modify <- function (predicate, state, event, op) {
       running <- TRUE
       value <- asif.difftime(0)
       val <- asif.difftime(predicate[[name]])
-      if (is.character(val))
+      if (is.character(val) && grepl("^(state|event)\\.",value))
         val <- asif.difftime(getJS(val,state,event))
       if (is.logical(val)) running <- val
       else if (is.difftime(val)) value <- val
@@ -147,7 +159,7 @@ modify <- function (predicate, state, event, op) {
       running <- FALSE
       value <- asif.difftime(0)
       val <- asif.difftime(predicate[[name]])
-      if (is.character(val))
+      if (is.character(val) && grepl("^(state|event)\\.",value))
         val <- asif.difftime(getJS(val,state,event))
       if (is.logical(val)) running <- val
       else if (is.difftime(val)) value <- val
