@@ -27,18 +27,20 @@
     }
   },
   rule: {
-    name: "Set Up for slider manipulation",
-    doc: "Reset slider used and old value."
-    verb: "Manipulate",
-    object: "Slider",
-    context: "Mainpulation Levels",
-    ruleType: "Status",
-    priority: 2,
-    conditions: {
-    },
+      name: "Count Air Resistance Manipulations",
+      doc: "Increment counter if slider changed.",
+      verb: "Manipulate",
+      object: "Slider",
+      context: "Manip Lvls",
+      ruleType: "Status",
+      priority: 2,
+      conditions: {
+          event.data.gemeObjectType:"AirResistanceValueManipulator",
+          event.data.oldValue:{"?ne":event.data.newValue}
+      },
     predicate: {
-      !set:{state.flags.airUsed:false},
-      !unset:{state.flags.airOldVal:NA},
+      "!set":{state.flags.airUsed:false},
+      "!unset":{state.flags.airOldVal:NA},
     }
   },
   result:{
