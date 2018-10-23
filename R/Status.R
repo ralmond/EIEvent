@@ -252,31 +252,19 @@ removeJS <- function (field,state) {
     if (length(fieldexp)<3L)
       stop("No flag name supplied:", field)
     flag(state,fieldexp[3]) <-
-      setJSfield(flag(state,fieldexp[3]), fieldexp[-(1:3)], value)
+      removeJSfield(flag(state,fieldexp[3]), fieldexp[-(1:3)])
   } else if (fieldexp[2]=="observables") {
     if (length(fieldexp)!=3L)
       stop("No observable name supplied:", field)
     obs(state,fieldexp[3]) <-
-      setJSfield(obs(state,fieldexp[3]), fieldexp[-(1:3)], value)
+      removeJSfield(obs(state,fieldexp[3]), fieldexp[-(1:3)])
   } else if (fieldexp[2]=="timers") {
     if (length(fieldexp)<3L)
       stop("No timer name supplied:", field)
     if (length(fieldexp) == 3L) {
-      if (is.logical(value))
-        timerRunning(state,fieldexp[3], timestamp(event)) <-value
-      else if (is.datetime(value))
-        timerTime(state,fieldexp[3],timestamp(event)) <- value
-      else
-        stop ("Timer ",feildexp[3],"set to a value that is not a time or logical.")
+      timer(state,fieldexp[3]) <- NULL
     } else {
-      switch(fieldexp[4],
-             time=, value=
-                      timerTime(state,fieldexp[3], timestamp(event)) <-
-                      asif.difftime(value),
-             run=, running=
-                     timerRunning(state,fieldexp[3], timestamp(event)) <-value,
-             stop("Timer ",fieldexp[4],
-                  "only .time and .running allowed."))
+      stop("Timer subfields can't be removed.")
     }
   } else {
     stop("Unrecognized field ",field)
@@ -302,6 +290,23 @@ setJSfield <- function (target,fieldlist,value) {
   } else {
     target[[fieldlist[1]]] <-
       setJSfield(fieldlist[-1],target[[fieldlist[1]]],value)
+  }
+  target
+}
+
+removeJSfield <- function (target,fieldlist) {
+  if (length(fieldlist==1L)) {
+    if (is.list(target)) {
+      target[fieldlist] <- NULL
+    } else if (length(target) > 0L) {
+      ## Do I need something here for numeric "names"
+      target <- target[names(target)!=fieldlist]
+    } else {
+      NULL
+    }
+  } else {
+    target[[fieldlist[1]]] <-
+      removeJSfield(fieldlist[-1],target[[fieldlist[1]]])
   }
   target
 }
