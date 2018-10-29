@@ -1,0 +1,175 @@
+[
+{
+  state: {
+    uid: "Test0",
+    context: "Level 50",
+    timers:{},
+    flags:{
+      massUsed: true,
+      massOldVal: 2,
+    },
+    observables:{
+      massManip:1
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "Manipulate",
+            object: "Slider",
+            context: "Mass Level 50",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "MassValueManipulator",
+      oldValue: 0,
+      newValue: 5,
+      method: "input"
+    }
+  },
+  rule: {
+      name: "Count Number of Mass Manipulations",
+      doc: "Increment counter if slider changed.",
+      verb: "Manipulate",
+      object: "Slider",
+      context: "Manip Lvls",
+      ruleType: "Status",
+      priority: 2, # ask him 
+      conditions: {
+          event.data.gemeObjectType:"MassValueManipulator",
+          event.data.oldValue:{"?ne":event.data.newValue}
+      },
+    predicate: {
+      "!set":{state.flags.massUsed:false},
+      "!unset":{state.flags.massOldVal:NA},    ## ask Russell
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Mass Level 50",
+    timers:{},
+    flags:{
+      massUsed: false,
+      massOldVal: "NA"   ## ask Russell ``event.data.oldValue:{"?ne":event.data.newValue}
+    },
+    observables:{
+      massManip:1
+    }
+  }
+},
+{
+  state: {
+    uid: "Test0",
+    context: "Mass Level 50",
+    timers:{},
+    flags:{
+      massUsed: false,
+      massOldVal: "NA"
+    },
+    observables:{
+      massManip:1
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "Manipulate",
+            object: "Slider",
+            context: "Mass Level 50",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "MassValueManipulator",
+      oldValue: 0,
+      newValue: 5,
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Set up old value for Mass Slider",
+    doc: "Set the value of the old value for the mass slider."
+    verb: "Manipulate",
+    object: "Slider",
+    context: "Mainpulation Levels",
+    ruleType: "Status",
+    priority: 5,
+    conditions: {
+      event.data.gemeObjectType:"MassValueManipulator"
+    },
+    predicate: {
+      !set:{
+        state.flags.massManip:true,
+        state.flags.massOldVal:"event.data.oldValue"
+      }
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Mass Level 50",
+    timers:{},
+   flags:{
+      massUsed: true,
+      massOldVal: 0
+    },
+    observables:{
+      massManip:1
+    } 
+  }
+},
+{
+  state: {
+    uid: "Test0",
+    context: "Mass Level 50",
+    timers:{},
+    flags:{
+      massUsed: true,
+      massOldVal: 0
+    },
+    observables:{
+      massManip:1
+    } 
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "Manipulate",
+            object: "Slider",
+            context: "Mass Level 50",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "MassValueManipulator",
+      oldValue: 0,
+      newValue: 5,
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Count Mass Manipulations",
+    doc: "Increment flags.massManip every time the slider is manipulated."
+    verb: "Manipulate",
+    object: "Slider",
+    context: "Mainpulation Levels",
+    ruleType: "Observable",
+    priority: 5,
+    conditions: {
+      event.data.gemeObjectType:"MassValueManipulator",
+      state.flags.massManip:true,
+      state.flags.massOldVal:{"?ne":event.data.newValue}
+    },
+    predicate: {
+      "!incr":{state.observables.massManip:1}
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Mass Level 50",
+    timers:{},
+   flags:{
+      massUsed: true,
+      massOldVal: 0
+    },
+    observables:{
+      massManip:2
+    } 
+    }
+  
+  }
+]
