@@ -1,0 +1,146 @@
+[
+  {
+    state:{
+      uid: "Test0",
+      context: 84,
+      timers:{},
+      flags:{
+      },
+      observables:{
+        badge:"gold"
+      }
+    },
+    event:{
+      app:"https://epls.coe.fsu.edu/PPTest",
+      uid: "Test0",
+      verb: "satisfied",
+      object: "game level"
+      context: 84,
+      timestamp:"2018-09-25 12:12:28 EDT",   
+      data: {
+        badge:"gold"
+      }
+    },
+    rule:{
+      name: "gold coin",
+      doc: "The player got a gold coin for this level",
+      verb: "satisfied",
+      object: "game level",
+      context: "ALL",
+      ruleType: "Status/observables", //ask Russell
+      priority: 2,
+      conditions: {
+        event.data.badge:"gold"
+      },
+      predicate: {
+        "!set":{state.observables.badge:"gold"}
+      }
+    },
+    result:{
+      uid: "Test0",
+      context: 84,
+      timers:{},
+      flags:{
+      },
+      observables:{
+        badge:"gold"
+      } 
+    }
+  },
+   {
+    state:{
+      uid: "Test0",
+      context: 84,
+      timers:{},
+      flags:{
+      },
+      observables:{
+        badge:"silver"
+      }
+    },
+    event:{
+      app:"https://epls.coe.fsu.edu/PPTest",
+      uid: "Test0",
+      verb: "satisfied",
+      object: "game level",
+      context: 84,
+      timestamp:"2018-09-25 12:12:28 EDT",   
+      data: {
+        badge:"silver"
+      }
+    },
+    rule:{
+      name: "silver coin",
+      doc: "The player got a silver coin for this level",
+      verb: "satisfied",
+      object: "game level",
+      context: "ALL",
+      ruleType: "observables",
+      priority: 2,
+      conditions: {
+        event.data.badge:"silver"
+      },
+      predicate: {
+        "!set":{state.observables.badge:"silver"}
+      }
+    },
+    result:{
+      uid: "Test0",
+      context: 84,
+      timers:{},
+      flags:{
+      },
+      observables:{
+        badge:"silver"
+      } 
+    }
+  },
+     {
+    state:{
+      uid: "Test0",
+      context: 84,
+      timers:{},
+      flags:{
+      },
+      observables:{
+        badge:"none"
+      }
+    },
+    event:{
+      app:"https://epls.coe.fsu.edu/PPTest",
+      uid: "Test0",
+      verb: "satisfied",
+      object: "game level",
+      context: 84,
+      timestamp:"2018-09-25 12:12:28 EDT",   
+      data: {
+        badge:"none"
+      }
+    },
+    rule:{
+      name: "no coin",
+      doc: "The player got no coin for this level",
+      verb: "satisfied",
+      object: "game level",
+      context: "ALL",
+      ruleType: "observables"
+      priority: 2,
+      conditions: {
+        event.data.badge:"none"
+      },
+      predicate: {
+        "!set":{state.observables.badge:"silver"}
+      }
+    },
+    result:{
+      uid: "Test0",
+      context: 84,
+      timers:{},
+      flags:{
+      },
+      observables:{
+        badge:"none"
+      } 
+    }
+  }, 
+  ]
