@@ -1,175 +1,408 @@
 [
-{
-  state: {
-    uid: "Test0",
-    context: "Level 50",
-    timers:{},
-    flags:{
-      massUsed: true,
-      massOldVal: 2,
-    },
-    observables:{
-      massManip:1
-    }
-  },
-  event: {
+    {
+        comment:  "Mass Flag Test",
+        state: {
+            uid: "Test0",
+            context: "Level 50",
+            timers:{},
+            flags:{
+                massUsed: false,
+                airUsed: false,
+                gravityUsed:false
+            },
+            observables:{
+                massManip: 0
+            }
+        },
+        event: {
             app:"https://epls.coe.fsu.edu/PPTest",
             uid: "Test0",
-            verb: "Manipulate",
-            object: "Slider",
+            verb: "adjusted",
+            object: "control",
             context: "Mass Level 50",
             timestamp:"2018-09-25 12:12:28 EDT",   
             data: {
-      gemeObjectType: "MassValueManipulator",
-      oldValue: 0,
-      newValue: 5,
-      method: "input"
-    }
-  },
-  rule: {
-      name: "Count Number of Mass Manipulations",
-      doc: "Increment counter if slider changed.",
-      verb: "Manipulate",
-      object: "Slider",
-      context: "Manip Lvls",
-      ruleType: "Status",
-      priority: 2, # ask him 
-      conditions: {
-          event.data.gemeObjectType:"MassValueManipulator",
-          event.data.oldValue:{"?ne":event.data.newValue}
-      },
-    predicate: {
-      "!set":{state.flags.massUsed:false},
-      "!unset":{state.flags.massOldVal:NA},    ## ask Russell
-    }
-  },
-  result:{
-    uid: "Test0",
-    context: "Mass Level 50",
-    timers:{},
-    flags:{
-      massUsed: false,
-      massOldVal: "NA"   ## ask Russell ``event.data.oldValue:{"?ne":event.data.newValue}
+                gemeObjectType: "MassValueManipulator",
+                oldValue: 0,
+                newValue: 5,
+                method: "slider"
+            }
+        },
+        rule: {
+            name: "Mass Slider flag"
+            doc: "Set the flag if mass slider is used..",
+            verb: "adjusted",
+            object: "control",
+            context: "Manip Lvls",
+            ruleType: "Status",
+            priority: 5, 
+            conditions: {
+                event.data.gemeObjectType:"MassValueManipulator",
+                event.data.oldValue:{"?ne":event.data.newValue}
+            },
+            predicate: {
+                "!set":{state.flags.massUsed:true}
+            }
+        },
+        result:{
+            uid: "Test0",
+            context: "Mass Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: false,
+                gravityUsed:false
+            },
+            observables:{
+                massManip:1
+            } 
+        }
     },
-    observables:{
-      massManip:1
-    }
-  }
-},
-{
-  state: {
-    uid: "Test0",
-    context: "Mass Level 50",
-    timers:{},
-    flags:{
-      massUsed: false,
-      massOldVal: "NA"
-    },
-    observables:{
-      massManip:1
-    }
-  },
-  event: {
+    {
+        comment: "Air Flag Test",
+        state: {
+            uid: "Test0",
+            context: "Level 50",
+            timers:{},
+            flags:{
+                massUsed: false,
+                airUsed: false,
+                gravityUsed:false
+            },
+            observables:{
+                massManip: 0
+            }
+        },
+        event: {
             app:"https://epls.coe.fsu.edu/PPTest",
             uid: "Test0",
-            verb: "Manipulate",
-            object: "Slider",
+            verb: "adjusted",
+            object: "control",
             context: "Mass Level 50",
             timestamp:"2018-09-25 12:12:28 EDT",   
             data: {
-      gemeObjectType: "MassValueManipulator",
-      oldValue: 0,
-      newValue: 5,
-      method: "input"
-    }
-  },
-  rule: {
-    name: "Set up old value for Mass Slider",
-    doc: "Set the value of the old value for the mass slider."
-    verb: "Manipulate",
-    object: "Slider",
-    context: "Mainpulation Levels",
-    ruleType: "Status",
-    priority: 5,
-    conditions: {
-      event.data.gemeObjectType:"MassValueManipulator"
+                gemeObjectType: "AirValueManipulator",
+                oldValue: 0,
+                newValue: 5,
+                method: "slider"
+            }
+        },
+        rule: {
+            name: "Air Slider flag"
+            doc: "Set the flag if air slider is used..",
+            verb: "adjusted",
+            object: "control",
+            context: "Manip Lvls",
+            ruleType: "Status",
+            priority: 5, 
+            conditions: {
+                event.data.gemeObjectType:"AirResistanceValueManipulator",
+                event.data.oldValue:{"?ne":event.data.newValue}
+            },
+            predicate: {
+                "!set":{state.flags.airUsed:true}
+            }
+        },
+        result:{
+            uid: "Test0",
+            context: "Mass Level 50",
+            timers:{},
+            flags:{
+                massUsed: false,
+                airUsed: true,
+                gravityUsed:false
+            },
+            observables:{
+                massManip:1
+            } 
+        }
     },
-    predicate: {
-      !set:{
-        state.flags.massManip:true,
-        state.flags.massOldVal:"event.data.oldValue"
-      }
-    }
-  },
-  result:{
-    uid: "Test0",
-    context: "Mass Level 50",
-    timers:{},
-   flags:{
-      massUsed: true,
-      massOldVal: 0
-    },
-    observables:{
-      massManip:1
-    } 
-  }
-},
-{
-  state: {
-    uid: "Test0",
-    context: "Mass Level 50",
-    timers:{},
-    flags:{
-      massUsed: true,
-      massOldVal: 0
-    },
-    observables:{
-      massManip:1
-    } 
-  },
-  event: {
+    {
+        comment:"Gravity Slider flag test>"
+        state: {
+            uid: "Test0",
+            context: "Level 50",
+            timers:{},
+            flags:{
+                massUsed: false,
+                airUsed: false,
+                gravityUsed:false
+            },
+            observables:{
+                massManip: 0
+            }
+        },
+        event: {
             app:"https://epls.coe.fsu.edu/PPTest",
             uid: "Test0",
-            verb: "Manipulate",
-            object: "Slider",
+            verb: "adjusted",
+            object: "control",
             context: "Mass Level 50",
             timestamp:"2018-09-25 12:12:28 EDT",   
             data: {
-      gemeObjectType: "MassValueManipulator",
-      oldValue: 0,
-      newValue: 5,
-      method: "input"
-    }
-  },
-  rule: {
-    name: "Count Mass Manipulations",
-    doc: "Increment flags.massManip every time the slider is manipulated."
-    verb: "Manipulate",
-    object: "Slider",
-    context: "Mainpulation Levels",
-    ruleType: "Observable",
-    priority: 5,
-    conditions: {
-      event.data.gemeObjectType:"MassValueManipulator",
-      state.flags.massManip:true,
-      state.flags.massOldVal:{"?ne":event.data.newValue}
+                gemeObjectType: "GravityValueManipulator",
+                oldValue: 0,
+                newValue: 5,
+                method: "slider"
+            }
+        },
+        rule: {
+            name: "Gravity Slider flag"
+            doc: "Set the flag if gravity slider is used..",
+            verb: "adjusted",
+            object: "control",
+            context: "Manip Lvls",
+            ruleType: "Status",
+            priority: 5, 
+            conditions: {
+                event.data.gemeObjectType:"GravityValueManipulator",
+                event.data.oldValue:{"?ne":event.data.newValue}
+            },
+            predicate: {
+                "!set":{state.flags.gravityUsed:true}
+            }
+        },
+        result:{
+            uid: "Test0",
+            context: "Mass Level 50",
+            timers:{},
+            flags:{
+                massUsed: false,
+                airUsed: false,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:1
+            } 
+        }
     },
-    predicate: {
-      "!incr":{state.observables.massManip:1}
-    }
-  },
-  result:{
-    uid: "Test0",
-    context: "Mass Level 50",
-    timers:{},
-   flags:{
-      massUsed: true,
-      massOldVal: 0
+    {
+        comment: "Mass Slider increment",
+        state: {
+            uid: "Test0",
+            context: "Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: true,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:1,
+                airManip:1,
+                gravityManip:1,
+            }
+        },
+        event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "play",
+            object: "params",
+            context: "Mass Level 50",
+            timestamp:"2018-09-25 12:14:28 EDT",   
+            data: {
+            }
+        },
+        rule: {
+            name: "Count Mass Manipulations",
+            doc: "Increment counter if slider changed flag is set.",
+            verb: "play",
+            object: "params",
+            context: "Manip Lvls",
+            ruleType: "Observable",
+            priority: 5, 
+            conditions: {
+                state.flags.massUsed:true
+            },
+            predicate: {
+                "!incr":{state.observables.massManip:1}
+            }
+        },
+        result:{
+            uid: "Test0",
+            context: "Mass Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: true,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:2,
+                airManip:1,
+                gravityManip:1
+            } 
+        }
     },
-    observables:{
-      massManip:2
-    } 
+    {
+        comment: "Air Slider increment",
+        state: {
+            uid: "Test0",
+            context: "Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: true,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:1,
+                airManip:1,
+                gravityManip:1,
+            }
+        },
+        event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "play",
+            object: "params",
+            context: "Mass Level 50",
+            timestamp:"2018-09-25 12:14:28 EDT",   
+            data: {
+            }
+        },
+        rule: {
+            name: "Count Air Manipulations",
+            doc: "Increment counter if slider changed flag is set.",
+            verb: "play",
+            object: "params",
+            context: "Manip Lvls",
+            ruleType: "Observable",
+            priority: 5, 
+            conditions: {
+                state.flags.airUsed:true
+            },
+            predicate: {
+                "!incr":{state.observables.airManip:1}
+            }
+        },
+        result:{
+            uid: "Test0",
+            context: "Mass Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: true,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:1,
+                airManip:2,
+                gravityManip:1
+            } 
+        }
+    },
+    {
+        comment: "Gravity Slider increment",
+        state: {
+            uid: "Test0",
+            context: "Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: true,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:1,
+                airManip:1,
+                gravityManip:1,
+            }
+        },
+        event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "play",
+            object: "params",
+            context: "Mass Level 50",
+            timestamp:"2018-09-25 12:14:28 EDT",   
+            data: {
+            }
+        },
+        rule: {
+            name: "Count Gravity Manipulations",
+            doc: "Increment counter if slider changed flag is set.",
+            verb: "play",
+            object: "params",
+            context: "Manip Lvls",
+            ruleType: "Observable",
+            priority: 5, 
+            conditions: {
+                state.flags.gravityUsed:true
+            },
+            predicate: {
+                "!incr":{state.observables.gravityManip:1}
+            }
+        },
+        result:{
+            uid: "Test0",
+            context: "Mass Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: true,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:1,
+                airManip:1,
+                gravityManip:2
+            } 
+        }
+    },
+    {
+        comment: "Reset Rule Test"
+        state: {
+            uid: "Test0",
+            context: "Level 50",
+            timers:{},
+            flags:{
+                massUsed: true,
+                airUsed: true,
+                gravityUsed:true
+            },
+            observables:{
+                massManip:2
+            }
+        },
+        event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "play",
+            object: "params",
+            context: "Mass Level 50",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+            }
+        },
+        rule: {
+            name: "Reset Mass Manipulation Flag",
+            doc: "Set flag to falls",
+            verb: "adjusted",
+            object: "control",
+            context: "Manip Lvls",
+            ruleType: "Observable",
+            priority: 10,       // Want to run late
+            conditions: {
+            },
+            predicate: {
+                "!set":{state.flags.massUsed:false,
+                        state.flags.airUsed:false,
+                        state.flags.gravityUsed:false}
+            }
+        },
+        result:{
+            uid: "Test0",
+            context: "Mass Level 50",
+            timers:{},
+            flags:{
+                massUsed: false,
+                airUsed: false,
+                gravityUsed:false
+            },
+            observables:{
+                massManip:2
+            } 
+        }
     }
-  
-  }
 ]
