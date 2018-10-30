@@ -1,0 +1,115 @@
+[
+{
+  state: {
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      BouncinessUsed: true,
+      BouncinessOldVal: 0.8,
+    },
+    observables:{
+      BouncinessManip:"Activated"
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "adjusted",
+            object: "control",
+            context: "25",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "Bounciness",
+      oldValue: 0.8,
+      newValue: 0,
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Activate Bounciness",
+    doc: "Reset slider used and old value."
+    verb: "adjusted",
+    object: "control",
+    context: "Manipulation Levels",
+    ruleType: "Status",
+    priority: 2,
+    conditions: {
+    },
+    predicate: {
+      !set:{state.flags.BouncinessUsed:false},
+      !unset:{state.flags.BouncinessOldVal:NA},
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      BouncinessUsed: false,
+      BouncinessOldVal: "NA"
+    },
+    observables:{
+      airManip:"activated"
+    }
+  }
+},
+{
+  state: {
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      BouncinessUsed: false,
+      BouncinessOldVal: "NA"
+    },
+    observables:{
+      BouncinessManip:"Activated"
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "adjusted",
+            object: "control",
+            context: "25",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "Bounciness",
+      oldValue: 0.8,
+      newValue: 0,
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Set up old value for Bounciness",
+    doc: "Set the value of the old value for the Bounciness"
+    verb: "Bounciness",
+    object: "control",
+    context: "Manipulation Levels",
+    ruleType: "Status",
+    priority: 5,
+    conditions: {
+      event.data.gemeObjectType:"Bounciness"
+    },
+    predicate: {
+      !set:{
+        state.flags.BouncinessManip:true,
+        state.flags.BouncinessOldVal:"event.data.oldValue"
+      }
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Bounciness",
+    timers:{},
+   flags:{
+      airUsed: true,
+      airOldVal: 0.8
+    },
+    observables:{
+      airManip:"activated"
+    } 
+  }
+}
+]
