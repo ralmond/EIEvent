@@ -7,7 +7,7 @@
       flags:{
       },
       observables:{
-        badge:"gold"
+        badge:"none"
       }
     },
     event:{
@@ -22,18 +22,18 @@
       }
     },
     rule:{
-      name: "gold coin",
-      doc: "The player got a gold coin for this level",
+      name: "Coin rule",
+      doc: "Set the value of the badge to the coin the player earned."
       verb: "satisfied",
       object: "game level",
       context: "ALL",
-      ruleType: "Status/observables", //ask Russell
-      priority: 2,
+      ruleType: "Observable", 
+      priority: 5,
       conditions: {
-        event.data.badge:"gold"
+          event.data.badge:["silver","gold"]
       },
       predicate: {
-        "!set":{state.observables.badge:"gold"}
+        "!set":{state.observables.badge:"event.data.badge"}
       }
     },
     result:{
