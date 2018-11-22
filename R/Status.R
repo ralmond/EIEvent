@@ -61,6 +61,31 @@ setMethod("reset","Timer", function(timer) {
   timer
 })
 
+###
+## Serialization.  Note timers are not stored directly in database,
+## so they don't need IDs
+setMethod("as.jlist",c("Timer","list"), function(obj,ml) {
+  ml$class <- NULL
+  ## Additional work
+  ml$name <- unbox(ml$name)
+  ml$startTime <- unboxer(ml$startTime)
+  ml$totalTime <- unboxer(list(tim=as.numeric(ml$totalTime),
+                               units=units(ml$totalTime)))
+
+  ml
+  })
+
+parseTimer <- function (rec) {
+  if (is.null(rec$totalTime)) {
+    tt <- as.difftime(NA_real_,units="secs")
+  } else {
+    tt <- do.call(as.difftime,rec$totalTime)
+  }
+  new("Timer",name=ununboxer(rec$name),
+      startTime=ununboxer(rec$startTime), totalTime=tt)
+}
+
+
 ############################################################
 ### Status -- Maintains state for one user in one context.
 
@@ -311,6 +336,32 @@ removeJSfield <- function (target,fieldlist) {
   target
 }
 
+
+setMethod("as.jlist",c("Status","list"), function(obj,ml) {
+  ml$"_id" <- NULL
+  ml$class <-NULL
+
+  ml$uid <- unbox(ml$uid)
+  ml$context <- unbox(ml$context)
+  ml$timestamp <- unboxer(ml$timestamp)
+
+  ml$timers <- unboxer(lapply(ml$timers,
+                              function(tim) as.jlist(tim,attributes(tim))))
+  ml$flags <- unboxer(ml$flags)
+  ml$observables <- unbox(ml$observables)
+
+  ml
+})
+
+parseRule<- function (rec) {
+  if (is.null(rec$"_id")) rec$"_id" <- NA_character_
+  new("Status","_id"=rec$"_id",
+      uid=ununboxer(rec$uid),context=ununboxer(rec$context),
+      timers=lapply(ununboxer(rec$timers), parseTimer),
+      flags=parseData(ununboxer(rec$flags)),
+      observables=parseData(ununboxer(rec$observables)),
+      timestamp=ununboxer(rec$timestamp))
+}
 
 
 

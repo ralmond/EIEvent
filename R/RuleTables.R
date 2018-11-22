@@ -1,7 +1,8 @@
 ## Rule Tables are collections of rules.
 
 setClass("Rule",
-         slots=c(app="character",       #Application Identifier
+         slots=c("_id"="character",     #Mongo ID
+                 app="character",       #Application Identifier
                  name="character",      #Human idenfier
                  doc="character",       #Human description
                  context="character",   #Applicable context
@@ -21,7 +22,8 @@ setMethod("ruleType","Rule", function(x) x@ruleType)
 setMethod("condition","Rule", function(x) x@condition)
 setMethod("predicate","Rule", function(x) x@predicate)
 
-Rule <- function(context="ALL",verb="ALL",object="ALL",
+Rule <- function("_id"=NA_character_,
+                 context="ALL",verb="ALL",object="ALL",
                  ruleType=c("StatusRule","ObservableRule","ContextRule",
                             "TriggerRule","ResetRule"),
                  priority=5, doc="",
@@ -39,11 +41,6 @@ setMethod("show","Rule",function(object) {
   cat(toString(object),"\n")
 })
 
-setMethod("as.json","Rule", function(x) {
-  jlist <- as.jlist(x,attributes(x))
-  toJSON(jlist,POSIXt="mongo")
-})
-
 setMethod("as.jlist",c("Rule","list"), function(obj,ml) {
   ml$"_id" <- NULL
   ml$class <-NULL
@@ -51,16 +48,25 @@ setMethod("as.jlist",c("Rule","list"), function(obj,ml) {
   ml$name <- unbox(ml$name)
   ml$verb <- unbox(ml$verb)
   ml$object <- unbox(ml$object)
-  ml$object <- unbox(ml$ruleType)
-  ml$object <- unbox(ml$priority)
+  ml$ruleType <- unbox(ml$ruleType)
+  ml$priority <- unbox(ml$priority)
+
+  ml$condition <- unboxer(ml$contidion)
+  ml$predicate <- unboxer(ml$predicate)
+
   ml
 })
 
 parseRule<- function (rec) {
-  new("Rule",app=rec$app,name=rec$name,doc=rec$doc,context=rec$contect,
-      verb=rec$verb,object=rec$object,ruleType=rec$ruleType,
-      priority=rec$priority,condition=parseData(rec$condition),
-      predicate=parseData(rec$predicate))
+  if (is.null(rec$"_id")) rec$"_id" <- NA_character_
+  new("Rule","_id"=ununboxer(rec$"_id"),
+      app=ununboxer(rec$app),name=ununboxer(rec$name),
+      doc=ununboxer(rec$doc),context=ununboxer(rec$contect),
+      verb=ununboxer(rec$verb),object=ununboxer(rec$object),
+      ruleType=ununboxer(rec$ruleType),
+      priority=ununboxer(rec$priority),
+      condition=parseData(ununboxer(rec$condition)),
+      predicate=parseData(ununboxer(rec$predicate)))
 }
 
 
@@ -89,7 +95,7 @@ setMethod("RTdebug<-","RuleTable",function(x,newval) {
 #           function (table, context, verb, object, rules) {
 #             addRules(table,context,verb,object,list(rules))
 #           })
-# 
+#
 # setMethod("addRules",c("RuleTable","character","character","character","list"),
 #           function (table, context, verb, object, rules) {
 #             nrules <- max(length(context), length(verb),
@@ -115,7 +121,7 @@ setMethod("RTdebug<-","RuleTable",function(x,newval) {
 #             table@rules <- c(table@rules)
 #             table
 #           })
-# 
+#
 # ### This internal method calculates a logical vector which indicates
 # ### which rules are being sought.
 # setMethod("affectedRules",c("RuleTable","character","character","character"),
@@ -129,7 +135,7 @@ setMethod("RTdebug<-","RuleTable",function(x,newval) {
 #               result <- result & table@object %in% object
 #             result
 #           })
-# 
+#
 # setMethod("removeRules",c("RuleTable","character","character","character"),
 #           function (table, context, verb, object, rules) {
 #             if (length(table@context) == 0L) return (table)
@@ -141,7 +147,7 @@ setMethod("RTdebug<-","RuleTable",function(x,newval) {
 #             table@rules <- table@rules[!affected]
 #             table
 #           })
-# 
+#
 # setMethod("ruleSet",c("RuleTable","character","character","character"),
 #           function (table, context, verb, object, includeAll=FALSE) {
 #             if (includeALL) {
@@ -151,7 +157,7 @@ setMethod("RTdebug<-","RuleTable",function(x,newval) {
 #             }
 #             table@rules[affectedRules(table,context,verb,object)]
 #           })
-# 
+#
 # ### Abstract method, must be defined by implementing classes.
 # setGeneric("validRule", function(table, rule)
 #   standardGeneric("validRule"))
@@ -168,7 +174,7 @@ StatusRuleTable <- function() {
 }
 
 # setMethod("validRule", function (table,rule) valid.StatusRule(rule))
-# 
+#
 # setMethod("runAll", function (table, current, event) {
 #   applicable <-
 #     ruleSet(table,table@context,current@verb,current@object,
@@ -178,7 +184,7 @@ StatusRuleTable <- function() {
 #   }
 #   current
 # })
-# 
+#
 
 setClass("ContextRuleTable",contains="RuleTable")
 
@@ -188,7 +194,7 @@ ContextRuleTable <- function() {
 }
 
 # setMethod("validRule", function (table,rule) valid.ContextRule(rule))
-# 
+#
 # setMethod("calculate", function (table, current, event) {
 #   applicable <-
 #     ruleSet(table,table@context,current@verb,current@object,
@@ -199,16 +205,16 @@ ContextRuleTable <- function() {
 #   ## do.call(c) removes null entries.
 #   unqiue(do.call("c",contexts))
 # })
-# 
+#
 # setClass("ObsRuleTable",contains="RuleTable")
-# 
+#
 # ObsRuleTable <- function() {
 #   new("ObsRuleTable",context=character(),verb=character(),
 #       object=character(),rules=list(),debug=FALSE)
 # }
-# 
+#
 # setMethod("validRule", function (table,rule) valid.ObsRule(rule))
-# 
+#
 # setMethod("runAll", function (table, current, event, oldContext) {
 #   applicable <-
 #     ruleSet(table,table@context,current@verb,current@object,
@@ -227,7 +233,7 @@ TriggerRuleTable <- function() {
 }
 
 # setMethod("validRule", function (table,rule) valid.TriggerRule(rule))
-# 
+#
 # setMethod("calcListeners", function (table, current, event, oldContext) {
 #   applicable <-
 #     ruleSet(table,table@context,current@verb,current@object,
