@@ -36,9 +36,20 @@ setMethod("as.jlist","Event", function(obj,ml) {
 })
 
 parseEvent<- function (rec) {
+  if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   new("Event","_id"=rec$"_id", app=rec$app, uid=rec$uid,
-      context=rec$context,verb=rec$verb,object=rec$object,
-      timestamp=rec$timestamp,
-      data=parseData(rec$data))
+      context=ununboxer(rec$context),verb=ununboxer(rec$verb),
+      object=ununboxer(rec$object), timestamp=ununboxer(rec$timestamp),
+      data=parseData(ununboxer(rec$data)))
 }
 
+setMethod("as.jlist",c("Event","list"), function(obj,ml) {
+  ## Call Next Method
+  as.p4jlist <- getMethod("as.jlist",c("P4Message","list"))
+  ml <- do.call(as.p4jlist,list(obj,ml))
+  ## Additional work
+  ml$verb <- unbox(ml$verb)
+  ml$object <- unbox(ml$object)
+
+  ml
+  })
