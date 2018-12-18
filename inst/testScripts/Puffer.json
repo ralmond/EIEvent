@@ -5,11 +5,10 @@
     context: "25",
     timers:{},
     flags:{
-      PufferUsed: true,
-      position: "(258.8, 398.9)",
+      PufferUsed: false
     },
     observables:{
-      PufferManip:"Clicked"
+      NumberPufferManip: 0 
     }
   },
   event: {
@@ -27,17 +26,18 @@
   },
   rule: {
     name: "Click Puffer",
-    doc: "??"
+    doc: "Increments the click counter"
     verb: "adjusted",
     object: "control",
     context: "Manipulation Levels",
     ruleType: "Status",
     priority: 2,
     conditions: {
+      gemeObjectType: "Puffer" 
     },
     predicate: {
-      !set:{state.flags.PufferUsed:false},
-      !unset:{state.flags.PufferPositionVal:NA},
+      !set:{state.flags.PufferUsed: true},
+      !incr:{state.observables.NumberPufferManip: 1},
     }
   },
   result:{
@@ -45,11 +45,10 @@
     context: "25",
     timers:{},
     flags:{
-      PufferUsed: false,
-      position: "NA"
-    },
+      PufferUsed: true
+        },
     observables:{
-      PufferManip:"Clicked"
+      NumberPufferManip: 1
     }
   }
 },
