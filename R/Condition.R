@@ -13,83 +13,180 @@ checkCondition <- function (conditions, state, event) {
     for (i in 2:length(feildexp)) {
       target <- target[[fieldexp[i]]]
     }
-    if (!checkOneCondition(conditions[[field]],target))
+    if (!checkOneCondition(conditions[[field]],target,state,event))
       return(FALSE)
   }
   return(TRUE)
 }
 
-checkOneCondition <- function(condition,target) {
-  if (is.list(condition) && !is.null(names(condition))) {
+checkOneCondition <- function(condition,target,state,event) {
+  if ((is.vector(condition) || is.list(condition))
+      && !is.null(names(condition))) {
     for (iop in 1:length(condition)) {
-      if (!do.call(names(condition)[iop],list(condition[[iop]],target)))
+      argi <- condition[[iop]]
+      if (!do.call(names(condition)[iop],
+                   list(arg1,target,state,event)))
         return(FALSE)
     }
     return (TRUE)
   } else {
-    if (is.double(condition) && is.double(target)) {
-      any(abs(condition-target)<.0001)
+    if (length(condition) > 1L) {
+      return (do.call("?in",
+                      list(condition,target,state,event)))
     } else {
-      any(condition==target)
+      return (do.call("?in",
+                      list(condition,target,state,event)))
     }
   }
 }
 
-"?eq" <- function (cond,target) { target == cond}
-"?ne" <- function (cond,target) { target != cond}
-"?gt" <- function (cond,target) { target > cond}
-"?gte" <- function (cond,target) { target >= cond}
-"?lt" <- function (cond,target) { target < cond}
-"?lte" <- function (cond,target) { target <= cond}
+"?eq" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  if (is.double(arg) && is.double(target)) {
+    abs(arg-target) < .0001
+  } else {
+    target == arg
+  }
+}
+"?ne" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  if (is.double(arg) && is.double(target)) {
+    abs(arg-target) > .0001
+  } else {
+    target != arg
+  }
+}
+"?gt" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  target > arg
+}
+"?gte" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  target >= arg
+}
+"?lt" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  target < arg
+}
+"?lte" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  target <= arg
+}
 
-"?in" <- function (cond,target) { target %in% cond}
-"?nin" <- function (cond,target) { !(target %in% cond)}
+"?in" <- function (arg,target,state,event) {
+    if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+    target %in% arg
+}
+"?nin" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  !(target %in% arg)
+}
 
 
-"?exists" <- function (cond,target) {!is.null(target) == cond}
-"?isnull" <- function (cond,target) {is.null(target) == cond}
-"?isna" <- function (cond,target) {is.na(target) == cond}
+"?exists" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  !is.null(target) == arg
+}
+"?isnull" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  is.null(target) == arg
+}
+"?isna" <- function (arg,target,state,event) {
+  is.na(target) == arg
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+}
 
-"?regexp" <- function (cond,target) {grepl(cond,target)}
+"?regexp" <- function (arg,target,state,event) {
+  if (is.character(arg) &&
+      all(grepl("^(state|event)\\.",arg) )) {
+    arg <- lapply(arg, function (value)
+      getJS(value,state,event))
+  }
+  grepl(arg,target)
+}
 
 
 ## These assume that target is a vector and apply the test repeatedly.
-"?any" <- function (cond,target) {
-  if (length(cond) >1L) stop("?any queries must have length 1.")
-  subquery <- names(cond)[1]
-  subcond <- cond[[1]]
-  any(do.call(subquery,list(subcond,target)))
+"?any" <- function (arg,target,state,event) {
+  if (length(arg) >1L) stop("?any queries must have length 1.")
+  subquery <- names(arg)[1]
+  subarg <- arg[[1]]
+  any(do.call(subquery,list(subarg,target,state,event)))
 }
-"?all" <- function (cond,target) {
-  if (length(cond) >1L) stop("?all queries must have length 1.")
-  subquery <- names(cond)[1]
-  subcond <- cond[[1]]
-  all(do.call(subquery,list(subcond,target)))
+"?all" <- function (arg,target,state,event) {
+  if (length(arg) >1L) stop("?all queries must have length 1.")
+  subquery <- names(arg)[1]
+  subarg <- arg[[1]]
+  all(do.call(subquery,list(subarg,target,state,event)))
 }
 
 
 ## These combine other tests.
-"?not" <- function (cond,target) {
-  if (length(cond) >1L) stop("?all queries must have length 1.")
-  subquery <- names(cond)[1]
-  subcond <- cond[[1]]
-  !do.call(subquery,list(subcond,target))
+"?not" <- function (arg,target,state,event) {
+  if (length(arg) >1L) stop("?not queries must have length 1.")
+  subquery <- names(arg)[1]
+  subarg <- arg[[1]]
+  !do.call(subquery,list(subarg,target,state,event))
 }
-"?and" <- function (cond,target) {
-  for (iop in 1:length(cond)) {
-    subquery <- names(cond)[i]
-    subcond <- cond[[i]]
-    if (!do.call(subquery,list(subcond,target)))
+"?and" <- function (arg,target,state,event) {
+  for (iop in 1:length(arg)) {
+    subquery <- names(arg)[i]
+    subarg <- arg[[i]]
+    if (!do.call(subquery,list(subarg,target,state,event)))
       return (FALSE)
   }
   return (TRUE)
 
 }
-"?or" <- function (cond,target) {
-  for (iop in 1:length(cond)) {
-    subquery <- names(cond)[i]
-    subcond <- cond[[i]]
-    if (do.call(subquery,list(subcond,target)))
+"?or" <- function (arg,target,state,event) {
+  for (iop in 1:length(arg)) {
+    subquery <- names(arg)[i]
+    subarg <- arg[[i]]
+    if (do.call(subquery,list(subarg,target,state,event)))
       return (TRUE)
   }
   return (FALSE)

@@ -33,7 +33,10 @@ setMethod("name","Context", function(x) x@name)
 setMethod("doc","Context", function(x) x@doc)
 
 
-applicableContexts <- function (c) {c(cid(c),belongsTo(c))}
+applicableContexts <- function (c) {
+  if (length(belongsTo(c))==0L) cid(c)
+  c(cid(c), belongsTo(c))
+}
 
 parseContext <- function(rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_

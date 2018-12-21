@@ -874,7 +874,9 @@ Identification, Test Scoring
   sets.  The \texttt{!push} operator adds the argument value to the
   front of the list, and the \texttt{!pop} operator removes the first
   element, or if the value is a positive integer, it removes the that
-  many elements from the front of the stack.
+  many elements from the front of the stack.  If the argument of
+  \texttt{!pop} is a field reference, than that field is set to the
+  value of on the top of the stack.
 
   Timers are treated specially by the \texttt{!set} operator.  In
   particular, there are two fields of the timer object which can be
