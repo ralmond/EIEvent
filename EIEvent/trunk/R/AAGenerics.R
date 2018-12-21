@@ -24,15 +24,15 @@ setGeneric("pause",
 setGeneric("resume",function(timer,time) standardGeneric("resume"))
 setGeneric("isRunning",function(timer) standardGeneric("isRunning"))
 setGeneric("totalTime",function(timer) standardGeneric("totalTime"))
-setGeneric("timeSoFar",function(timer,now) standardGeneric("timeSoFar"))
-setGeneric("timeSoFar<-",function(timer,now,value)
+setGeneric("timeSoFar",function(timer,time) standardGeneric("timeSoFar"))
+setGeneric("timeSoFar<-",function(timer,time,value)
   standardGeneric("timeSoFar<-"))
 setGeneric("reset",function(timer) standardGeneric("reset"))
 
 ## Status
 setGeneric("timer",function(x,name) standardGeneric("timer"))
 setGeneric("timer<-",function(x,name,value) standardGeneric("timer<-"))
-setGeneric("setTimer",function(x,name,value,running,now)
+setGeneric("setTimer",function(x,timerID,time,running,now)
   standardGeneric("setTimer"))
 setGeneric("timerTime",function(x,name,now) standardGeneric("timerTime"))
 setGeneric("timerTime<-",function(x,name,now,value)
@@ -46,5 +46,7 @@ setGeneric("obs",function(x,name) standardGeneric("obs"))
 setGeneric("obs<-",function(x,name,value) standardGeneric("obs<-"))
 setGeneric("copy",function(prototype,uid) standardGeneric("copy"))
 
+setGeneric("context<-",function(x,value) standardGeneric("context<-"))
+setGeneric("oldContext",function(x) standardGeneric("oldContext"))
 
 

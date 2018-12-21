@@ -2,7 +2,7 @@ import(methods)
 import(Proc4)
 
 #importFrom("grDevices", "col2rgb", "grey.colors", "hsv", "rgb2hsv")
-importFrom("jsonlite","toJSON")
+importFrom("jsonlite","toJSON","unbox")
 
 ## Condition
 export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
@@ -11,7 +11,7 @@ export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
 
 ## Context
 export(Context,name,doc,cid, belongsTo, "belongsTo<-",
-       number, "number<-",applicableContexts)
+       number, "number<-",applicableContexts,parseContext)
 exportClasses(Context)
 exportMethods(name,doc,cid, belongsTo, "belongsTo<-",
        number, "number<-")
@@ -28,20 +28,28 @@ export(executePredicate, "!set", "!unset", modify,
        "!start", "!reset", "!setCall", asif.difftime)
 
 ## RuleTables (Rules)
-export(Rule)
+export(Rule,name,doc,context,ruleType,priority,condition,predicate,
+       parseRule)
 exportClass(Rule)
-exportMethods(context)
+exportMethods(context,ruleType,priority,condition,predicate)
 
 ## Status (Timer)
-export(Timer)
+export(Timer,start,pause,resume,isRunning,totalTime,timeSoFar,
+       "timeSoFar<-",reset,parseTimer)
 exportClass(Timer)
-exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,reset)
+exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,
+              "timeSoFar<-",reset)
 
 ## Status (Status)
-export(Status)
+export(Status,timer,"timer<-",setTimer,timerTime,"timerTime<-",
+       timerRunning,"timerRunning<-",flag,"flag<-",obs,"obs<-",
+       "copy",parseStatus,getJS,setJS,removeJS,getJSfield,
+       setJSfield, removeJSfield, "context<-",oldContext)
 exportClasses(Status)
-exportMethods(timer,"timer<-",
-              flag,"flag<-",obs,"obs<-",timerTime)
+exportMethods(timer,"timer<-",setTimer,timerTime,"timerTime<-",
+              timerRunning,"timerRunning<-",
+              flag,"flag<-",obs,"obs<-",timerTime, "context<-",
+              oldContext)
 
 
 

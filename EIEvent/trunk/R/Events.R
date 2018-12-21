@@ -17,7 +17,7 @@ setMethod("object","Event", function(x) x@object)
 Event <- function(uid,verb,object="",timestamp=Sys.time(),
                   details=list(),app="default",context="") {
   new("Event",app=app,uid=uid,verb=verb,object=object,
-      timestamp=timetimestamp,context=context,data=details)
+      timestamp=timestamp,context=context,data=details)
 }
 
 setMethod("toString","Event", function(x, ...) {

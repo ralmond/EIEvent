@@ -86,8 +86,11 @@ modify <- function (predicate, state, event, op) {
     curr <- getJS(name,state,event)
     value <- predicate[[name]]
     if (is.character(value) &&
-        grepl("^(state|event)\\.",value) )
-      value <- getJS(value,state,event)
+        grepl("^state\\.",value) ) {
+      v1 <- getJS(paste(name,'[1]',sep=""),state,event)
+      state <- setJS(value,state,timestamp(event),v1)
+      value <- 1
+    }
     value <- as.integer(value)
     state <- setJS(name,state,timestamp(event),curr[-(1:value)])
   }

@@ -22,14 +22,14 @@ setMethod("ruleType","Rule", function(x) x@ruleType)
 setMethod("condition","Rule", function(x) x@condition)
 setMethod("predicate","Rule", function(x) x@predicate)
 
-Rule <- function("_id"=NA_character_,
-                 context="ALL",verb="ALL",object="ALL",
+Rule <- function(context="ALL",verb="ALL",object="ALL",
                  ruleType=c("StatusRule","ObservableRule","ContextRule",
                             "TriggerRule","ResetRule"),
                  priority=5, doc="",
                  name=paste("When in",context,",",verb, object, ruleType),
                  condition=list(),predicate=list(),app="default") {
-  new("Rule",app=app,name=name,doc=doc,context=contect,verb=verb,object=object,
+  new("Rule","_id"=NA_character_,app=app,name=name,
+      doc=doc,context=contect,verb=verb,object=object,
       ruleType=ruleType,priority=priority,condition=condition,
       predicate=predicate)
 }

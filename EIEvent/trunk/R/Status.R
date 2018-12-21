@@ -16,7 +16,7 @@ Timer <- function(name) {
 setMethod("start","Timer",
           function(timer,time,runningCheck=TRUE) {
             if (runningCheck && isRunning(timer)) {
-              stop("Timer ",name,"is already running.")
+              stop("Timer ",timer@name,"is already running.")
             }
             timer@startTime <- as.POSIXct(time)
             timer})
@@ -24,7 +24,7 @@ setMethod("start","Timer",
 setMethod("pause",c("Timer","POSIXct"),
           function(timer,time,runningCheck=TRUE) {
             if (runningCheck && !isRunning(timer)) {
-              stop("Timer ",name,"is not running.")
+              stop("Timer ",timer@name,"is not running.")
             }
             timer@totalTime <- timer@totalTime +
               as.POSIXct(time) - timer@startTime
@@ -40,18 +40,18 @@ setMethod("isRunning","Timer",
 setMethod("totalTime","Timer", function(timer) timer@totalTime)
 
 setMethod("timeSoFar","Timer",
-          function(timer,now) {
+          function(timer,time) {
             if (isRunning(timer)) {
-              timer@totalTime + as.POSIXct(now) - timer@startTime
+              timer@totalTime + as.POSIXct(time) - timer@startTime
             } else {
               timer@totalTime
             }})
 setMethod("timeSoFar<-","Timer",
-          function(timer,now,value) {
+          function(timer,time,value) {
             if (isRunning(timer)) {
-              timer@startTime <- as.POSIXct(now)
+              timer@startTime <- as.POSIXct(time)
             }
-            timer@totalTime <- now
+            timer@totalTime <- value
             timer})
 
 
@@ -108,6 +108,11 @@ Status <- function (uid,context,timerNames=character(),
 
 setMethod("uid","Status", function(x) x@uid)
 setMethod("context","Status", function(x) x@context)
+setMethod("context<-","Status", function(x,value){
+  x@context <- value
+  x
+})
+setMethod("oldContext","Status", function(x) x@oldContext)
 
 setMethod("timer","Status", function(x,name) x@timers[[name]])
 setMethod("timer<-","Status", function(x,name,value) {
@@ -118,34 +123,35 @@ setMethod("timer<-","Status", function(x,name,value) {
   x
 })
 
-setMethod("setTimer","Status", function(x,name,value,running,now) {
-  fieldlist <- splitfield(name)
+setMethod("setTimer",c("Status","character"),
+          function(x,timerID,time,running,now) {
+  fieldlist <- splitfield(timerID)
   if (fieldlist[1] != "state" || fieldlist[2] !="timers")
-    stop ("Can only !start and !reset timers:  ",name)
+    stop ("Can only !start and !reset timers:  ",timerID)
   name <- fieldlist[3]
   if (is.null(timer(x,name))) {
     timer(x,name) <- Timer(name)
   }
-  timerTime(x,name) <- value
+  timerTime(x,name,now) <- time
   timerRunning(x,name,now) <- running
   x
 })
 
 
 
-setMethod("timerTime","Status", function(x,name,now)
+setMethod("timerTime",c("Status","character"), function(x,name,now)
   timeSoFar(x@timers[[name]],now))
-setMethod("timerTime<-","Status", function(x,name,now,value){
-  timeSoFar(x@timers[[name]],now)<-value
+setMethod("timerTime<-", c("Status","character"), function(x,name,now,value){
+  timeSoFar(timer(x,name),now)<-value
   x})
-setMethod("timerRunning","Status", function(x,name,now) {
+setMethod("timerRunning", c("Status","character"), function(x,name,now) {
   isRunning(timer(x,name))
 })
-setMethod("timerRunning<-","Status", function(x,name,now,value) {
+setMethod("timerRunning<-", c("Status","character"), function(x,name,now,value) {
   if (value == TRUE) {
-    start(timer(x,name),now,FALSE)
+    timer(x,name) <- start(timer(x,name),now,FALSE)
   } else if (value == FALSE) {
-    pause(timer(x,name),now,FALSE)
+    timer(x,name) <- pause(timer(x,name),now,FALSE)
   } else {
     stop ("Trying to set running state of timer ",name," to illogical value.")
   }
@@ -212,7 +218,7 @@ getJS <- function (field,state,event) {
                   ),
          event=
            switch(fieldexp[2],
-                  data=getJSfield(data(event),fieldexp[-(1:2)]),
+                  data=getJSfield(details(event),fieldexp[-(1:2)]),
                   object=object(event),
                   verb=verb(event),
                   timestamp=timestamp(event),
@@ -353,7 +359,7 @@ setMethod("as.jlist",c("Status","list"), function(obj,ml) {
   ml
 })
 
-parseRule<- function (rec) {
+parseStatus<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   new("Status","_id"=rec$"_id",
       uid=ununboxer(rec$uid),context=ununboxer(rec$context),
