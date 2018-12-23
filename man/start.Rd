@@ -108,7 +108,6 @@ reset(timer)
     \item{resume}{Identical to start with \code{runningCheck=TRUE}.}
     \item{timeSoFar}{If running, returns \code{totalTime} + \code{time}
       - \code{startTime}.  If paused, returns \code{totalTime}.}
-      the lap time on a stopwatch.)}
     \item{timeSoFar<-}{Sets \code{totalTime} to \code{value}.  If the
       timer is running sets \code{startTime <- time}.}
     \item{isRunning}{Returns \code{!is.na(startTime)}.}

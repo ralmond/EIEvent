@@ -245,7 +245,7 @@ setJS <- function (field,state,now,value) {
     flag(state,fieldexp[3]) <-
       setJSfield(flag(state,fieldexp[3]), fieldexp[-(1:3)], value)
   } else if (fieldexp[2]=="observables") {
-    if (length(fieldexp)!=3L)
+    if (length(fieldexp)<3L)
       stop("No observable name supplied:", field)
     obs(state,fieldexp[3]) <-
       setJSfield(obs(state,fieldexp[3]), fieldexp[-(1:3)], value)
@@ -315,12 +315,15 @@ getJSfield <- function(obj,fieldlist) {
 
 
 setJSfield <- function (target,fieldlist,value) {
-  if (length(fieldlist==OL)) return (value)
-  if (length(fieldlist==1L)) {
-    target[[fieldlist]] <- value
+  if (length(fieldlist)==0L) return (value)
+  if (length(fieldlist)==1L) {
+    field <- fieldlist
+    if (!is.na(strtoi(field))) field <- strtoi(field)
+    target[[field]] <- value
   } else {
-    target[[fieldlist[1]]] <-
-      setJSfield(fieldlist[-1],target[[fieldlist[1]]],value)
+    field <- fieldlist[1]
+    if (!is.na(strtoi(field))) field <- strtoi(field)
+    target[[field]] <- setJSfield(target[[field]],fieldlist[-1],value)
   }
   target
 }

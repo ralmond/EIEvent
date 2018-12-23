@@ -1,15 +1,15 @@
 [
 {
+  comment: "What happends when bounciness boxe unchecked.",
   state: {
     uid: "Test0",
     context: "25",
     timers:{},
     flags:{
-      BouncinessUsed: true,
-      BouncinessOldVal: 0.8,
+      BouncinessOn: true
     },
     observables:{
-      BouncinessManip:"Activated"
+      BouncinessRun:false
     }
   },
   event: {
@@ -27,18 +27,19 @@
     }
   },
   rule: {
-    name: "Activate Bounciness",
-    doc: "Reset slider used and old value."
+    name: "Bounciness Off"
+    doc: "When player unchecks bounciness, clear flag."
     verb: "adjusted",
     object: "control",
     context: "Manipulation Levels",
     ruleType: "Status",
     priority: 2,
     conditions: {
+        gemeObject: "Bounciness"
+        newValue: 0
     },
     predicate: {
-      !set:{state.flags.BouncinessUsed:false},
-      !unset:{state.flags.BouncinessOldVal:NA},
+      !set:{state.flags.BouncinessOn:false},
     }
   },
   result:{
@@ -46,25 +47,24 @@
     context: "25",
     timers:{},
     flags:{
-      BouncinessUsed: false,
-      BouncinessOldVal: "NA"
+      BouncinessOn: false
     },
     observables:{
-      airManip:"activated"
+      BouncinessRun: false
     }
   }
 },
 {
+  comment: "What happends when bounciness box checked.",
   state: {
-    uid: "Test0",
-    context: "25",
-    timers:{},
-    flags:{
-      BouncinessUsed: false,
-      BouncinessOldVal: "NA"
-    },
-    observables:{
-      BouncinessManip:"Activated"
+      uid: "Test0",
+      context: "25",
+      timers:{},
+      flags:{
+          BouncinessOn: false
+      },
+      observables:{
+          BouncinessRun:false
     }
   },
   event: {
@@ -75,27 +75,77 @@
             context: "25",
             timestamp:"2018-09-25 12:12:28 EDT",   
             data: {
-      gemeObjectType: "Bounciness",
-      oldValue: 0.8,
-      newValue: 0,
-      method: "input"
-    }
+                gemeObjectType: "Bounciness",
+                oldValue: 0,
+                newValue: 0.8,
+                method: "input"
+            }
   },
   rule: {
-    name: "Set up old value for Bounciness",
-    doc: "Set the value of the old value for the Bounciness"
-    verb: "Bounciness",
+    name: "Bounciness On"
+    doc: "When player checks bounciness, set flag."
+    verb: "adjusted",
     object: "control",
     context: "Manipulation Levels",
     ruleType: "Status",
+    priority: 2,
+    conditions: {
+        gemeObject: "Bounciness"
+        newValue: 0.8
+    },
+    predicate: {
+      !set:{state.flags.BouncinessOn:true},
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      BouncinessOn: true
+    },
+    observables:{
+      BouncinessRun: false
+    }
+  }
+},
+{
+  comment: "What happends when Run pressed.",
+  state: {
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      BouncinessOn: true
+    },
+    observables:{
+      BouncinessRun: false
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "play",
+            object: "params",
+            context: "25",
+            timestamp:"2018-09-25 12:13:28 EDT",   
+            data: {
+            }
+  },
+  rule: {
+    name: "Bouncy Run Check."
+    doc: "Set the bounciness observable if bounciness flag is set."
+    verb: "Bounciness",
+    object: "control",
+    context: "Manipulation Levels",
+    ruleType: "Observable",
     priority: 5,
     conditions: {
-      event.data.gemeObjectType:"Bounciness"
+      state.flags.BouncinessOn:true
     },
     predicate: {
       !set:{
-        state.flags.BouncinessManip:true,
-        state.flags.BouncinessOldVal:"event.data.oldValue"
+        state.Observables.BouncinessRun:true,
       }
     }
   },
@@ -104,11 +154,10 @@
     context: "Bounciness",
     timers:{},
    flags:{
-      airUsed: true,
-      airOldVal: 0.8
+       BouncinessOn:true
     },
     observables:{
-      airManip:"activated"
+        BouncinessRun:true
     } 
   }
 }

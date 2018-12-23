@@ -1,5 +1,6 @@
 \name{getJS}
 \alias{getJS}
+\alias{getJSfield}
 \title{Gets a field from an object in Javascript notation.}
 \description{
 
@@ -9,12 +10,13 @@
   \code{state.timers.}\emph{name}. Similarly, fields of an
   \code{\linkS4class{Event}} can be referenced using \code{event.verb},
   \code{event.object}, \code{event.data.}\emph{field}, or
-  \code{event.timestamp}.  The function \code{getJS} feteches the
+  \code{event.timestamp}.  The function \code{getJS} fetches the
   current value of the referenced field from the state or event object.
 
 }
 \usage{
 getJS(field, state, event)
+getJSfield(obj,fieldlist)
 }
 \arguments{
   \item{field}{A character scalar describing the field to be referenced
@@ -23,6 +25,12 @@ getJS(field, state, event)
     current status of the user in the system.}
   \item{event}{An object of type \code{\linkS4class{event}} giving the
     event being processed.}
+  \item{obj}{A collection object to be access.  The object implmenting 
+    \code{state.flags}, \code{state.observables} or
+    \code{event.details}, or one of sub-components.}
+  \item{fieldlist}{The successive field names as a vector of characters
+    (split at the \sQuote{.} and excluding the initial \code{state.flags},
+    \code{state.observables} or \code{event.details}.}
 }
 \details{
 
@@ -71,12 +79,17 @@ getJS(field, state, event)
 
   The fields of \code{event.data}, \code{state.flags.} and
   \code{state.observables.} can also contain unnamed vectors (either
-  character, numeric, or list).  In which case square brackets can be
+  character, numeric, or list).  In this case square brackets can be
   used to index the elements by position.  Indexes start at 1, as in R.
   For example, \dQuote{\code{state.flags.agentList[3]}} references the
   third value in the agentList flag of the status.  Currently only
   numeric indexes are allowed, variable references are not, nor can
   sublists be selected.
+
+  The function \code{getJSfield} is an internal function which is used
+  to access components.  It is called recursively to access fields which
+  are themselves lists or vectors.
+
 
 }
 \section{Fields of the \code{Event} object.}{
@@ -139,7 +152,7 @@ getJS(field, state, event)
   \itemize{
     \item{\code{state.uid} The user ID of the student or player. (Should
     be the same of that of the event.)}
-    \item{\code{event.timestamp} The timestamp of the last event
+    \item{\code{state.timestamp} The timestamp of the last event
     encorporated into the status.}
   }
 }
@@ -210,8 +223,6 @@ getJS(field, state, event)
   \code{\linkS4class{Status}}, \code{\linkS4class{Event}},
   \code{\linkS4class{Rule}}.
 
-
-
 }
 \examples{
 
@@ -266,5 +277,3 @@ getJS("event.data.vector[3]",st,ev)==3
 )
 
 }
-\keyword{ objects }
-\keyword{ manipulation }
