@@ -109,7 +109,7 @@ when called with names for the timer objects.
   running. 
 
   The \code{\link{setJS}} function gets the current time from the
-  current \code{\linkS4class{Event} object being processed, and thus
+  current \code{\linkS4class{Event}} object being processed, and thus
   automatically takes care of the time argument.
 
 }
