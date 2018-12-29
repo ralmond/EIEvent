@@ -1,3 +1,8 @@
+2018-12-27  Russell Almond  <ralmond@Limu>
+
+	* R/Status.R (as.jlist): R/RuleTables.R (as.jlist): changed to
+	unparseData prototocol 
+
 2018-09-27  Russell Almond  <ralmond@Limu>
 
 	* R/RuleTables.R (Rule): Added app to Rule.

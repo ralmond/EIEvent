@@ -17,7 +17,8 @@ setMethod("object","Event", function(x) x@object)
 Event <- function(uid,verb,object="",timestamp=Sys.time(),
                   details=list(),app="default",context="") {
   new("Event",app=app,uid=uid,verb=verb,object=object,
-      timestamp=timestamp,context=context,data=details)
+      timestamp=timestamp,context=context,data=details,
+      "_id"=c(oid=NA_character_))
 }
 
 setMethod("toString","Event", function(x, ...) {
@@ -28,18 +29,13 @@ setMethod("show","Event",function(object) {
   cat(toString(object),"\n")
 })
 
-setMethod("as.jlist","Event", function(obj,ml) {
-  evl <- callNextMethod()
-  evl$verb <- unbox(evl$verb)
-  evl$object <- unbox(evl$object)
-  evl
-})
-
 parseEvent<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
-  new("Event","_id"=rec$"_id", app=rec$app, uid=rec$uid,
-      context=ununboxer(rec$context),verb=ununboxer(rec$verb),
-      object=ununboxer(rec$object), timestamp=ununboxer(rec$timestamp),
+  names(rec$"_id") <- "oid"
+  new("Event","_id"=rec$"_id", app=as.vector(rec$app),
+      uid=as.vector(rec$uid),
+      context=as.vector(rec$context),verb=as.vector(rec$verb),
+      object=as.vector(rec$object), timestamp=ununboxer(rec$timestamp),
       data=parseData(ununboxer(rec$data)))
 }
 

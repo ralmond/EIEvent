@@ -6,8 +6,6 @@
 \alias{belongsTo,Context-method}
 \alias{belongsTo<-,Context-method}
 \alias{cid,Context-method}
-\alias{doc,Context-method}
-\alias{name,Context-method}
 \alias{number,Context-method}
 \alias{number<-,Context-method}
 
@@ -54,12 +52,12 @@ parents (direct and indirect) need to be listed).
   the status.  A rule is considered applicable if one of the following
   conditions is met.
   \enumerate{
-    \item{The \code{context} fields of the \link{\linkS4class{Status}}
-      and \link{\linkS4class{Rule}} class match exactly.}
-    \item{The \code{context} fields of the \link{\linkS4class{Rule}}
+    \item{The \code{context} fields of the \code{\linkS4class{Status}}
+      and \code{\linkS4class{Rule}} class match exactly.}
+    \item{The \code{context} fields of the \code{\linkS4class{Rule}}
       class matches the \code{cid} of one of the entries in the
-      \code{belongsTo} field of the \link{\linkS4class{Status}}.}
-    \item{The \code{context} fields of the \link{\linkS4class{Rule}} is
+      \code{belongsTo} field of the \code{\linkS4class{Status}}.}
+    \item{The \code{context} fields of the \code{\linkS4class{Rule}} is
       the keyword \dQuote{ANY}, \emph{i.e.}, the rule is applicable to
       all classes.}
   }
@@ -151,7 +149,7 @@ parents (direct and indirect) need to be listed).
 
   Methods for working with contexts:
   \code{\link{Context}}, \code{\link{applicableContexts}},
-  \code{\link{parseContext}}
+  \code{\link{parseContext}}, \code{\link{name}}, \code{\link{doc}}
 }
 \examples{
 showClass("Context")

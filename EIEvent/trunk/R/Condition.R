@@ -6,13 +6,7 @@ checkCondition <- function (conditions, state, event) {
       if (!do.call(condition[[field]],list(state,event)))
         return (FALSE)
     }
-    fieldexp <- strsplit(field,".")[[1]]
-    if (fieldexp[1]=="state") target <- state
-    if (fieldexp[1]=="event") target <- event
-    else stop("Field name must start with 'state' or 'event':",field)
-    for (i in 2:length(feildexp)) {
-      target <- target[[fieldexp[i]]]
-    }
+    target <- getJS(field,state,event)
     if (!checkOneCondition(conditions[[field]],target,state,event))
       return(FALSE)
   }
@@ -24,19 +18,15 @@ checkOneCondition <- function(condition,target,state,event) {
       && !is.null(names(condition))) {
     for (iop in 1:length(condition)) {
       argi <- condition[[iop]]
-      if (!do.call(names(condition)[iop],
-                   list(arg1,target,state,event)))
+      op <- names(condition)[iop]
+      if (!do.call(op,list(argi,target,state,event)))
         return(FALSE)
     }
     return (TRUE)
   } else {
-    if (length(condition) > 1L) {
-      return (do.call("?in",
-                      list(condition,target,state,event)))
-    } else {
-      return (do.call("?in",
-                      list(condition,target,state,event)))
-    }
+    ## ?in and ?eq are equivalent if length(condition)==1
+    return (do.call("?in",
+                    list(condition,target,state,event)))
   }
 }
 
@@ -132,12 +122,12 @@ checkOneCondition <- function(condition,target,state,event) {
   is.null(target) == arg
 }
 "?isna" <- function (arg,target,state,event) {
-  is.na(target) == arg
   if (is.character(arg) &&
       all(grepl("^(state|event)\\.",arg) )) {
     arg <- lapply(arg, function (value)
       getJS(value,state,event))
   }
+  is.na(target) == arg
 }
 
 "?regexp" <- function (arg,target,state,event) {
@@ -174,8 +164,8 @@ checkOneCondition <- function(condition,target,state,event) {
 }
 "?and" <- function (arg,target,state,event) {
   for (iop in 1:length(arg)) {
-    subquery <- names(arg)[i]
-    subarg <- arg[[i]]
+    subquery <- names(arg)[iop]
+    subarg <- arg[[iop]]
     if (!do.call(subquery,list(subarg,target,state,event)))
       return (FALSE)
   }
@@ -184,8 +174,8 @@ checkOneCondition <- function(condition,target,state,event) {
 }
 "?or" <- function (arg,target,state,event) {
   for (iop in 1:length(arg)) {
-    subquery <- names(arg)[i]
-    subarg <- arg[[i]]
+    subquery <- names(arg)[iop]
+    subarg <- arg[[iop]]
     if (do.call(subquery,list(subarg,target,state,event)))
       return (TRUE)
   }

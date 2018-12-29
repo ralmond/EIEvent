@@ -13,7 +13,7 @@ Timer <- function(name) {
       totalTime=as.difftime(0,units="secs"))
 }
 
-setMethod("start","Timer",
+setMethod("start",c("Timer","POSIXt"),
           function(timer,time,runningCheck=TRUE) {
             if (runningCheck && isRunning(timer)) {
               stop("Timer ",timer@name,"is already running.")
@@ -21,7 +21,7 @@ setMethod("start","Timer",
             timer@startTime <- as.POSIXct(time)
             timer})
 
-setMethod("pause",c("Timer","POSIXct"),
+setMethod("pause",c("Timer","POSIXt"),
           function(timer,time,runningCheck=TRUE) {
             if (runningCheck && !isRunning(timer)) {
               stop("Timer ",timer@name,"is not running.")
@@ -31,7 +31,7 @@ setMethod("pause",c("Timer","POSIXct"),
             timer@startTime <- as.POSIXct(NA)
             timer})
 
-setMethod("resume","Timer", function(timer,time) start(timer,time))
+setMethod("resume",c("Timer","POSIXt"), function(timer,time) start(timer,time))
 
 setMethod("isRunning","Timer",
           function(timer)
@@ -39,14 +39,14 @@ setMethod("isRunning","Timer",
 
 setMethod("totalTime","Timer", function(timer) timer@totalTime)
 
-setMethod("timeSoFar","Timer",
+setMethod("timeSoFar",c("Timer","POSIXt"),
           function(timer,time) {
             if (isRunning(timer)) {
               timer@totalTime + as.POSIXct(time) - timer@startTime
             } else {
               timer@totalTime
             }})
-setMethod("timeSoFar<-","Timer",
+setMethod("timeSoFar<-",c("Timer","POSIXt"),
           function(timer,time,value) {
             if (isRunning(timer)) {
               timer@startTime <- as.POSIXct(time)
@@ -90,7 +90,8 @@ parseTimer <- function (rec) {
 ### Status -- Maintains state for one user in one context.
 
 setClass("Status",
-         slots=c(app="character",
+         slots=c("_id"="character",
+                 app="character",
                  uid="character",
                  context="character",
                  oldContext="character",
@@ -103,7 +104,8 @@ Status <- function (uid,context,timerNames=character(),
                     app="default") {
   timers <- sapply(timerNames, Timer)
   new("Status",app=app,uid=uid,context=context,oldContext=context,
-      timers=timers, flags=flags,observables=observables,timestamp=timestamp)
+      timers=timers, flags=flags,observables=observables,timestamp=timestamp,
+      "_id"=c(oid=NA_character_))
 }
 
 setMethod("uid","Status", function(x) x@uid)
@@ -113,6 +115,8 @@ setMethod("context<-","Status", function(x,value){
   x
 })
 setMethod("oldContext","Status", function(x) x@oldContext)
+setMethod("app","Status", function(x) x@app)
+setMethod("timestamp","Status", function(x) x@timestamp)
 
 setMethod("timer","Status", function(x,name) x@timers[[name]])
 setMethod("timer<-","Status", function(x,name,value) {
@@ -254,18 +258,18 @@ setJS <- function (field,state,now,value) {
       stop("No timer name supplied:", field)
     if (length(fieldexp) == 3L) {
       if (is.logical(value))
-        timerRunning(state,fieldexp[3], timestamp(event)) <-value
-      else if (is.datetime(value))
-        timerTime(state,fieldexp[3],timestamp(event)) <- value
+        timerRunning(state,fieldexp[3], now) <-value
+      else if (is.difftime(value))
+        timerTime(state,fieldexp[3],now) <- value
       else
-        stop ("Timer ",feildexp[3],"set to a value that is not a time or logical.")
+        stop ("Timer ",fieldexp[3],"set to a value that is not a time or logical.")
     } else {
       switch(fieldexp[4],
              time=, value=
-                      timerTime(state,fieldexp[3], timestamp(event)) <-
+                      timerTime(state,fieldexp[3], now) <-
                       asif.difftime(value),
              run=, running=
-                     timerRunning(state,fieldexp[3], timestamp(event)) <-value,
+                     timerRunning(state,fieldexp[3], now) <-value,
              stop("Timer ",fieldexp[4],
                   "only .time and .running allowed."))
     }
@@ -350,26 +354,28 @@ setMethod("as.jlist",c("Status","list"), function(obj,ml) {
   ml$"_id" <- NULL
   ml$class <-NULL
 
-  ml$uid <- unbox(ml$uid)
-  ml$context <- unbox(ml$context)
+  ml$uid <- unboxer(ml$uid)
+  ml$context <- unboxer(ml$context)
   ml$timestamp <- unboxer(ml$timestamp)
 
   ml$timers <- unboxer(lapply(ml$timers,
                               function(tim) as.jlist(tim,attributes(tim))))
-  ml$flags <- unboxer(ml$flags)
-  ml$observables <- unbox(ml$observables)
+  ml$flags <- unparseData(ml$flags)
+  ml$observables <- unparseData(ml$observables)
 
   ml
 })
 
 parseStatus<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
+  names(rec$"_id") <- "oid"
   new("Status","_id"=rec$"_id",
       uid=ununboxer(rec$uid),context=ununboxer(rec$context),
       timers=lapply(ununboxer(rec$timers), parseTimer),
       flags=parseData(ununboxer(rec$flags)),
       observables=parseData(ununboxer(rec$observables)),
-      timestamp=ununboxer(rec$timestamp))
+      timestamp=ununboxer(rec$timestamp),
+      app=ununboxer(rec$app),oldContext=ununboxer(rec$oldContext))
 }
 
 

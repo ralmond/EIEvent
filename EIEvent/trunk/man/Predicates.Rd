@@ -1,4 +1,5 @@
 \name{Predicates}
+\alias{Predicates}
 \alias{!set}
 \alias{!unset}
 \alias{!incr}
@@ -19,7 +20,7 @@
 \description{
 
   A \code{\linkS4class{Rule}} contains both \link{Conditions} and
-  \link{Precdiates}.  The latter is a list of operations which are run
+  Predicates.  The latter is a list of operations which are run
   when the conditions are satisfied.  The list of predicates has the
   form \emph{!op}\code{=list(}\emph{target}\code{=}\emph{arg}\code{,...)}.
   Here \code{target} is a reference to a field in the
@@ -29,7 +30,7 @@
 }
 \usage{
 "!set"(predicate, state, event)
-"!uset"(predicate, state, event)
+"!unset"(predicate, state, event)
 "!incr"(predicate, state, event)
 "!decr"(predicate, state, event)
 "!mult"(predicate, state, event)
@@ -47,8 +48,9 @@ modify(predicate, state, event, op)
 }
 \arguments{
   \item{predicate}{This is a list of the form
-    \code{list(\emph{target1}=\emph{arg1}, \emph{target2}=\emph{arg2},
-      ...)}.  It names the fields to be modified and the new values (or
+    \code{list(}\emph{target1}\code{=}\emph{arg1}\code{, }
+    \emph{target2}\code{=}\emph{arg2}\code{, ...)}.
+    It names the fields to be modified and the new values (or
     arguments used to compute the new values).}
   \item{state}{A \code{\linkS4class{Status}} object representing the
     current state of the simulation.}
@@ -230,7 +232,7 @@ modify(predicate, state, event, op)
 }
 \seealso{
 
-  \code{\linkS4class{Rules}} describes the rule object and
+  \code{\linkS4class{Rule}} describes the rule object and
   \link{Conditions} describes the Conditions.
   
   Other classes in the EIEvent system:
@@ -252,7 +254,7 @@ list (
             "state.timers.learningsupports.run"=TRUE),
 ## Delete fields
 "!unset"=list("state.flags.agent"="NA", # Set to NA
-              "state.flags.slider"="NULL" # Set to NULL
+              "state.flags.slider"="NULL", # Set to NULL
               "state.flags.unneeded"="Delete"), # Delete it. 
 
 ## Modify fields.
