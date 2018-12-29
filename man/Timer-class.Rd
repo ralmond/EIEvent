@@ -2,15 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Timer-class}
-\alias{as.jlist,Timer,list-method}
-\alias{isRunning,Timer-method}
-\alias{pause,Timer,POSIXct-method}
-\alias{reset,Timer-method}
-\alias{resume,Timer-method}
-\alias{start,Timer-method}
-\alias{timeSoFar,Timer-method}
-\alias{timeSoFar<-,Timer-method}
-\alias{totalTime,Timer-method}
 
 \title{Class \code{"Timer"}}
 \description{

@@ -2,13 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Status-class}
-\alias{as.jlist,Status,list-method}
-\alias{context,Status-method}
 \alias{copy,Status-method}
-\alias{flag,Status-method}
-\alias{flag<-,Status-method}
-\alias{obs,Status-method}
-\alias{obs<-,Status-method}
 \alias{setTimer,Status-method}
 \alias{timer,Status-method}
 \alias{timer<-,Status-method}
@@ -16,7 +10,6 @@
 \alias{timerRunning<-,Status-method}
 \alias{timerTime,Status-method}
 \alias{timerTime<-,Status-method}
-
 \title{Class \code{"Status"}}
 \description{
 
@@ -36,6 +29,7 @@ for every student in the system.
 }
 \section{Slots}{
   \describe{
+    \item{\code{_id}:}{Internal database ID.}
     \item{\code{app}:}{Object of class \code{"character"} giving an
       identifier for the application. }
     \item{\code{uid}:}{Object of class \code{"character"} giving an
@@ -64,6 +58,8 @@ for every student in the system.
     \item{as.jlist}{\code{signature(obj = "Status", ml = "list")}:
       preprocessing method used to conver the \code{Status} into a JSON
       string.  See \code{\link[Proc4]{as.jlist}}. }
+    \item{app}{\code{signature(x = "Status")}: returns the value of
+      the \code{context} field. }
     \item{context}{\code{signature(x = "Status")}: returns the value of
       the \code{context} field. }
     \item{copy}{\code{signature(prototype = "Status")}: creates a
@@ -217,8 +213,10 @@ for every student in the system.
 
   Methods for working with States:
   \code{\link{timer}}, \code{\link{timerTime}},
-  \code{\link{timerRunning}}, \code{\link{flag}}, \code{\link{objs}},
-  \code{\link{copy}}, \code{\link{parseStatus}}, 
+  \code{\link{timerRunning}}, \code{\link{flag}}, \code{\link{obs}},
+  \code{\link{app}}, \code{\link{context}},\code{\link{oldContext}},
+  \code{\link{timestamp}}, \code{\link{copy}},
+  \code{\link{parseStatus}},  
 
 }
 \examples{

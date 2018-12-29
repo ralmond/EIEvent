@@ -21,9 +21,9 @@ getJSfield(obj,fieldlist)
 \arguments{
   \item{field}{A character scalar describing the field to be referenced
     (see details).}
-  \item{state}{An object of type \code{\linkS4class{status}} giving the
+  \item{state}{An object of type \code{\linkS4class{Status}} giving the
     current status of the user in the system.}
-  \item{event}{An object of type \code{\linkS4class{event}} giving the
+  \item{event}{An object of type \code{\linkS4class{Event}} giving the
     event being processed.}
   \item{obj}{A collection object to be access.  The object implmenting 
     \code{state.flags}, \code{state.observables} or

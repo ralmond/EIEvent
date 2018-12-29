@@ -213,4 +213,5 @@ asif.difftime <- function (e2) {
   e2
 }
 
+is.difftime <- function(x) {is(x,"difftime")}
 

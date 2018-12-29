@@ -2,11 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Event-class}
-\alias{as.jlist,Event,ANY-method}
-\alias{as.jlist,Event,list-method}
-\alias{object,Event-method}
-\alias{verb,Event-method}
-
 \title{Class \code{"Event"}}
 \description{
 
@@ -88,11 +83,10 @@ and objects, which should correpsond to the \code{verb} and
 }
 \section{Methods}{
   \describe{
-    \item{as.jlist}{\code{signature(obj = "Event", ml = "ANY")}: ... }
     \item{as.jlist}{\code{signature(obj = "Event", ml = "list")}: ... }
-    \item{object}{\code{signature(x = "Event")}: ... }
-    \item{verb}{\code{signature(x = "Event")}: ... }
-	 }
+    \item{object}{\code{signature(x = "Event")}: Fetches the object component. }
+    \item{verb}{\code{signature(x = "Event")}: Fetches the verb component. }
+  }
 }
 \references{
 
@@ -119,6 +113,9 @@ and objects, which should correpsond to the \code{verb} and
 
 \author{Russell Almond}
 \seealso{
+
+  The event class is a subclass of
+  \code{\link[Proc4]{P4Message}}. 
 
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},

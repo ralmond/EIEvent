@@ -30,10 +30,10 @@
       ruleType: "Observable", 
       priority: 5,
       conditions: {
-          event.data.badge:["silver","gold"]
+          "event.data.badge":["silver","gold"]
       },
       predicate: {
-        "!set":{state.observables.badge:"event.data.badge"}
+        "!set":{"state.observables.badge":"event.data.badge"}
       }
     },
     result:{

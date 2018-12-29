@@ -2,14 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Rule-class}
-\alias{as.jlist,Rule,list-method}
-\alias{condition,Rule-method}
-\alias{context,Rule-method}
-\alias{object,Rule-method}
-\alias{predicate,Rule-method}
-\alias{ruleType,Rule-method}
-\alias{verb,Rule-method}
-
 \title{Class \code{"Rule"}}
 \description{
 
@@ -286,6 +278,8 @@
       the predicate for the rule.}
     \item{ruleType}{\code{signature(x = "Rule")}: Returns a character
       scalar giving the type of the rule.}
+    \item{predicate}{\code{signature(x = "Rule")}: Returns a number giving
+      the priority for the rule; lower numbers are higher priority.}
     \item{verb}{\code{signature(x = "Rule")}: Returns a character
       scalar giving the verb to which the rule is applicable. }
   }
@@ -324,7 +318,10 @@
   \code{\linkS4class{RuleTable}}.
 
   Methods for working with Rules:
-  \code{\link{Rule}}, \code{\link{parseRule}}
+  \code{\link{Rule}}, \code{\link{parseRule}}, \code{\link{ruleType}},
+  \code{\link{priority}}, \code{\link{condition}},
+  \code{\link{predicate}}, \code{\link{verb}}, \code{\link{object}},
+  \code{\link{context}}, \code{\link{name}}, \code{\link{doc}}
 
 }
 \examples{

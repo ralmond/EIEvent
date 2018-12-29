@@ -1,4 +1,5 @@
 \name{Conditions}
+\alias{Conditions}
 \alias{?eq}
 \alias{?ne}
 \alias{?gt}
@@ -7,7 +8,7 @@
 \alias{?lte}
 \alias{?in}
 \alias{?nin}
-\alias{?exisits}
+\alias{?exists}
 \alias{?isnull}
 \alias{?isna}
 \alias{?regexp}
@@ -27,26 +28,26 @@
 
 }
 \usage{
-"?eq"(cond, target, state, event)
-"?ne"(cond, target, state, event)
-"?gt"(cond, target, state, event)
-"?gte"(cond, target, state, event)
-"?lt"(cond, target, state, event)
-"?lte"(cond, target, state, event)
-"?in"(cond, target, state, event)
-"?nin"(cond, target, state, event)
-"?exists"(cond, target, state, event)
-"?isnull"(cond, target, state, event)
-"?isna"(cond, target, state, event)
-"?regexp"(cond, target, state, event)
-"?any"(cond, target, state, event)
-"?all"(cond, target, state, event)
-"?not"(cond, target, state, event)
-"?and"(cond, target, state, event)
-"?or"(cond, target, state, event)
+"?eq"(arg, target, state, event)
+"?ne"(arg, target, state, event)
+"?gt"(arg, target, state, event)
+"?gte"(arg, target, state, event)
+"?lt"(arg, target, state, event)
+"?lte"(arg, target, state, event)
+"?in"(arg, target, state, event)
+"?nin"(arg, target, state, event)
+"?exists"(arg, target, state, event)
+"?isnull"(arg, target, state, event)
+"?isna"(arg, target, state, event)
+"?regexp"(arg, target, state, event)
+"?any"(arg, target, state, event)
+"?all"(arg, target, state, event)
+"?not"(arg, target, state, event)
+"?and"(arg, target, state, event)
+"?or"(arg, target, state, event)
 }
 \arguments{
-  \item{cond}{This is the value of the condition clause (the argument)
+  \item{arg}{This is the value of the condition clause (the argument)
     of the query. }
   \item{target}{This is the value of the current state of the referenced
     field in the query.}
@@ -177,7 +178,8 @@
 }
 \section{Condition Testing}{
 
-  These functions are comming soon.
+  The function \code{\link{checkCondition}} is used internally to check
+  when a set of conditions in a rule are satisfied.
   
 }
 \value{
@@ -210,8 +212,9 @@
 \author{Russell Almond}
 \seealso{
 
-  \code{\linkS4class{Rules}} describes the rule object and
-  \link{Predicates} describes the predicates.
+  \code{\linkS4class{Rule}} describes the rule object and
+  \link{Predicates} describes the predicates.  The function
+  \code{checkCondition} tests when conditions are satisfied.
   
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},
@@ -256,7 +259,7 @@ state.flags.agentsused=list("?not"=list("?any"="ramp")),
 
 ## ?and, ?or -- note these stop as soon as falsehood (truth) is proved.
 state.flags.noagents=list("?and"=list("?is.na"=FALSE,"?gt"=0)),
-state.flags.noagents=list("?or"=list("?is.na"=TRUE,"?eq"=0)),
+state.flags.noagents=list("?or"=list("?is.na"=TRUE,"?eq"=0))
 
 )
 

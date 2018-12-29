@@ -8,7 +8,6 @@ setGeneric("name", function (x) standardGeneric("name"))
 setGeneric("doc", function (x) standardGeneric("doc"))
 
 ## Rules
-setGeneric("ruleName",function(x) standardGeneric("ruleName"))
 setGeneric("ruleType",function(x) standardGeneric("ruleType"))
 setGeneric("priority",function(x) standardGeneric("priority"))
 setGeneric("condition",function(x) standardGeneric("condition"))

@@ -7,6 +7,14 @@
 \alias{timeSoFar}
 \alias{timeSoFar<-}
 \alias{reset}
+\alias{isRunning,Timer-method}
+\alias{pause,Timer,POSIXt-method}
+\alias{reset,Timer-method}
+\alias{resume,Timer,POSIXt-method}
+\alias{start,Timer,POSIXt-method}
+\alias{timeSoFar,Timer,POSIXt-method}
+\alias{timeSoFar<-,Timer,POSIXt-method}
+\alias{totalTime,Timer-method}
 \title{Functions for manipulating timer objects.}
 \description{
 
@@ -20,12 +28,20 @@
 }
 \usage{
 start(timer, time, runningCheck = TRUE)
+\S4method{start}{Timer,POSIXt}(timer, time, runningCheck = TRUE)
 pause(timer, time, runningCheck = TRUE)
+\S4method{pause}{Timer,POSIXt}(timer, time, runningCheck = TRUE)
 resume(timer, time)
+\S4method{resume}{Timer,POSIXt}(timer, time)
+isRunning(timer)
+\S4method{isRunning}{Timer}(timer)
 timeSoFar(timer, time)
-timeSoFar(timer, time) <- value
+\S4method{timeSoFar}{Timer,POSIXt}(timer, time)
+\S4method{timeSoFar}{Timer,POSIXt}(timer, time) <- value
 totalTime(timer)
+\S4method{totalTime}{Timer}(timer)
 reset(timer)
+\S4method{reset}{Timer}(timer)
 }
 \arguments{
   \item{timer}{An object of class \code{\linkS4class{Timer}}.}
