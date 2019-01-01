@@ -29,7 +29,7 @@ export(executePredicate, "!set", "!unset", modify,
 
 ## RuleTables (Rules)
 export(Rule,name,doc,context,ruleType,priority,condition,predicate,
-       parseRule)
+       parseRule, queryTest, queryTestScript, ruleTest, ruleTestScript)
 exportClass(Rule)
 exportMethods(context,ruleType,priority,condition,predicate)
 

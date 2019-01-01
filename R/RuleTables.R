@@ -25,8 +25,8 @@ setMethod("condition","Rule", function(x) x@condition)
 setMethod("predicate","Rule", function(x) x@predicate)
 
 Rule <- function(context="ALL",verb="ALL",object="ALL",
-                 ruleType=c("StatusRule","ObservableRule","ContextRule",
-                            "TriggerRule","ResetRule"),
+                 ruleType=c("Status","Observable","Context",
+                            "Trigger","Reset"),
                  priority=5, doc="",
                  name=paste("When in",context,",",verb, object, ruleType),
                  condition=list(),predicate=list(),app="default") {
@@ -43,7 +43,7 @@ setMethod("show","Rule",function(object) {
   cat(toString(object),"\n")
 })
 
-setMethod("as.jlist",c("Rule","list"), function(obj,ml) {
+setMethod("as.jlist",c("Rule","list"), function(obj,ml,serialize=TRUE) {
   ml$"_id" <- NULL
   ml$class <-NULL
 
@@ -53,8 +53,8 @@ setMethod("as.jlist",c("Rule","list"), function(obj,ml) {
   ml$ruleType <- unbox(ml$ruleType)
   ml$priority <- unbox(ml$priority)
 
-  ml$condition <- unparseCondition(ml$condition)
-  ml$predicate <- unparsePredicate(ml$predicate)
+  ml$condition <- unparseCondition(ml$condition,serialize)
+  ml$predicate <- unparsePredicate(ml$predicate,serialize)
 
   ml
 })
@@ -62,6 +62,10 @@ setMethod("as.jlist",c("Rule","list"), function(obj,ml) {
 parseRule<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   names(rec$"_id") <- "oid"
+  if (is.null(rec$app)) rec$app <- "default"
+  if (is.null(rec$context)) rec$context <- "ALL"
+  if (is.null(rec$verb)) rec$verb <- "ALL"
+  if (is.null(rec$object)) rec$object <- "ALL"
   new("Rule","_id"=rec$"_id",
       app=as.vector(rec$app),
       name=as.vector(rec$name),
@@ -74,35 +78,6 @@ parseRule<- function (rec) {
 }
 
 ## Although in theory we could serialize
-
-## This was the old code for parseData, it doesn't work for more
-## complex objects, but it might work for conditions and predicates.
-parseSimpleData <- function (messData) {
-  ##Need to convert back from list to numeric/character
-  for (i in 1:length(messData)) {
-    datum <- messData[[i]]
-    if (all(sapply(datum,is.character)) && all(sapply(datum,length)==1L)) {
-      datum <- as.character(datum)
-      names(datum) <- names(messData[[i]])
-    }
-    if (all(sapply(datum,is.logical)) && all(sapply(datum,length)==1L)) {
-      datum <- as.logical(datum)
-      names(datum) <- names(messData[[i]])
-    }
-    if (all(sapply(datum,is.numeric)) && all(sapply(datum,length)==1L)) {
-      if (all(sapply(datum,is.integer))) {
-        datum <- as.integer(datum)
-      } else {
-        datum <- as.numeric(datum)
-      }
-      names(datum) <- names(messData[[i]])
-    }
-    ## May need an extra step here to decode data which
-    ## are not one of the primative vector types.
-    messData[[i]] <- datum
-  }
-  messData
-}
 
 parseCondition <- Proc4::parseData
 parsePredicate <- Proc4::parseData

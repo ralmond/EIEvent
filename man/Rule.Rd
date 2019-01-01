@@ -13,9 +13,9 @@
 
 }
 \usage{
-Rule(context = "ALL", verb = "ALL", object = "ALL", ruleType = c("StatusRule", "ObservableRule", "ContextRule", "TriggerRule", "ResetRule"), priority = 5, doc = "", name = paste("When in", context, ",", verb, object, ruleType), condition = list(), predicate = list(), app = "default")
-parseEvent(rec)
-\S4method{as.jlist}{Rule,list}(obj, ml)
+Rule(context = "ALL", verb = "ALL", object = "ALL", ruleType = c("Status", "Observable", "Context", "Trigger", "Reset"), priority = 5, doc = "", name = paste("When in", context, ",", verb, object, ruleType), condition = list(), predicate = list(), app = "default")
+parseRule(rec)
+\S4method{as.jlist}{Rule,list}(obj, ml, serialize = TRUE)
 }
 \arguments{
   \item{context}{A character string describing the task, item or game
@@ -56,6 +56,10 @@ parseEvent(rec)
     encoded.}
   \item{ml}{A list of fields of \code{obj}.  Usually, this is created by
     using \code{\link[base]{attributes}(obj)}.}
+  \item{serialize}{A logical flag. If true,
+    \code{\link[jsonlite]{serializeJSON}} is used to protect the
+    \code{data} field (and other objects which might contain complex R
+    code.} 
 }
 \details{
 
@@ -110,6 +114,11 @@ parseEvent(rec)
   The rule object is described in \code{\linkS4class{Rule}} and 
   \link{Conditions} and \link{Predicates} each have detailed
   descriptions. 
+  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  can be used to test that rule conditions function properly.
+  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  can be used to test that rule conditions and predicates function
+  properly together.
 
   \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
   describe the JSON conversion system. 

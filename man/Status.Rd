@@ -14,7 +14,7 @@
 \usage{
 Status(uid, context, timerNames = character(), flags = list(), observables = list(), timestamp = Sys.time(), app = "default")
 parseStatus(rec)
-\S4method{as.jlist}{Status,list}(obj, ml)
+\S4method{as.jlist}{Status,list}(obj, ml, serialize = TRUE)
 }
 \arguments{
   \item{uid}{A character scalar identifying the examinee or player.}
@@ -39,7 +39,10 @@ parseStatus(rec)
     encoded.}
   \item{ml}{A list of fields of \code{obj}.  Usually, this is created by
     using \code{\link[base]{attributes}(obj)}.}
-
+  \item{serialize}{A logical flag. If true,
+    \code{\link[jsonlite]{serializeJSON}} is used to protect the
+    \code{data} field (and other objects which might contain complex R
+    code.} 
 }
 \details{
 

@@ -259,7 +259,14 @@
 }
 \section{Rule Testing}{
 
-  These functions are comming soon.
+  The functions \code{\link{queryTest}} and
+  \code{\link{queryTestScript}} can be used to test that rule conditions
+  function properly.
+
+  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  can be used to test that rule conditions and predicates function
+  properly together.
+
   
 }
 \section{Methods}{
@@ -311,6 +318,12 @@
 
   \link{Conditions} and \link{Predicates} each have detailed
   descriptions. 
+
+  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  can be used to test that rule conditions function properly.
+  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  can be used to test that rule conditions and predicates function
+  properly together.
   
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},

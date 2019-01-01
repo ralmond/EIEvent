@@ -64,7 +64,7 @@ setMethod("reset","Timer", function(timer) {
 ###
 ## Serialization.  Note timers are not stored directly in database,
 ## so they don't need IDs
-setMethod("as.jlist",c("Timer","list"), function(obj,ml) {
+setMethod("as.jlist",c("Timer","list"), function(obj,ml, serialize=TRUE) {
   ml$class <- NULL
   ## Additional work
   ml$name <- unbox(ml$name)
@@ -350,7 +350,7 @@ removeJSfield <- function (target,fieldlist) {
 }
 
 
-setMethod("as.jlist",c("Status","list"), function(obj,ml) {
+setMethod("as.jlist",c("Status","list"), function(obj,ml,serialize=TRUE) {
   ml$"_id" <- NULL
   ml$class <-NULL
 
@@ -360,8 +360,8 @@ setMethod("as.jlist",c("Status","list"), function(obj,ml) {
 
   ml$timers <- unboxer(lapply(ml$timers,
                               function(tim) as.jlist(tim,attributes(tim))))
-  ml$flags <- unparseData(ml$flags)
-  ml$observables <- unparseData(ml$observables)
+  ml$flags <- unparseData(ml$flags,serialize)
+  ml$observables <- unparseData(ml$observables,serialize)
 
   ml
 })
@@ -369,13 +369,16 @@ setMethod("as.jlist",c("Status","list"), function(obj,ml) {
 parseStatus<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   names(rec$"_id") <- "oid"
+  if (is.null(rec$oldContext)) rec$oldContext <- rec$context
+  if (is.null(rec$app)) rec$app <- "default"
+  if (is.null(rec$timestamp)) rec$timestamp <- Sys.time()
   new("Status","_id"=rec$"_id",
-      uid=ununboxer(rec$uid),context=ununboxer(rec$context),
+      uid=as.vector(rec$uid),context=as.vector(rec$context),
       timers=lapply(ununboxer(rec$timers), parseTimer),
       flags=parseData(ununboxer(rec$flags)),
       observables=parseData(ununboxer(rec$observables)),
-      timestamp=ununboxer(rec$timestamp),
-      app=ununboxer(rec$app),oldContext=ununboxer(rec$oldContext))
+      timestamp=as.POSIXlt(ununboxer(rec$timestamp)),
+      app=as.vector(rec$app),oldContext=as.vector(rec$oldContext))
 }
 
 

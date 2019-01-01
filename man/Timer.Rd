@@ -15,7 +15,7 @@
 \usage{
 Timer(name)
 parseTimer(rec)
-\S4method{as.jlist}{Timer,list}(obj, ml)
+\S4method{as.jlist}{Timer,list}(obj, ml, serialize = TRUE)
 }
 \arguments{
   \item{name}{A character scalar giving the name of the timer.  This is
@@ -26,6 +26,10 @@ parseTimer(rec)
     encoded.}
   \item{ml}{A list of fields of \code{obj}.  Usually, this is created by
     using \code{\link[base]{attributes}(obj)}.}
+  \item{serialize}{A logical flag. If true,
+    \code{\link[jsonlite]{serializeJSON}} is used to protect the
+    \code{data} field (and other objects which might contain complex R
+    code.} 
 }
 \details{
 

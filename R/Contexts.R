@@ -48,7 +48,7 @@ parseContext <- function(rec) {
       doc=ununboxer(rec$doc))
 }
 
-setMethod("as.jlist",c("Context","list"), function(obj,ml) {
+setMethod("as.jlist",c("Context","list"), function(obj,ml, serialize=TRUE) {
   ml$"_id" <- NULL
   ml$class <-NULL
   ## Use manual unboxing for finer control.

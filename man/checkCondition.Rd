@@ -86,6 +86,9 @@ checkCondition(conditions, state, event)
 
   \code{\linkS4class{Rule}} describes the rule object and
   \link{Conditions} describes the conditions.
+
+  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  can be used to test that rule conditions function properly.
   
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},

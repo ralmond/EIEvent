@@ -32,17 +32,21 @@ setMethod("show","Event",function(object) {
 parseEvent<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   names(rec$"_id") <- "oid"
+  if (is.null(rec$app)) rec$app <- "default"
+  if (is.null(rec$object)) rec$app <- ""
+  if (is.null(rec$timestamp)) rec$timestamp <- Sys.time()
   new("Event","_id"=rec$"_id", app=as.vector(rec$app),
       uid=as.vector(rec$uid),
       context=as.vector(rec$context),verb=as.vector(rec$verb),
-      object=as.vector(rec$object), timestamp=ununboxer(rec$timestamp),
+      object=as.vector(rec$object),
+      timestamp=as.POSIXlt(ununboxer(rec$timestamp)),
       data=parseData(ununboxer(rec$data)))
 }
 
-setMethod("as.jlist",c("Event","list"), function(obj,ml) {
+setMethod("as.jlist",c("Event","list"), function(obj,ml,serialize=TRUE) {
   ## Call Next Method
   as.p4jlist <- getMethod("as.jlist",c("P4Message","list"))
-  ml <- do.call(as.p4jlist,list(obj,ml))
+  ml <- do.call(as.p4jlist,list(obj,ml,serialize))
   ## Additional work
   ml$verb <- unbox(ml$verb)
   ml$object <- unbox(ml$object)

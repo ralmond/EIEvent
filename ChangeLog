@@ -1,7 +1,16 @@
+2018-12-31  Russell Almond  <ralmond@Limu>
+
+	* R/testRules.R (queryTest, queryTestScript):  Added.
+
+	* R/Status.R (parseStatus): Added default values for missing fields.
+	* R/Events.R (parseEvent): Same thing.
+	* R/RuleTable.R (parseRule): Same thing.
+
+
 2018-12-27  Russell Almond  <ralmond@Limu>
 
 	* R/Status.R (as.jlist): R/RuleTables.R (as.jlist): changed to
-	unparseData prototocol 
+	unparseData prototocol.
 
 2018-09-27  Russell Almond  <ralmond@Limu>
 
