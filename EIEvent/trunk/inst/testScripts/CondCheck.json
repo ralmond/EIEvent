@@ -1,7 +1,10 @@
 [
     {
+        "name":"Color Test True",
+        "doc": "Simple test script.",
         "state":{
             "uid": "Test",
+            "oldContext": "Test",
             "context": "Test",
             "timers":{},
             "flags":{},
@@ -34,8 +37,11 @@
         "result":true
     },
     {
+        "name":"Color Test FALSE",
+        "doc": "Simple test script.",
         "state":{
             "uid": "Test",
+            "app":"https://epls.coe.fsu.edu/EIEvent/Selftest",
             "context": "Test",
             "timers":{},
             "flags":{},

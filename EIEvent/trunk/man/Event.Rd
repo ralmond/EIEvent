@@ -14,7 +14,7 @@
 \usage{
 Event(uid, verb, object = "", timestamp = Sys.time(), details = list(), app = "default", context = "")
 parseEvent(rec)
-\S4method{as.jlist}{Event,list}(obj, ml)
+\S4method{as.jlist}{Event,list}(obj, ml, serialize = TRUE)
 }
 \arguments{
   \item{uid}{A character scalar identifying the examinee or player.}
@@ -39,6 +39,10 @@ parseEvent(rec)
     encoded.}
   \item{ml}{A list of fields of \code{obj}.  Usually, this is created by
     using \code{\link[base]{attributes}(obj)}.}
+  \item{serialize}{A logical flag. If true,
+    \code{\link[jsonlite]{serializeJSON}} is used to protect the
+    \code{data} field (and other objects which might contain complex R
+    code.} 
 }
 \details{
 
@@ -92,6 +96,7 @@ parseEvent(rec)
 \seealso{
 
   \code{\linkS4class{Event}} describes the event object.
+
 
   \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
   describe the JSON conversion system.  In particular, as

@@ -234,6 +234,11 @@ modify(predicate, state, event, op)
 
   \code{\linkS4class{Rule}} describes the rule object and
   \link{Conditions} describes the Conditions.
+
+  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  can be used to test that rule conditions and predicates function
+  properly together.
+
   
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},

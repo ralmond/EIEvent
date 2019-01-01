@@ -1,8 +1,5 @@
 ## Put all of the generic functions in a place they will be loaded first.
 
-## Json binding
-setGeneric("as.jlist",function(obj,ml) standardGeneric("as.jlist"))
-
 ## Contexts
 setGeneric("name", function (x) standardGeneric("name"))
 setGeneric("doc", function (x) standardGeneric("doc"))

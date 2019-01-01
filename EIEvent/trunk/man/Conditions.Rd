@@ -214,7 +214,9 @@
 
   \code{\linkS4class{Rule}} describes the rule object and
   \link{Predicates} describes the predicates.  The function
-  \code{checkCondition} tests when conditions are satisfied.
+  \code{checkCondition} tests when conditions are satisfied.  The
+  functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  can be used to test that rule conditions function properly.
   
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},
