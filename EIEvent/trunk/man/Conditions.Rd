@@ -180,7 +180,13 @@
 
   The function \code{\link{checkCondition}} is used internally to check
   when a set of conditions in a rule are satisfied.
-  
+
+  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  can be used to test that rule conditions function properly.
+  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  can be used to test that rule conditions and predicates function
+  properly together.
+
 }
 \value{
 
@@ -264,6 +270,14 @@ state.flags.noagents=list("?and"=list("?is.na"=FALSE,"?gt"=0)),
 state.flags.noagents=list("?or"=list("?is.na"=TRUE,"?eq"=0))
 
 )
+
+## The ?Where operator
+agplusobj <- function (state,event) {
+  return (getJS("state.flags.noobj",state,event) +
+          getJS("event.data.newobj",state,event) < 10)
+}
+
+list("?where"="agplusobj")
 
 
 }

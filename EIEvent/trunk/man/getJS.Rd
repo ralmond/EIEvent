@@ -25,7 +25,7 @@ getJSfield(obj,fieldlist)
     current status of the user in the system.}
   \item{event}{An object of type \code{\linkS4class{Event}} giving the
     event being processed.}
-  \item{obj}{A collection object to be access.  The object implmenting 
+  \item{obj}{A collection object to be accessed.  The object implmenting 
     \code{state.flags}, \code{state.observables} or
     \code{event.details}, or one of sub-components.}
   \item{fieldlist}{The successive field names as a vector of characters
@@ -213,7 +213,8 @@ getJSfield(obj,fieldlist)
 
   The functions \code{\link{setJS}} for setting fields and
   \code{\link{removeJS}} for removing fields (only allowed with state
-  objects). 
+  objects).  This function is called from the functions
+  \code{\link{checkCondition}} and \code{\link{executePredicate}}. 
 
   The help files \link{Conditions} and \link{Predicates} each have
   detailed descriptions of rule syntax.

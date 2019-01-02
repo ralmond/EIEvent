@@ -143,8 +143,12 @@ setMethod("setTimer",c("Status","character"),
 
 
 
-setMethod("timerTime",c("Status","character"), function(x,name,now)
-  timeSoFar(x@timers[[name]],now))
+setMethod("timerTime",c("Status","character"), function(x,name,now) {
+  if (is.null(x@timers[[name]])) {
+    stop("Did not find a timer named ",name)
+  }
+  timeSoFar(x@timers[[name]],now)
+})
 setMethod("timerTime<-", c("Status","character"), function(x,name,now,value){
   timeSoFar(timer(x,name),now)<-value
   x})
@@ -256,6 +260,8 @@ setJS <- function (field,state,now,value) {
   } else if (fieldexp[2]=="timers") {
     if (length(fieldexp)<3L)
       stop("No timer name supplied:", field)
+    if (is.null(timer(st,fieldexp[3])))
+      stop("Timer ",fieldexp[3]," does not exist.")
     if (length(fieldexp) == 3L) {
       if (is.logical(value))
         timerRunning(state,fieldexp[3], now) <-value
@@ -289,7 +295,7 @@ removeJS <- function (field,state) {
     flag(state,fieldexp[3]) <-
       removeJSfield(flag(state,fieldexp[3]), fieldexp[-(1:3)])
   } else if (fieldexp[2]=="observables") {
-    if (length(fieldexp)!=3L)
+    if (length(fieldexp)<3L)
       stop("No observable name supplied:", field)
     obs(state,fieldexp[3]) <-
       removeJSfield(obs(state,fieldexp[3]), fieldexp[-(1:3)])
@@ -333,7 +339,8 @@ setJSfield <- function (target,fieldlist,value) {
 }
 
 removeJSfield <- function (target,fieldlist) {
-  if (length(fieldlist==1L)) {
+  if (length(fieldlist)==0L) return(NULL)
+  if (length(fieldlist)==1L) {
     if (is.list(target)) {
       target[fieldlist] <- NULL
     } else if (length(target) > 0L) {

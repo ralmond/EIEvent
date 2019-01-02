@@ -1,7 +1,7 @@
 
 executePredicate <- function (predicate, state, event) {
   for (op in names(predicate)) {
-    state <- do.call(op,predicate[[op]],state,event)
+    state <- do.call(op,list(predicate[[op]],state,event))
   }
   return (state)
 }

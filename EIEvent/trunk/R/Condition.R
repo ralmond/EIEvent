@@ -3,8 +3,7 @@
 checkCondition <- function (conditions, state, event) {
   for (field in names(conditions)) {
     if (field == "?where") {
-      if (!do.call(condition[[field]],list(state,event)))
-        return (FALSE)
+      return (do.call(conditions[[field]],list(state,event)))
     }
     target <- getJS(field,state,event)
     if (!checkOneCondition(conditions[[field]],target,state,event))

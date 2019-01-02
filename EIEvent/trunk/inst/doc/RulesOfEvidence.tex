@@ -846,7 +846,8 @@ Identification, Test Scoring
   this case the field is set to the value (or if the value references
   an event or flag variable, to the value of that field).  If the
   state object does not have a flag or observable of that name, it
-  will be created. 
+  will be created. (Timer objects, however, will not be created, see
+  the \texttt{!start} operator.) 
 
   The \texttt{!unset} operator is an inverse.  For this the
   \textit{value} should be one of \texttt{"NULL"}, \texttt{"NA"}, or
@@ -910,6 +911,26 @@ Identification, Test Scoring
       }
     \end{lstlisting}
   \end{algorithm}
+
+  The \texttt{!set} operator assumes that timer object already has
+  been created in the state object.    The \texttt{!start} and
+  \texttt{!reset} operations are synonyms for 
+  \texttt{!set} with some differences.  First, both a \texttt{running} (or
+  \texttt{run}) and \texttt{value} (or \texttt{time}) can be set at the same
+  time.  If only a real or POSIX time value is specified
+  the it is assumed that the time should be set. If only a logical value
+  is supplied, it is assumed that the running state should be set.  If
+  the logical value is not supplied, it is assumed to be \texttt{TRUE} for
+  \texttt{!start} and \texttt{FALSE} for \texttt{!reset}.  If the time
+  value is not specified, it is assumed to be zero.
+
+  There is one important difference between the \texttt{!set} and the
+  \texttt{!start} approach.  They behave differently if the timer object
+  is not already created in the state object. The \texttt{!set} operator
+  (and related modification operators) will signal an error.  The
+  \texttt{!start} and \texttt{!reset} operators will create a new timer if
+  needed.
+
   
   Finally, the \texttt{!setCall} operator provides an implementation
   dependent extension mechanism.  The \textit{value} should be a
