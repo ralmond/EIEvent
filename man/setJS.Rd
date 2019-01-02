@@ -24,9 +24,9 @@ setJSfield(target, fieldlist, value)
   \item{now}{An object of class \code{\link[base]{POSIXt}} which gives
     the time ofthe event.  Used when setting timers.}
   \item{value}{The new value to be assigned to the field.}
-  \item{target}{A collection object to be access.  The object implmenting 
+  \item{target}{A collection object to be accessed.  The object implmenting 
     \code{state.flags}, \code{state.observables} or
-    \code{event.details}, or one of sub-components.}
+    one of sub-components.}
   \item{fieldlist}{The successive field names as a vector of characters
     (split at the \sQuote{.} and excluding the initial \code{state.flags},
     \code{state.observables} or \code{event.details}.}
@@ -49,8 +49,8 @@ setJSfield(target, fieldlist, value)
   In EIEvent rules, only the \code{state}, the current
   \code{\linkS4class{Status}}, can be modified.  Therefore, in the
   predicate all dot notation field references start with \code{state}
-  (field references starting with \code{event} can be used the 
-  \code{event}.  Furthermore, \code{\linkS4class{Status}} 
+  (field references starting with \code{event} can be used in the 
+  \code{value}).  Furthermore, \code{\linkS4class{Status}} 
   objects have only a certain number of settable fields so only those
   fields can be referenced. 
 
@@ -174,7 +174,8 @@ setJSfield(target, fieldlist, value)
 
   The functions \code{\link{getJS}} for accessing fields and
   \code{\link{removeJS}} for removing fields (only allowed with state
-  objects). 
+  objects).  This function is called from
+  \code{\link{executePredicate}}. 
 
   The help files \link{Conditions} and \link{Predicates} each have
   detailed descriptions of rule syntax.

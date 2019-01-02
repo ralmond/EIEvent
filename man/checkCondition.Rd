@@ -24,6 +24,7 @@ checkCondition(conditions, state, event)
     checked. }
 }
 \details{
+
   The condition of a \code{\linkS4class{Rule}} is a list of queries.
   Each query has the following form:
 
@@ -38,6 +39,7 @@ checkCondition(conditions, state, event)
   against. In other words, the query is effectively of the form
   \emph{field ?op arg}.  The \code{...} represents additional
   \code{?op}--\code{arg} pairs to be tested.
+  
   The \emph{arg} can be a literal value (either scalar or vector) or a
   reference to another field in the \code{\linkS4class{Status}} or
   \code{\linkS4class{Event}} object using the dot notation.  
@@ -52,6 +54,8 @@ checkCondition(conditions, state, event)
   called. This should be a function of two arguments, the status and the
   event, which returns a logical value.  The condition is satisfied if
   the funciton returns true.
+
+  See \link{Conditions} for more details.
 
 }
 \value{
@@ -85,7 +89,10 @@ checkCondition(conditions, state, event)
 \seealso{
 
   \code{\linkS4class{Rule}} describes the rule object and
-  \link{Conditions} describes the conditions.
+  \link{Conditions} describes the conditions. \link{Predicates}
+  describes the predicate part of the rule, and
+  \code{\link{executePredicate}} executes the predicate (when the
+  condition is satisfied).
 
   The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
   can be used to test that rule conditions function properly.
@@ -107,7 +114,7 @@ st <- Status("Phred","Level 1",timerNames=character(),
 
 ev <- Event("Phred","test","message",
       timestamp=as.POSIXct("2018-12-21 00:01:01"),
-      details=list(agent="lever"))
+      details=list(agent="lever",newobj=2))
 
 
 stopifnot(
@@ -130,6 +137,14 @@ checkCondition(list(state.flags.noagents=
                     list("?and"=list("?isna"=FALSE,"?gt"=0))),
                st,ev)==FALSE
 ) 
+
+agplusobj <- function (state,event) {
+  return (getJS("state.flags.noobj",state,event) +
+          getJS("event.data.newobj",state,event) < 10)
+}
+
+stopifnot(checkCondition(list("?where"="agplusobj"),st,ev))
+
 
 }
 \keyword{ interface }

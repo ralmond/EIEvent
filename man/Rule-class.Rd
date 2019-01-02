@@ -317,10 +317,15 @@
 \seealso{
 
   \link{Conditions} and \link{Predicates} each have detailed
-  descriptions. 
+  descriptions. The functions \code{\link{checkCondition}} and
+  \code{\link{executePredicate}} run the condition and predicate parts
+  of the rule.
 
   The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
   can be used to test that rule conditions function properly.
+  The functions \code{\link{predicateTest}} and
+  \code{\link{predicateTestScript}} 
+  can be used to test that predicates function properly.
   The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
   can be used to test that rule conditions and predicates function
   properly together.

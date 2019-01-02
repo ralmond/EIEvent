@@ -9,8 +9,6 @@ Undocumented code objects:
 
   ‘copy’
   
-  ‘removeJS’ ‘removeJSfield’
-
   ‘setTimer’ ‘timer’ ‘timer<-’ ‘timerRunning’
   ‘timerRunning<-’ ‘timerTime’ ‘timerTime<-’ ‘
 

@@ -1,0 +1,7 @@
+conf/.*~$
+testscripts/.*~$
+doc/.*~$
+inst/doc/.*.aux$
+inst/doc/.*.log$
+.svn
+.*~$

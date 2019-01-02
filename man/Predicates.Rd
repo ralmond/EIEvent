@@ -100,8 +100,8 @@ modify(predicate, state, event, op)
   The following operators are supported:
   \describe{
     \item{\code{!set}}{This operator sets the field to the value of the
-      argument.  If the flag,timer, or observable does not exist, it is
-      created.} 
+      argument.  If the field is a flag or observable and does not exist, it is
+      created. If it is a timer and does not exist, an error is signaled.} 
     \item{\code{!unset}}{This is the inverse of the \code{!set}
       operator.  If the \emph{arg} in this expression is \code{NULL}, or
       \code{NA}, then the field will be set to that value.  If 
@@ -170,6 +170,13 @@ modify(predicate, state, event, op)
   \code{!start} and \code{FALSE} for \code{!reset}.  If the time value
   is not specified, it is assumed to be zero.
 
+  There is one important difference between the \code{!set} and the
+  \code{!start} approach.  They behave differently if the timer object
+  is not already created in the state object. The \code{!set} operator
+  (and related modification operators) will signal an error.  The
+  \code{!start} and \code{!reset} operators will create a new timer if
+  needed.
+  
 }
 \section{Expansion Mechanisms}{
 
@@ -191,7 +198,16 @@ modify(predicate, state, event, op)
 
 \section{Predicate Testing}{
 
-  These functions are comming soon.
+  The function \code{\link{checkCondition}} is used internally to check
+  when a set of conditions in a rule are satisfied.
+
+  The functions \code{\link{predicateTest}} and
+  \code{\link{predicateTestScript}} 
+  can be used to test that predicates function properly.
+  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  can be used to test that rule conditions and predicates function
+  properly together.
+
   
 }
 
