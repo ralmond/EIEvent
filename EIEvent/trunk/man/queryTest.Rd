@@ -73,7 +73,7 @@ queryTestScript(filename, quiet = FALSE, verbose = FALSE, suiteName = basename(f
 
   The function \code{queryTest} returns a logical value indicating
   whether the result of \code{\link{checkCondition}} matches the
-  expected result.  If \code{\link{checkConditions}} throws an error, it
+  expected result.  If \code{\link{checkCondition}} throws an error, it
   is caught and reported \code{queryTest} returns \code{NA}.  The
   function \code{queryTest} throws an error if its \code{state},
   \code{event}, \code{rule} and \code{result} components are not of

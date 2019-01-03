@@ -16,7 +16,7 @@
 load("/home/ralmond/.Proc4.js")
 
 eiUser = pwds.filter(function(u) {return u.user == "EIP";})[0];
-eapUser.roles = [{role:"readWrite", db:"EIRecords"},
+eipUser.roles = [{role:"readWrite", db:"EIRecords"},
                  {role:"read", db:"gameLRS"},
                  {role:"dbAdmin", db:"EIRecords"}];
 db.getSiblingDB("EIRecords");

@@ -54,7 +54,13 @@ r1 <- Rule(name="Coin Rule",
 
 stopifnot(name(r1)=="Coin Rule",grepl("badge",doc(r1)))
 
-## Need test for context.
+ct <- Context("Level1","First Tutorial",1,
+              belongsTo=c("tutorialLevels","easyLevels"),
+              doc="First Introductory Level",
+              app="ecd://epls.coe.fsu.edu/EITest")
+stopifnot(name(ct)=="First Tutorial",
+          grepl("Intro",doc(ct)))
+
 
 }
 \keyword{ manip }

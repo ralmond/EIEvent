@@ -101,6 +101,16 @@ queryTestScript <- function (filename,  quiet=FALSE, verbose=FALSE,
   result
 }
 
+predicateTest <- function (test, quiet=FALSE, verbose=TRUE,
+                      ignoreContext=FALSE,
+                      name=test$name) {
+}
+predicateTestScript <- function (filename,  quiet=FALSE, verbose=TRUE,
+                            ignoreContext=FALSE,
+                            suiteName=basename(filename)) {
+}
+
+
 ruleTest <- function (test, quiet=FALSE, verbose=TRUE,
                       ignoreContext=FALSE,
                       name=test$name) {

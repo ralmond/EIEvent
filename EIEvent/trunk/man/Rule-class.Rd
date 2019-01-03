@@ -134,7 +134,7 @@
     \item{The value of \code{object(Rule)} is equal to the value of
       \code{context(Status)}, is equal to the name of a group context to
       which \code{context(Status)} belongs (see
-      \code{\link{applicableContext}}), or is equal to the special value
+      \code{\link{applicableContexts}}), or is equal to the special value
       \dQuote{ANY}.}
   }
 

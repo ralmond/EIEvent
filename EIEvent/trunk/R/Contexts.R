@@ -7,12 +7,13 @@ setClass("Context",
                 name="character",      #Longer name
                 number="integer",       #Context #
                 belongsTo="character",  #Contexts to which this belongs
-                doc="character"))
+                doc="character",
+                app="character"))
 Context <- function (cid,name,number,belongsTo=character(),
-                     doc="") {
+                     doc="", app="default") {
   new("Context","_id"=c(oid=NA_character_),cid=cid,
-      name=name,number=number,
-      belongsTo=belongsTo,doc=doc)
+      name=name,number=as.integer(number),
+      belongsTo=belongsTo,doc=doc, app=app)
 }
 setGeneric("cid", function(c) standardGeneric("cid"))
 setGeneric("belongsTo", function(c) standardGeneric("belongsTo"))
@@ -27,25 +28,26 @@ setMethod("belongsTo<-","Context", function(c,value) {
   c})
 setMethod("number","Context", function(c) c@number)
 setMethod("number<-","Context", function(c,value) {
-  c@number <- value
+  c@number <- as.integer(value)
   c})
 
 setMethod("name","Context", function(x) x@name)
 setMethod("doc","Context", function(x) x@doc)
+setMethod("app","Context", function(x) x@app)
 
 
 applicableContexts <- function (c) {
-  if (length(belongsTo(c))==0L) cid(c)
-  c(cid(c), belongsTo(c))
+  if (length(belongsTo(c))==0L) c(cid(c),"ALL")
+  c(cid(c), belongsTo(c), "ALL")
 }
 
 parseContext <- function(rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   names(rec$"_id") <- "oid"
-  new("Context","_id"=ununboxer(rec$"_id"),
-      cid=ununboxer(rec$cid), name=ununboxer(rec$name),
-      number=ununboxer(rec$number),belongsTo=ununboxer(rec$belongsTo),
-      doc=ununboxer(rec$doc))
+  new("Context","_id"=rec$"_id",
+      cid=as.vector(rec$cid), name=as.vector(rec$name),
+      number=as.integer(rec$number),belongsTo=as.vector(rec$belongsTo),
+      doc=as.vector(rec$doc), app=as.vector(rec$app))
 }
 
 setMethod("as.jlist",c("Context","list"), function(obj,ml, serialize=TRUE) {
@@ -57,6 +59,7 @@ setMethod("as.jlist",c("Context","list"), function(obj,ml, serialize=TRUE) {
   ml$number <- unboxer(ml$number)
   ml$belongsTo <- unboxer(ml$belongsTo)
   ml$doc <- unboxer(ml$doc)
+  ml$app <- unboxer(ml$app)
   ml
   })
 

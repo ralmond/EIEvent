@@ -8,7 +8,9 @@
   The \code{Status} function is the constructor for the
   \code{\linkS4class{Status}} (or state) object.  As Status objects are
   usually read from a database or other input stream, the
-  \code{parseStatus} function is recreates an event from a JSON list.
+  \code{parseStatus} function is recreates an event from a JSON
+  list and \code{\link[Proc4]{as.jlist}} encodes them into a list to be
+  saved as JSON.
 
 }
 \usage{
@@ -58,7 +60,7 @@ parseStatus(rec)
   \code{\link[Proc4]{as.json}}.  
 
   The \code{parseStatus} function is the inverse of \code{as.jlist}
-  applied to an event object.  It is designed to be given as an argument
+  applied to a status object.  It is designed to be given as an argument
   to \code{\link[Proc4]{getOneRec}} and 
   \code{\link[Proc4]{getManyRecs}}.   
 
@@ -66,7 +68,7 @@ parseStatus(rec)
 \value{
 
   The functions \code{Status} and \code{parseStatus} return objects of
-  class event.  The function \code{as.jlist} produces a named list
+  class status.  The function \code{as.jlist} produces a named list
   suitable for passing to \code{\link[jsonlite]{toJSON}}.
 
 }
