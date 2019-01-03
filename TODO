@@ -1,12 +1,4 @@
 Undocumented code objects:
-  ‘Context’ ‘parseContext’ 
-  ‘applicableContexts’
-  ‘belongsTo’ ‘belongsTo<-’ ‘cid’
-  ‘number’ ‘number<-’ 
-
-  ‘name’ 'doc' ## need test for context.
-  ‘executePredicate’
-
   ‘copy’
   
   ‘setTimer’ ‘timer’ ‘timer<-’ ‘timerRunning’
@@ -19,3 +11,18 @@ Undocumented S4 methods:
   generic 'timerTime' and siglist 'Status,character'
   generic 'timerTime<-' and siglist 'Status,character'
 
+Functions to write:
+
+testRule, testRuleScript
+testPredicate, testPredicateScript
+
+Classes to write:
+
+EIEngine
+RuleTable
+
+Rule maintenance
+
+Database Setup
+
+Shiny page

@@ -2,13 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Context-class}
-\alias{as.jlist,Context,list-method}
-\alias{belongsTo,Context-method}
-\alias{belongsTo<-,Context-method}
-\alias{cid,Context-method}
-\alias{number,Context-method}
-\alias{number<-,Context-method}
-
 \title{Class \code{"Context"}}
 \description{
 
@@ -96,6 +89,8 @@ parents (direct and indirect) need to be listed).
       context belongs.}
     \item{\code{doc}:}{Object of class \code{"character"} which provides
       extended documentation for the context group.}
+    \item{\code{app}:}{Object of class \code{"character"} which a unique
+      identifier for the application in which this context is applicable.}
   }
 }
 \section{Methods}{
@@ -116,6 +111,8 @@ parents (direct and indirect) need to be listed).
       of the context.}
     \item{number<-}{\code{signature(c = "Context")}: Sets the numeric id
       of the context.}
+    \item{app}{\code{signature(x = "Context")}: Returns the app
+      identifier of the context.}
   }
 }
 \references{
@@ -149,7 +146,8 @@ parents (direct and indirect) need to be listed).
 
   Methods for working with contexts:
   \code{\link{Context}}, \code{\link{applicableContexts}},
-  \code{\link{parseContext}}, \code{\link{name}}, \code{\link{doc}}
+  \code{\link{parseContext}}, \code{\link{name}}, \code{\link{doc}},
+  \code{\link{cid}}, \code{\link{number}}, \code{\link[Proc4]{app}}
 }
 \examples{
 showClass("Context")

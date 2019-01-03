@@ -65,7 +65,7 @@ oldContext(x)
   \code{\linkS4class{Event}}) class this should be a primative context.
   In the case of a \code{\linkS4class{Rule}} class, it could also be a
   context group, which covers several other contexts through the
-  \code{\link{belongTo}} field.  The rule context must match the context
+  \code{\link{belongsTo}} field.  The rule context must match the context
   field in the \code{\linkS4class{Status}} (not the
   \code{\linkS4class{Event}}.  The rule is considered applicable if (a) the
   contexts match exactly, (b) the rule context is a context set and the

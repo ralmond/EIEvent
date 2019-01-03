@@ -260,7 +260,7 @@ setJS <- function (field,state,now,value) {
   } else if (fieldexp[2]=="timers") {
     if (length(fieldexp)<3L)
       stop("No timer name supplied:", field)
-    if (is.null(timer(st,fieldexp[3])))
+    if (is.null(timer(state,fieldexp[3])))
       stop("Timer ",fieldexp[3]," does not exist.")
     if (length(fieldexp) == 3L) {
       if (is.logical(value))

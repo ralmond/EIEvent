@@ -97,12 +97,12 @@ executePredicate(predicate, state, event)
 \seealso{
 
   \code{\linkS4class{Rule}} describes the rule object and
-  \link{Predicate} describes the conditions.  \link{Conditions}
+  \link{Predicates} describes the conditions.  \link{Conditions}
   describes the condition part of the rule, and
   \code{\link{checkCondition}} checks the conditions.
 
   The functions \code{\link{predicateTest}} and
-  \code{\link{[predicateTestScript}} 
+  \code{\link{predicateTestScript}} 
   can be used to test that rule conditions function properly.
   
   Other classes in the EIEvent system:

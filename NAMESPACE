@@ -31,7 +31,7 @@ export(executePredicate, "!set", "!unset", modify,
 
 ## RuleTables (Rules)
 export(Rule,name,doc,context,ruleType,priority,condition,predicate,
-       parseRule, queryTest, queryTestScript, ruleTest, ruleTestScript)
+       parseRule)
 exportClass(Rule)
 exportMethods(context,ruleType,priority,condition,predicate)
 
@@ -53,7 +53,9 @@ exportMethods(timer,"timer<-",setTimer,timerTime,"timerTime<-",
               flag,"flag<-",obs,"obs<-",timerTime, "context<-",
               oldContext,app)
 
-
+## testRules
+export(queryTest, queryTestScript, predicateTest, predicateTestScript,
+       ruleTest, ruleTestScript)
 
 
 
