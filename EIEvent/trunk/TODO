@@ -11,10 +11,15 @@ Undocumented S4 methods:
   generic 'timerTime' and siglist 'Status,character'
   generic 'timerTime<-' and siglist 'Status,character'
 
-Functions to write:
+Functions to document/test:
 
 testRule, testRuleScript
 testPredicate, testPredicateScript
+-- currently problem with spurious names
+
+Functions to write:
+
+matchContext (in testRules.R)
 
 Classes to write:
 
@@ -23,6 +28,6 @@ RuleTable
 
 Rule maintenance
 
-Database Setup
+Database Setup -- check schemas in setupMongo.js
 
 Shiny page

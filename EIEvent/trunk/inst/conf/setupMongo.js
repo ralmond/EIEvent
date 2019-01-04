@@ -68,7 +68,48 @@ db.createCollection("Events", {
     },
     validationAction: "warn"
 })
-db.EvidenceSets.createIndex( { app:1, uid: 1, timestamp:-1});
+db.Events.createIndex( { app:1, uid: 1, timestamp:-1});
+db.createCollection("Messages", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["app","uid","timestamp"],
+            properties: {
+                _id: {
+                    bsonType: "string",
+                    description: "app@uid@seqno",
+                },
+                app: {
+                    bsonType: "string",
+                    description: "Application ID (string)"
+                },
+                uid: {
+                    bsonType: "string",
+                    description: "User (studnet) ID (string)"
+                },
+                context: {
+                    bsonType: "string",
+                    description: "Context (task) ID (string)"
+                },
+                timestamp: {
+                    bsonType: "date",
+                    description: "Timestamp"
+                },
+                mess: {
+                    bsonType: "string",
+                    description: "Instructions to EAP"
+                },
+                data: {
+                    bsonType: "object",
+                    description: "Named list of evidence."
+                }
+                }
+            }
+        }
+    },
+    validationAction: "warn"
+})
+db.Messages.createIndex( { app:1, uid: 1, timestamp:-1});
 db.createCollection("Rules", {
     validator: {
         $jsonSchema: {
@@ -169,4 +210,90 @@ db.createCollection("States", {
     validationAction: "warn"
 })
 db.States.createIndex( { app:1, context: 1, timestamp:-1});
+db.createCollection("Contexts", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["app","cid","number"],
+            properties: {
+                _id: {
+                    bsonType: "string",
+                    description: "app@uid@seqno",
+                },
+                app: {
+                    bsonType: "string",
+                    description: "Application ID (string)"
+                },
+                cid: {
+                    bsonType: "string",
+                    description: "Context ID (string)"
+                },
+                number: {
+                    bsonType: "integer",
+                    description: "Context ID (integer)"
+                },
+                belongsTo: {
+                    bsonType: "array",
+                    description: "List of timers"
+                },
+                name: {
+                    bsonType: "string",
+                    description: "Name of context"
+                },
+                doc: {
+                    bsonType: "string",
+                    description: "Description of context"
+                },
+            }
+        }
+    },
+    validationAction: "warn"
+})
+db.Contexts.createIndex( { app:1, cid: 1});
+db.Contexts.createIndex( { app:1, number: 1});
+db.createCollection("RuleTests", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["app","state","event","rule","result"],
+            properties: {
+                _id: {
+                    bsonType: "string",
+                    description: "app@uid@seqno",
+                },
+                app: {
+                    bsonType: "string",
+                    description: "Application ID (string)"
+                },
+                name: {
+                    bsonType: "string",
+                    description: "Identifier for Test (string)"
+                },
+                doc: {
+                    bsonType: "string",
+                    description: "Description of Test"
+                },
+                state: {
+                    bsonType: "object",
+                    description: "Intial State"
+                },
+                event: {
+                    bsonType: "object",
+                    description: "Triggering Event"
+                },
+                rule: {
+                    bsonType: "object",
+                    description: "Rule to be tested."
+                },
+                result: {
+                    bsonType: "object",
+                    description: "Expected Result"
+                }
+            }
+        }
+    },
+    validationAction: "warn"
+})
+db.RuleTests.createIndex( { app:1 })
+
 
