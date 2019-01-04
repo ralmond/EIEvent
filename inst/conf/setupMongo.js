@@ -1,3 +1,4 @@
+
 // This file contains javascript to set up the collections expected by
 // the EI process
 
@@ -42,13 +43,17 @@ db.createCollection("Events", {
                     bsonType: "string",
                     description: "Context (task) ID (string)"
                 },
-                timestamp: {
-                    bsonType: "date",
-                    description: "Timestamp"
+                sender: {
+                    bsonType: "string",
+                    description: "Who posted this message."
                 },
                 mess: {
                     bsonType: "string",
                     description: "Instructions to EAP"
+                },
+                timestamp: {
+                    bsonType: "date",
+                    description: "Timestamp"
                 },
                 verb: {
                     bsonType: "string",
@@ -61,7 +66,6 @@ db.createCollection("Events", {
                 data: {
                     bsonType: "object",
                     description: "Named list of evidence."
-                }
                 }
             }
         }
@@ -91,18 +95,21 @@ db.createCollection("Messages", {
                     bsonType: "string",
                     description: "Context (task) ID (string)"
                 },
-                timestamp: {
-                    bsonType: "date",
-                    description: "Timestamp"
+                sender: {
+                    bsonType: "string",
+                    description: "Who posted this message."
                 },
                 mess: {
                     bsonType: "string",
                     description: "Instructions to EAP"
                 },
+                timestamp: {
+                    bsonType: "date",
+                    description: "Timestamp"
+                },
                 data: {
                     bsonType: "object",
                     description: "Named list of evidence."
-                }
                 }
             }
         }
@@ -220,10 +227,6 @@ db.createCollection("Contexts", {
                     bsonType: "string",
                     description: "app@uid@seqno",
                 },
-                app: {
-                    bsonType: "string",
-                    description: "Application ID (string)"
-                },
                 cid: {
                     bsonType: "string",
                     description: "Context ID (string)"
@@ -244,6 +247,10 @@ db.createCollection("Contexts", {
                     bsonType: "string",
                     description: "Description of context"
                 },
+                app: {
+                    bsonType: "string",
+                    description: "Application ID (string)"
+                }
             }
         }
     },
