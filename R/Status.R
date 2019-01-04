@@ -388,7 +388,75 @@ parseStatus<- function (rec) {
       app=as.vector(rec$app),oldContext=as.vector(rec$oldContext))
 }
 
-
+##We need an all.equal method as we need to suppress checking names on
+##parts of the data fields which might be different.
+setMethod(all.equal,c("Status","Status"), function (target, current, ...) {
+  msg <- character()
+  if (target@"_id" !=  current@"_id")
+    msg <- c(msg,"Database IDs do not match.")
+  if (app(target) != app(current))
+    msg <- c(msg,"Application IDs do not match.")
+  if (uid(target) != uid(current))
+    msg <- c(msg,"User IDs do not match.")
+  if (context(target) != context(current))
+    msg <- c(msg,"Contexts do not match.")
+  if (oldContext(target) != oldContext(current))
+    msg <- c(msg,"Contexts do not match.")
+  ## Check Flags
+  fnamet <- names(target@flags)
+  fnamec <- names(current@flags)
+  if (length(target@flags) != length(current@flags) ||
+      !setequal(fnamet,fnamec)) {
+    msg <- c(msg,"Names or number of flags differ.")
+    if (length(setdiff(fnamet,fnamec)) > 0L)
+      msg <- c(msg,paste("Flags in target but not in current",
+                         setdiff(fnamet,fnamec)))
+    if (length(setdiff(fnamec,fnamet)) > 0L)
+      msg <- c(msg,paste("Flags in current but not in target",
+                         setdiff(fnamec,fnamet)))
+  }
+  msgf <- all.equal(target@flags[fnamet],target@flags[fnamet],...,
+                    use.names=FALSE)
+  if (!isTRUE(msgf)) msg <- c(msg,msgf)
+  ## Check Observables
+  onamet <- names(target@observables)
+  onamec <- names(current@observables)
+  if (length(target@observables) != length(current@observables) ||
+      !setequal(onamet,onamec)) {
+    msg <- c(msg,"Names or number of observables differ.")
+    if (length(setdiff(onamet,onamec)) > 0L)
+      msg <- c(msg,paste("Observables in target but not in current",
+                         setdiff(onamet,onamec)))
+    if (length(setdiff(onamec,onamet)) > 0L)
+      msg <- c(msg,paste("Observables in current but not in target",
+                         setdiff(onamec,onamet)))
+  }
+  msgo <- all.equal(target@observables[onamet],target@observables[onamet],...,
+                    use.names=FALSE)
+  if (!isTRUE(msgo)) msg <- c(msg,msgo)
+  ## Check timers
+  tnamet <- names(target@timers)
+  tnamec <- names(current@timers)
+  if (length(target@timers) != length(current@timers) ||
+      !setequal(tnamet,tnamec)) {
+    msg <- c(msg,"Names or number of timers differ.")
+    if (length(setdiff(tnamet,tnamec)) > 0L)
+      msg <- c(msg,paste("Timers in target but not in current",
+                         setdiff(tnamet,tnamec)))
+    if (length(setdiff(tnamec,tnamet)) > 0L)
+      msg <- c(msg,paste("Timers in current but not in target",
+                         setdiff(tnamec,tnamet)))
+  }
+  msgt <- all.equal(target@timers[tnamet],target@timers[tnamet],...,
+                    use.names=FALSE)
+  if (!isTRUE(msgt)) msg <- c(msg,msgt)
+  ## Timestamp
+  msgt <- all.equal(timestamp(target),timestamp(current),...)
+  if (!isTRUE(msgt)) msg <- c(msg,msgt)
+    ## Return true if message list is empty.
+  if (length(msg)==0L) TRUE
+  else msg
+})
 
 
 
