@@ -1,3 +1,10 @@
+2019-01-06  Rusell Almond  <ralmond@Cherry>
+
+	* R/Status.R (all.equal.Status): Status equality checks were
+	failing because of name issues.  Fixed by creating an equality
+	test method for Statuses which is a little bit more lax.  Not
+	thoroughly tested.
+
 2018-12-31  Russell Almond  <ralmond@Limu>
 
 	* R/testRules.R (queryTest, queryTestScript):  Added.
