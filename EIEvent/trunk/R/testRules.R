@@ -96,13 +96,12 @@ queryTestScript <- function (filename,  quiet=FALSE, verbose=FALSE,
     cat("Test suite",suiteName,": ",N,"tests, ",
         sum(result,na.rm=TRUE), "passed, ",
         sum(!result,na.rm=TRUE), "failed, ",
-        sum(is.na(result)), "errors.")
+        sum(is.na(result)), "errors.\n")
   }
   result
 }
 
-predicateTest <- function (test, quiet=FALSE, verbose=TRUE,
-                      ignoreContext=FALSE,
+predicateTest <- function (test, quiet=FALSE, verbose=FALSE,
                       name=test$name) {
   if (verbose) {
     cat("Running test ",name,"\n")
@@ -161,8 +160,7 @@ predicateTest <- function (test, quiet=FALSE, verbose=TRUE,
   return (isTRUE(result))
 }
 
-predicateTestScript <- function (filename,  quiet=FALSE, verbose=TRUE,
-                            ignoreContext=FALSE,
+predicateTestScript <- function (filename,  quiet=FALSE, verbose=FALSE,
                             suiteName=basename(filename)) {
   script <- fromJSON(filename,FALSE)
   N <- length(script)
@@ -188,13 +186,13 @@ predicateTestScript <- function (filename,  quiet=FALSE, verbose=TRUE,
     cat("Test suite",suiteName,": ",N,"tests, ",
         sum(result,na.rm=TRUE), "passed, ",
         sum(!result,na.rm=TRUE), "failed, ",
-        sum(is.na(result)), "errors.")
+        sum(is.na(result)), "errors.\n")
   }
   result
 }
 
 
-ruleTest <- function (test, quiet=FALSE, verbose=TRUE,
+ruleTest <- function (test, quiet=FALSE, verbose=FALSE,
                       contextSet=NULL,
                       name=test$name) {
   if (verbose) {
@@ -284,7 +282,7 @@ ruleTest <- function (test, quiet=FALSE, verbose=TRUE,
   return (isTRUE(result))
 }
 
-ruleTestScript <- function (filename,  quiet=FALSE, verbose=TRUE,
+ruleTestScript <- function (filename,  quiet=FALSE, verbose=FALSE,
                             contextSet=NULL,
                             suiteName=basename(filename)) {
   script <- fromJSON(filename,FALSE)
@@ -312,7 +310,7 @@ ruleTestScript <- function (filename,  quiet=FALSE, verbose=TRUE,
     cat("Test suite",suiteName,": ",N,"tests, ",
         sum(result,na.rm=TRUE), "passed, ",
         sum(!result,na.rm=TRUE), "failed, ",
-        sum(is.na(result)), "errors.")
+        sum(is.na(result)), "errors.\n")
   }
   result
 }

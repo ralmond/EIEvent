@@ -390,9 +390,12 @@ parseStatus<- function (rec) {
 
 ##We need an all.equal method as we need to suppress checking names on
 ##parts of the data fields which might be different.
-setMethod(all.equal,c("Status","Status"), function (target, current, ...) {
+all.equal.Status <- function (target, current, ...) {
+  if (!is(current,"Status"))
+    return(paste("Target is 'Status' and current is '",class(current),"'."))
   msg <- character()
-  if (target@"_id" !=  current@"_id")
+  if ((is.na(target@"_id") && !is.na(current@"_id")) ||
+      (!is.na(target@"_id") && !isTRUE(target@"_id" ==  current@"_id")))
     msg <- c(msg,"Database IDs do not match.")
   if (app(target) != app(current))
     msg <- c(msg,"Application IDs do not match.")
@@ -456,7 +459,7 @@ setMethod(all.equal,c("Status","Status"), function (target, current, ...) {
     ## Return true if message list is empty.
   if (length(msg)==0L) TRUE
   else msg
-})
+}
 
 
 
