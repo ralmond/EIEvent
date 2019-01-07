@@ -1,21 +1,10 @@
 Undocumented code objects:
   ‘copy’
+   
   
-  ‘setTimer’ ‘timer’ ‘timer<-’ ‘timerRunning’
-  ‘timerRunning<-’ ‘timerTime’ ‘timerTime<-’ ‘
-
-Undocumented S4 methods:
-  generic 'setTimer' and siglist 'Status,character'
-  generic 'timerRunning' and siglist 'Status,character'
-  generic 'timerRunning<-' and siglist 'Status,character'
-  generic 'timerTime' and siglist 'Status,character'
-  generic 'timerTime<-' and siglist 'Status,character'
-
 Functions to document/test:
 
 testRule, testRuleScript
-testPredicate, testPredicateScript
--- currently problem with spurious names
 
 Functions to write:
 
