@@ -13,7 +13,8 @@
 
 }
 \section{Objects from the Class}{
-  Objects can be created by calls of the function \code{\link{Rule}}.
+  Objects can be created by calls of the function \code{\link{Rule}}, or
+  read from JSON using \code{\link{ParseRule}}.
   Generally rules are stored in a \code{\linkS4class{RuleTable}}.
 
   When the \code{\linkS4class{EIEngine}} gets a new
@@ -259,11 +260,15 @@
 }
 \section{Rule Testing}{
 
-  The functions \code{\link{queryTest}} and
-  \code{\link{queryTestScript}} can be used to test that rule conditions
+  The functions \code{\link{testQuery}} and
+  \code{\link{testQueryScript}} can be used to test that rule conditions
   function properly.
 
-  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  The functions \code{\link{testPredicate}} and
+  \code{\link{testPredicateScript}} can be used to test that rule conditions
+  function properly.
+
+  The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
   properly together.
 
@@ -321,14 +326,15 @@
   \code{\link{executePredicate}} run the condition and predicate parts
   of the rule.
 
-  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  The functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.
-  The functions \code{\link{predicateTest}} and
-  \code{\link{predicateTestScript}} 
+  The functions \code{\link{testPredicate}} and
+  \code{\link{testPredicateScript}} 
   can be used to test that predicates function properly.
-  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
-  properly together.
+  properly together.  The class \code{\linkS4class{RuleTest}} stores a
+  rule test. 
   
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},

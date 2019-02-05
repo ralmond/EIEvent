@@ -1,3 +1,27 @@
+2019-02-02  Rusell Almond  <ralmond@Cherry>
+
+	* R/AAGenerics.R (MongoDB):  Putting the calls to the mongo()
+	constructor in the reference class objects (EIEngine, &c) was
+	causing problems because R would try to build prototype instances
+	of the class at package load, and would fail if the mongo string
+	was not correct.  Now, uri is set when class is initialized, but
+	call to mongo does not occur until database is first accessed.
+	Note that this means databases should be accessed by the method
+	and not the raw field.
+
+2019-01-21  Rusell Almond  <ralmond@Cherry>
+
+	* R/testRules.R (queryTest, predicateTest, ruleTest)
+	(ruleTestScript, predicateTestScript, predicateTest): Refactoring
+	to (a) use new RuleTest class and (b) use futile.logger.
+	(RuleTest): Added this class as a formal class.  
+
+2019-01-19  Rusell Almond  <ralmond@Cherry>
+
+	* R/ErrorHandling.R (withJavaLogging): This probably needs to get
+	replaced with an appropriate function from futile.logger. (ftry).
+	
+
 2019-01-06  Rusell Almond  <ralmond@Cherry>
 
 	* R/Status.R (all.equal.Status): Status equality checks were

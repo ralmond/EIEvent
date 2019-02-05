@@ -8,232 +8,277 @@
 ## rule -- the rule being tested.
 ## result -- a logical value.
 
-queryTest <- function (test, quiet=FALSE, verbose=FALSE,
-                       name=test$name) {
-  if (verbose) {
-    cat("Running test ",name,"\n")
-    if (!is.null(test$doc)) print(test$doc)
-  }
-  if (is(test$state,"Status")) {
-    state <- test$state
-  } else {
-    state <- parseStatus(test$state)
-  }
-  if (!is(state,"Status")) {
-    stop("Problems parsing status for test ",name)
-  }
-  if (is(test$event,"Event")) {
-    event <- test$event
-  } else {
-    event <- parseEvent(test$event)
-  }
-  if (!is(event,"Event")) {
-    stop("Problems parsing event for test ",name)
-  }
-  if (is(test$rule,"Rule")) {
-    rule <- test$rule
-  } else {
-    rule <- parseRule(test$rule)
-  }
-  if (!is(rule,"Rule")) {
-    stop("Problems parsing rule for test ",name)
-  }
-  if (verbose) {
-    cat("Testing rule ",name(rule),"\n")
-  }
-  expected <- as.logical(test$result)
-  if (is.na(expected)) {
-    stop("Result must be true of false for test", name)
-  }
-  actual <-try(checkCondition(condition(rule),state,event))
+setClass("RuleTest",
+         list("_id"="character",
+              app="character",
+              name="character",
+              doc="character",
+              initial="Status",
+              event="Event",
+              rule="Rule",
+              queryResult="logical",
+              final="Status"))
+
+RuleTest <- function(name=paste("Test of Rule",rule),
+                     doc="",app="default",initial,event,rule,queryResult,
+                     final) {
+  new("RuleTest","_id"=c(oid=NA_character_),app=app,name=name,
+      doc=doc,initial=initial,event=event,rule=rule,
+      queryResult=queryResult,
+      final=final)
+}
+
+
+setMethod("name","RuleTest", function(x) x@name)
+setMethod("doc","RuleTest", function(x) x@doc)
+setMethod("initial","RuleTest", function(x) x@initial)
+setMethod("event","RuleTest", function(x) x@event)
+setMethod("rule","RuleTest", function(x) x@rule)
+setMethod("queryResult","RuleTest", function(x) x@queryResult)
+setMethod("final","RuleTest", function(x) x@final)
+
+
+setMethod("toString","RuleTest", function(x, ...) {
+  paste('RuleTest:{',x@name,'}')
+})
+setMethod("show","RuleTest",function(object) {
+  cat(toString(object),"\n")
+})
+
+setMethod("as.jlist",c("RuleTest","list"), function(obj,ml,serialize=TRUE) {
+  ml$"_id" <- NULL
+  ml$class <-NULL
+
+  ml$name <- unbox(ml$name)
+  ml$doc <- unbox(ml$name)
+  ml$queryResult <- unbox(ml$queryResult)
+
+  ml$inital <- as.jlist(ml$initial,attributes(ml$initial),serialize)
+  ml$event <- as.jlist(ml$event,attributes(ml$event),serialize)
+  ml$rule <- as.jlist(ml$rule,attributes(ml$rule),serialize)
+  ml$final <- as.jlist(ml$final,attributes(ml$initial),serialize)
+
+  ml
+})
+
+parseRuleTest<- function (rec) {
+  if (is.null(rec$"_id")) rec$"_id" <- NA_character_
+  names(rec$"_id") <- "oid"
+  if (is.null(rec$app)) rec$app <- "default"
+  new("RuleTest","_id"=rec$"_id",
+      app=as.vector(rec$app),
+      name=as.vector(rec$name),
+      doc=as.vector(rec$doc),
+      initial=parseStatus(rec$initial),
+      event=parseEvent(rec$event),
+      rule=parseRule(rec$rule),
+      queryResult=as.vector(rec$queryResult),
+      final=parseStatus(rec$final))
+}
+
+########################################################################
+###  Test Methods.
+
+testQuery <- function (test) {
+  context <- paste("Running Query test",name(test))
+  flog.info(context)
+  if (!is.null(doc(test))) flog.debug(doc(test))
+  rule <- rule(test)
+  initial <- initial(test)
+  event <- event(test)
+  expected <- queryResult(test)
+  actual <-withFlogging(checkCondition(condition(rule),initial,event),
+                        context=context,rule=rule,
+                        initial=initial,event=event)
   if (is(actual,"try-error")) {
-    if (!quiet) {
-      cat("Error occurred while running test",name)
-    }
-    if (verbose) {
-      traceback(attr(actual,"condition"))
-    }
-    return (as.logical(NA))
+    result <- NA
+  } else {
+    result <- actual==expected
   }
-  result <- actual==expected
-  if (!quiet) {
-    cat("Test ",name,": ",ifelse(result,"Passed","Failed"),".\n")
+  flog.info("Test %s: %s.",name(test),
+            ifelse(is.na(result),"Error",ifelse(result,"Passed","Failed")))
+  if (!is.na(result) && !result) {
+    flog.debug("Rule:",rule,capture=TRUE)
+    flog.debug("Initial State:",initial,capture=TRUE)
+    flog.debug("Event:",event,capture=TRUE)
+    flog.debug("Expected Result:",expected,capture=TRUE)
   }
   return (result)
 }
 
-queryTestScript <- function (filename,  quiet=FALSE, verbose=FALSE,
-                             suiteName=basename(filename)) {
+## queryTest <- function (test, quiet=FALSE, verbose=FALSE,
+##                        name=test$name) {
+##   if (verbose) {
+##     cat("Running test ",name,"\n")
+##     if (!is.null(test$doc)) print(test$doc)
+##   }
+##   if (is(test$state,"Status")) {
+##     state <- test$state
+##   } else {
+##     state <- parseStatus(test$state)
+##   }
+##   if (!is(state,"Status")) {
+##     stop("Problems parsing status for test ",name)
+##   }
+##   if (is(test$event,"Event")) {
+##     event <- test$event
+##   } else {
+##     event <- parseEvent(test$event)
+##   }
+##   if (!is(event,"Event")) {
+##     stop("Problems parsing event for test ",name)
+##   }
+##   if (is(test$rule,"Rule")) {
+##     rule <- test$rule
+##   } else {
+##     rule <- parseRule(test$rule)
+##   }
+##   if (!is(rule,"Rule")) {
+##     stop("Problems parsing rule for test ",name)
+##   }
+##   if (verbose) {
+##     cat("Testing rule ",name(rule),"\n")
+##   }
+##   expected <- as.logical(test$result)
+##   if (is.na(expected)) {
+##     stop("Result must be true of false for test", name)
+##   }
+##   actual <-try(checkCondition(condition(rule),state,event))
+##   if (is(actual,"try-error")) {
+##     if (!quiet) {
+##       cat("Error occurred while running test",name)
+##     }
+##     if (verbose) {
+##       traceback(attr(actual,"condition"))
+##     }
+##     return (as.logical(NA))
+##   }
+##   result <- actual==expected
+##   if (!quiet) {
+##     cat("Test ",name,": ",ifelse(result,"Passed","Failed"),".\n")
+##   }
+##   return (result)
+## }
+
+testQueryScript <- function (filename,  suiteName=basename(filename)) {
+  if (!file.exists(filename)) {
+    stop("Cannot find file ",filename)
+  }
   script <- fromJSON(filename,FALSE)
   N <- length(script)
   result <- rep(as.logical(NA),N)
   names(result) <- paste(suiteName,1:N)
   for (i in 1:N) {
-    test <- script[[i]]
-    if (is.null(test$name)) {
-      test$name <- paste(suiteName,i)
-    } else {
-      names(result)[i] <- test$name
+    test <- withFlogging(parseRuleTest(script[[i]]),
+                            context=paste("Parsing test ",i),
+                            json=script[[i]])
+    if (is(test,"try-error")) next
+    if (is.null(name(test))) {
+      test@name <- paste(suiteName,i)
     }
-    if (is.null(test$doc)) test$doc <- paste("Test",i,"in suite",suiteName,".")
-    res <- withJavaLogging(queryTest(test, quiet=quiet, verbose=verbose),
-                           silentSuccess=!verbose,stopIsFatal=FALSE)
-    ## if (!is(res,"try-error")) {
-    ##   if (!quiet) {
-    ##     cat("Error occurred while parsing test",test$name)
-    ##   }
-    ##   if (verbose) {
-    ##     print(conditionCall(attr(res,"condition")))
-    ##     traceback(attr(res,"condition"))
-    ##   }
-    ##   result[i] <- result
-    ## }
-    result[i] <- res
-    if (verbose) cat("\n\n")
+    names(result)[i] <- name(test)
+    if (is.null(doc(test))) test@doc <- paste("Test",i,"in suite",suiteName,".")
 
+    result[i] <- testQuery(test)
   }
-  if (!quiet) {
-    cat("Test suite",suiteName,": ",N,"tests, ",
-        sum(result,na.rm=TRUE), "passed, ",
-        sum(!result,na.rm=TRUE), "failed, ",
-        sum(is.na(result)), "errors.\n")
-  }
+  flog.info("Test suite %s: %d tests, %d passed, %d failed, %d errors.",
+            suiteName,N, sum(result,na.rm=TRUE),
+            sum(!result,na.rm=TRUE),
+            sum(is.na(result)))
   result
 }
 
-predicateTest <- function (test, quiet=FALSE, verbose=FALSE,
-                      name=test$name) {
-  if (verbose) {
-    cat("Running test ",name,"\n")
-    if (!is.null(test$doc)) print(test$doc)
+testPredicate <- function (test) {
+  if (!queryResult(test)) {
+    flog.info("Skipping test %s as condition is false.",name(test))
+    return (TRUE)
   }
-  if (is(test$state,"Status")) {
-    state <- test$state
-  } else {
-    state <- parseStatus(test$state)
-  }
-  if (!is(state,"Status")) {
-    stop("Problems parsing status for test ",name)
-  }
-  if (is(test$event,"Event")) {
-    event <- test$event
-  } else {
-    event <- parseEvent(test$event)
-  }
-  if (!is(event,"Event")) {
-    stop("Problems parsing event for test ",name)
-  }
-  if (is(test$rule,"Rule")) {
-    rule <- test$rule
-  } else {
-    rule <- parseRule(test$rule)
-  }
-  if (!is(rule,"Rule")) {
-    stop("Problems parsing rule for test ",name)
-  }
-  if (is(test$result,"Status")) {
-    expected <- test$result
-  } else {
-    expected <- parseStatus(test$result)
-  }
-  if (!is(expected,"Status")) {
-    stop("Problems parsing result for test ",name)
-  }
-  if (verbose) {
-    cat("Testing rule ",name(rule),"\n")
-  }
-  actual <-try(executePredicate(predicate(rule),state,event))
+  context <- paste("Running Predicate test",name(test))
+  flog.info(context)
+  if (!is.null(doc(test))) flog.debug(doc(test))
+  rule <- rule(test)
+  state <- initial(test)
+  event <- event(test)
+  expected <- final(test)
+
+  actual <-withFlogging(executePredicate(predicate(rule),state,event),
+                        context=context,rule=rule,
+                        initial=initial,event=event)
   if (is(actual,"try-error")) {
-    if (!quiet) {
-      cat("Error occurred while running test",name)
+    flog.info("Test %s:  Error.",name(test))
+    result <- NA
+  } else {
+    result <- withFlogging(all.equal(expected,actual),
+                           context=paste(context,": Checking results"),
+                           rule=rule,
+                           initial=initial,event=event)
+    if (is(result,"try-error")) {
+      flog.info("Test %s:  Error.",name(test))
+      result <- NA
+    } else  if (isTRUE(result)) {
+      flog.info("Test %s:  Passed.",name(test))
+      result <- TRUE
+    } else {
+      flog.info("Test %s:  Failed.",name(test))
+      flog.info("Details:",result,capture=TRUE)
+      result <- FALSE
     }
-    if (verbose) {
-      traceback(attr(actual,"condition"))
-    }
-    return (as.logical(NA))
   }
-  result <- all.equal(expected,actual)
-  if (!quiet) {
-    cat("Test ",name,": ",ifelse(isTRUE(result),"Passed","Failed"),".\n")
-    if (!isTRUE(result)) print(result)
+  if (!is.na(result) && !result) {
+    flog.debug("Rule:",rule,capture=TRUE)
+    flog.debug("Initial State:",initial,capture=TRUE)
+    flog.debug("Event:",event,capture=TRUE)
+    flog.debug("Expected Result:",expected,capture=TRUE)
   }
-  return (isTRUE(result))
+  return (result)
 }
 
-predicateTestScript <- function (filename,  quiet=FALSE, verbose=FALSE,
-                            suiteName=basename(filename)) {
+testPredicateScript <- function (filename,  suiteName=basename(filename)) {
+  if (!file.exists(filename)) {
+    stop("Cannot find file ",filename)
+  }
   script <- fromJSON(filename,FALSE)
   N <- length(script)
   result <- rep(as.logical(NA),N)
   names(result) <- paste(suiteName,1:N)
+  run <- rep(TRUE,N)
   for (i in 1:N) {
-    test <- script[[i]]
-    if (is.null(test$name)) {
-      test$name <- paste(suiteName,i)
-    } else {
-      names(result)[i] <- test$name
+    test <- withFlogging(parseRuleTest(script[[i]]),
+                         context=paste("Parsing test ",i),
+                         json=script[[i]])
+    if (is(test,"try-error")) {
+      next
     }
-    if (is.null(test$doc)) test$doc <-
-                             paste("Test",i,"in suite",suiteName,".")
-    res <- withJavaLogging(predicateTest(test, quiet=quiet,
-                                         verbose=verbose),
-                           silentSuccess=!verbose,stopIsFatal=FALSE)
-    result[i] <- res
-    if (verbose) cat("\n\n")
-
+    if (is.null(name(test))) {
+      test@name <- paste(suiteName,i)
+    }
+    names(result)[i] <- name(test)
+    if (!queryResult(test)) {
+      flog.info("Skipping test %s as condition is false.",name(test))
+      run[i] <- FALSE
+      next
+    }
+    if (is.null(doc(test))) test@doc <- paste("Test",i,"in suite",suiteName,".")
+    result[i] <- testQuery(test)
   }
-  if (!quiet) {
-    cat("Test suite",suiteName,": ",N,"tests, ",
-        sum(result,na.rm=TRUE), "passed, ",
-        sum(!result,na.rm=TRUE), "failed, ",
-        sum(is.na(result)), "errors.\n")
-  }
+  ## Remove Skiped tests.
+  result <- result[run]
+  flog.info("Test suite %s: %d tests, %d skipped, %d passed, %d failed, %d errors.",
+            suiteName,N, sum(!run), sum(result,na.rm=TRUE),
+            sum(!result,na.rm=TRUE),
+            sum(is.na(result)))
   result
 }
 
 
-ruleTest <- function (test, quiet=FALSE, verbose=FALSE,
-                      contextSet=NULL,
-                      name=test$name) {
-  if (verbose) {
-    cat("Running test ",name,"\n")
-    if (!is.null(test$doc)) print(test$doc)
-  }
-  if (is(test$state,"Status")) {
-    state <- test$state
-  } else {
-    state <- parseStatus(test$state)
-  }
-  if (!is(state,"Status")) {
-    stop("Problems parsing status for test ",name)
-  }
-  if (is(test$event,"Event")) {
-    event <- test$event
-  } else {
-    event <- parseEvent(test$event)
-  }
-  if (!is(event,"Event")) {
-    stop("Problems parsing event for test ",name)
-  }
-  if (is(test$rule,"Rule")) {
-    rule <- test$rule
-  } else {
-    rule <- parseRule(test$rule)
-  }
-  if (!is(rule,"Rule")) {
-    stop("Problems parsing rule for test ",name)
-  }
-  if (is(test$result,"Status")) {
-    expected <- test$result
-  } else {
-    expected <- parseStatus(test$result)
-  }
-  if (!is(expected,"Status")) {
-    stop("Problems parsing result for test ",name)
-  }
-  if (verbose) {
-    cat("Testing rule ",name(rule),"\n")
-  }
+testRule <- function (test, contextSet=NULL) {
+  context <- paste("Running test",name(test))
+  flog.info(context)
+  if (!is.null(doc(test))) flog.debug(doc(test))
+  rule <- rule(test)
+  state <- initial(test)
+  event <- event(test)
+  expected <- final(test)
   ### Check the verb, object and context
   actual <- state                       #Default is no change.
   verbmatch <- verb(rule)=="ALL" | verb(rule)==verb(event)
@@ -241,76 +286,125 @@ ruleTest <- function (test, quiet=FALSE, verbose=FALSE,
   if (is.null(contextSet)) {
     contextmatch <- NA
   } else {
-    conSet <- applicableContexts(matchContext(context(status),contextSet))
-    contextmatch <- context(rule) %in% conSet
-  }
-  if (verbose) {
-    cat("Verb match: ",verbmatch," Object match: ",objmatch,
-        "Context match: ",contextmatch)
-  }
-  if (verbmatch && objmatch &&
-      (is.na(contextmatch) || contextmatch)) {
-    satisfied <-try(checkCondition(condition(rule),state,event))
-    if (is(satisfied,"try-error")) {
-      if (!quiet) {
-        cat("Error occurred while running condition check for test ",name)
-      }
-      if (verbose) {
-        traceback(attr(satisfied,"condition"))
-      }
+    conSet <- withFlogging(applicableContexts(matchContext(context(state),
+                                                           contextSet)),
+                           context=paste(context,"Matching context"),
+                           target=context(status))
+    if (is(conSet,'try-error')) {
+      flog.info("Test %s:  Error.",name(test))
       return (as.logical(NA))
     }
-    if (satisfied) {
-      ## Actually run the predicate
-      actual <-try(executePredicate(predicate(rule),state,event))
-      if (is(actual,"try-error")) {
-        if (!quiet) {
-          cat("Error occurred while running predicate for test",name)
-        }
-        if (verbose) {
-          traceback(attr(actual,"condition"))
-        }
-        return (as.logical(NA))
-      }
+    contextmatch <- context(rule) %in% conSet
+  }
+  flog.debug("Verb match: %s, Object match: %s, Context match:",
+             verbmatch, objmatch,contextmatch)
+  satisfied <- FALSE
+  if (verbmatch && objmatch &&
+      (is.na(contextmatch) || contextmatch)) {
+    satisfied <- withFlogging(checkCondition(condition(rule),state,event),
+                              context=paste(context,"Condition"),
+                              rule=rule, initial=state,event=event)
+
+    if (is(satisfied,"try-error")) {
+      flog.info("Test %s:  Error.",name(test))
+      satisfied <- FALSE
+      actual <- NA
     }
   }
-  result <- all.equal(expected,actual)
-  if (!quiet) {
-    cat("Test ",name,": ",ifelse(isTRUE(result),"Passed","Failed"),".\n")
-    if (!isTRUE(result)) print(result)
+  if (satisfied) {
+    actual <-withFlogging(executePredicate(predicate(rule),state,event),
+                          context=paste(context,"Predicate"),rule=rule,
+                          initial=initial,event=event)
+  } else {
+    flog.debug("Skipping predicate for %s, condition is false.",name(test))
+    actual <- state
   }
-  return (isTRUE(result))
+  if (is(actual,"try-error")) {
+    flog.info("Test %s:  Error.",name(test))
+    result <- NA
+  } else {
+    result <- withFlogging(all.equal(expected,actual),
+                           context=paste(context,": Checking results"),
+                           rule=rule,
+                           initial=initial,event=event)
+    if (is(result,"try-error")) {
+      flog.info("Test %s:  Error.",name(test))
+      result <- NA
+    } else if  (isTRUE(result)) {
+      flog.info("Test %s:  Passed.",name(test))
+      result <- TRUE
+    } else {
+      flog.info("Test %s:  Failed.",name(test))
+      flog.info("Details:",result,capture=TRUE)
+      result <- FALSE
+    }
+  }
+  if (!is.na(result) && !result) {
+    flog.debug("Rule:",rule,capture=TRUE)
+    flog.debug("Initial State:",initial,capture=TRUE)
+    flog.debug("Event:",event,capture=TRUE)
+    flog.debug("Expected Result:",expected,capture=TRUE)
+  }
+  return (result)
 }
 
-ruleTestScript <- function (filename,  quiet=FALSE, verbose=FALSE,
-                            contextSet=NULL,
-                            suiteName=basename(filename)) {
+testRuleScript <- function (filename, suiteName=basename(filename),
+                            contextSet=NULL) {
+  if (!file.exists(filename)) {
+    stop("Cannot find file ",filename)
+  }
   script <- fromJSON(filename,FALSE)
   N <- length(script)
   result <- rep(as.logical(NA),N)
   names(result) <- paste(suiteName,1:N)
   for (i in 1:N) {
-    test <- script[[i]]
-    if (is.null(test$name)) {
-      test$name <- paste(suiteName,i)
-    } else {
-      names(result)[i] <- test$name
+    test <- withFlogging(parseRuleTest(script[[i]]),
+                         context=paste("Parsing test ",i),
+                         json=script[[i]])
+    if (is(test,"try-error")) next
+    if (is.null(name(test))) {
+      test@name <- paste(suiteName,i)
     }
-    if (is.null(test$doc)) test$doc <-
-                             paste("Test",i,"in suite",suiteName,".")
-    res <- withJavaLogging(ruleTest(test, quiet=quiet,
-                                    verbose=verbose,
-                                    contextSet=contextSet),
-                           silentSuccess=!verbose,stopIsFatal=FALSE)
-    result[i] <- res
-    if (verbose) cat("\n\n")
+    names(result)[i] <- name(test)
+    if (is.null(doc(test))) test@doc <- paste("Test",i,"in suite",suiteName,".")
 
+    result[i] <- testRule(test)
   }
-  if (!quiet) {
-    cat("Test suite",suiteName,": ",N,"tests, ",
-        sum(result,na.rm=TRUE), "passed, ",
-        sum(!result,na.rm=TRUE), "failed, ",
-        sum(is.na(result)), "errors.\n")
-  }
+  flog.info("Test suite %s: %d tests, %d passed, %d failed, %d errors.",
+            suiteName,N, sum(result,na.rm=TRUE),
+            sum(!result,na.rm=TRUE),
+            sum(is.na(result)))
   result
 }
+
+#########################################
+## Test Sets
+
+TestSet <-
+  setRefClass("TestSet",
+              fields=c(app="character",
+                       dbname="character",
+                       dburi="character",
+                       contexts="ContextSet",
+                       rules="RuleTable",
+                       db="MongoDB"),
+              methods = list(
+                  initialize =
+                    function(app="default",
+                             dbname="EIRecords",
+                             dburi="mongo://localhost",
+                             contexts=ContextSet$new(app,dburi),
+                             rules=RuleTable$new(app,dbname,dburi),
+                             db = NULL,
+                             ...) {
+                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,
+                                contexts=contexts,rules=rules,...)
+                    },
+                  testdb = function () {
+                    if (is.null(db)) {
+                      db <<- mongo("RuleTests",dbname,dburi)
+                    }
+                    db
+                  }
+
+              ))

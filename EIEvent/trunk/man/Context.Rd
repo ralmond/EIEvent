@@ -36,7 +36,7 @@ parseContext(rec)
   \item{serialize}{A logical flag. If true,
     \code{\link[jsonlite]{serializeJSON}} is used to protect the
     \code{data} field (and other objects which might contain complex R
-    code.} 
+    code).} 
 }
 \details{
 
@@ -57,8 +57,9 @@ parseContext(rec)
 \value{
 
   The functions \code{Context} and \code{parseContext} return objects of
-  class context.  The function \code{as.jlist} produces a named list
-  suitable for passing to \code{\link[jsonlite]{toJSON}}.
+  class \code{\linkS4class{Context}}.  The function \code{as.jlist}
+  produces a named list suitable for passing to
+  \code{\link[jsonlite]{toJSON}}. 
 
 }
 \references{

@@ -63,4 +63,66 @@ setMethod("as.jlist",c("Context","list"), function(obj,ml, serialize=TRUE) {
   ml
   })
 
+###########################################################
+## Context Set
 
+ContextSet <-
+  setRefClass("ContextSet",
+              fields=c(app="character",
+                       dbname="character",
+                       dburi="character",
+                       db="MongoDB"),
+              methods = list(
+                  initialize =
+                    function(app="default",
+                             dbname="EIRecrods",
+                             dburi="mongodb://localhost",
+                             db = NULL, #mongo("Contexts",dbname,dburi)
+                             ...) {
+                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,...)
+                    },
+                  numbered = function (num) {
+                    con <- getOneRec(buildJQuery(app=app,number=num),db,
+                                     parseContext)
+                    if (is.null(con)) {
+                      flog.warn("No context found for number %d",num)
+                    } else {
+                      flog.debug("Found context %s",name(con))
+                    }
+                    con
+                  },
+                  named = function (named) {
+                    con <- getOneRec(buildJQuery(app=app,name=named),db,
+                                     parseContext)
+                    if (is.null(con)) {
+                      flog.warn("No context found for %s",name)
+                    } else {
+                      flog.debug("Found context %s",name(con))
+                    }
+                    con
+                  },
+                  update = function (con) {
+                    if (!is(con,"Context"))
+                      stop("Argument to ContextSet$update must be a context.")
+                    flog.debug("Updating context %s",name(con))
+                    saveRec(con,db)
+                  },
+                  contextdb = function () {
+                    if (is.null(db)) {
+                      db <<- mongo("Contexts",dbname,dburi)
+                    }
+                    db
+                  }
+              ))
+
+
+
+setGeneric("matchContext",function(con,set) standardGeneric("matchContext"))
+setMethod("matchContext",c("integer","list"),
+          function(con,set) set[[con]])
+setMethod("matchContext",c("character","list"),
+          function(con,set) set[[con]])
+setMethod("matchContext",c("integer","list"),
+          function(con,set) set$numbered(con))
+setMethod("matchContext",c("character","list"),
+          function(con,set) set$named(con))

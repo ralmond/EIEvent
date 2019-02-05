@@ -201,10 +201,10 @@ modify(predicate, state, event, op)
   The function \code{\link{checkCondition}} is used internally to check
   when a set of conditions in a rule are satisfied.
 
-  The functions \code{\link{predicateTest}} and
-  \code{\link{predicateTestScript}} 
+  The functions \code{\link{testPredicate}} and
+  \code{\link{testPredicateScript}} 
   can be used to test that predicates function properly.
-  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
   properly together.
 
@@ -251,7 +251,7 @@ modify(predicate, state, event, op)
   \code{\linkS4class{Rule}} describes the rule object and
   \link{Conditions} describes the Conditions.
 
-  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
   properly together.
 

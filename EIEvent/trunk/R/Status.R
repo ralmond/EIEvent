@@ -461,8 +461,55 @@ all.equal.Status <- function (target, current, ...) {
   else msg
 }
 
+##############################################################
+## User Records (collection of status objects.
+
+UserRecordSet <-
+  setRefClass("UserRecordSet",
+              fields=c(app="character",
+                       dbname="character",
+                       dburi="character",
+                       db="MongoDB"),
+              methods = list(
+                  initialize =
+                    function(app="default",dbname="EIRecords",
+                             dburi="mongo://localhost:271017",
+                             db = NULL,
+                             ...)
+                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,...)
+              ))
 
 
-
+## Student Record Methods
+UserRecordSet$methods(
+                  recorddb = function () {
+                    if (is.null(db)) {
+                      db <<- mongo("States",dbname,dburi)
+                    }
+                    db
+                  },
+             getStatus = function (uid) {
+               getOneRec(buildJQuery(app=app,uid=uid),recorddb(),
+                         parseStatus)
+             },
+             saveStatus = function (state) {
+               saveRec(state,recorddb())
+             },
+             newStudent = function (uid) {
+               rec <- getStatus(uid)
+               if (!is.null(rec)) {
+                 flog.debug("Found existing student record for  %s", uid)
+                 return (rec)
+               }
+               rec <- getStatus("default")
+               if(!is.null(rec)) {
+                 flog.debug("Found default student record for  %s", uid)
+                 return(rec)
+               }
+               flog.debug("Making blank student record for  %s", uid)
+               rec <- Status(uid=uid,context="*INITIAL*",app=app)
+               rec <- saveRec(state,recorddb())
+               rec
+             })
 
 
