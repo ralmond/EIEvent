@@ -2,7 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Status-class}
-\alias{copy,Status-method}
 \alias{setTimer,Status-method}
 \alias{timer,Status-method}
 \alias{timer<-,Status-method}
@@ -62,8 +61,6 @@ for every student in the system.
       the \code{context} field. }
     \item{context}{\code{signature(x = "Status")}: returns the value of
       the \code{context} field. }
-    \item{copy}{\code{signature(prototype = "Status")}: creates a
-      duplicate of the status object. }
     \item{flag}{\code{signature(x = "Status")}: returns the list of
       flags associated with the status. }
     \item{flag<-}{\code{signature(x = "Status")}: sets the list of flags
@@ -215,7 +212,7 @@ for every student in the system.
   \code{\link{timer}}, \code{\link{timerTime}},
   \code{\link{timerRunning}}, \code{\link{flag}}, \code{\link{obs}},
   \code{\link{app}}, \code{\link{context}},\code{\link{oldContext}},
-  \code{\link{timestamp}}, \code{\link{copy}},
+  \code{\link{timestamp}}, 
   \code{\link{parseStatus}},  
 
 }

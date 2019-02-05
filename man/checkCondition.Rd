@@ -94,7 +94,7 @@ checkCondition(conditions, state, event)
   \code{\link{executePredicate}} executes the predicate (when the
   condition is satisfied).
 
-  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  The functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.
   
   Other classes in the EIEvent system:

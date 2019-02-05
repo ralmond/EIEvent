@@ -1,9 +1,11 @@
 import(methods)
 import(Proc4)
+import(futile.logger)
 
 #importFrom("grDevices", "col2rgb", "grey.colors", "hsv", "rgb2hsv")
 importFrom("jsonlite","toJSON","fromJSON","unbox")
 importFrom("utils","limitedLabels")
+importFrom("mongolite","mongo")
 
 
 ## Condition
@@ -13,10 +15,10 @@ export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
 
 ## Context
 export(Context,name,doc,cid, belongsTo, "belongsTo<-",
-       number, "number<-",applicableContexts,parseContext)
-exportClasses(Context)
+       number, "number<-",applicableContexts,parseContext,matchContext)
+exportClasses(Context,ContextSet)
 exportMethods(name,doc,cid, belongsTo, "belongsTo<-",
-       number, "number<-")
+       number, "number<-",toString,show,matchContext)
 
 ## Events
 export(Event,verb,object,parseEvent)
@@ -32,7 +34,7 @@ export(executePredicate, "!set", "!unset", modify,
 ## RuleTables (Rules)
 export(Rule,name,doc,context,ruleType,priority,condition,predicate,
        parseRule)
-exportClass(Rule)
+exportClass(Rule,RuleTable)
 exportMethods(context,ruleType,priority,condition,predicate)
 
 ## Status (Timer)
@@ -45,17 +47,25 @@ exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,
 ## Status (Status)
 export(Status,timer,"timer<-",setTimer,timerTime,"timerTime<-",
        timerRunning,"timerRunning<-",flag,"flag<-",obs,"obs<-",
-       "copy",parseStatus,getJS,setJS,removeJS,getJSfield,
+       parseStatus,getJS,setJS,removeJS,getJSfield,
        setJSfield, removeJSfield, "context<-",oldContext)
-exportClasses(Status)
+exportClasses(Status,UserRecordSet)
 exportMethods(timer,"timer<-",setTimer,timerTime,"timerTime<-",
               timerRunning,"timerRunning<-",
               flag,"flag<-",obs,"obs<-",timerTime, "context<-",
               oldContext,app)
 
 ## testRules
-export(queryTest, queryTestScript, predicateTest, predicateTestScript,
-       ruleTest, ruleTestScript)
+export(testQuery, testQueryScript, testPredicate, testPredicateScript,
+       testRule, testRuleScript,RuleTest, parseRuleTest,
+       initial,event,rule,queryResult,final)
+exportMethods(initial,event,rule,queryResult,final)
+exportClasses(RuleTest,TestSet)
+
+## EIEngine
+export(EIEngine)
+exportMethods(notifyListeners)
+exportClasses(EIEngine)
 
 
 

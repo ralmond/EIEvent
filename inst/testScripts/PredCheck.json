@@ -2,7 +2,7 @@
     {
         "name":"Color it red",
         "doc":"Simple demonstration of a predicate check.",
-        "state":{
+        "initial":{
             "uid": "Test",
             "context": "Test",
             "timers":{},
@@ -34,7 +34,8 @@
                 "!set": {"state.flags.color": "red"}
             }
         },
-        "result":{
+        "queryResult":true,
+        "final":{
             "uid": "Test",
             "context": "Test",
             "timers":{},

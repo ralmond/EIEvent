@@ -181,9 +181,9 @@
   The function \code{\link{checkCondition}} is used internally to check
   when a set of conditions in a rule are satisfied.
 
-  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  The functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.
-  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
   properly together.
 
@@ -221,7 +221,7 @@
   \code{\linkS4class{Rule}} describes the rule object and
   \link{Predicates} describes the predicates.  The function
   \code{checkCondition} tests when conditions are satisfied.  The
-  functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.
   
   Other classes in the EIEvent system:

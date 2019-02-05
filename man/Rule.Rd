@@ -114,11 +114,15 @@ parseRule(rec)
   The rule object is described in \code{\linkS4class{Rule}} and 
   \link{Conditions} and \link{Predicates} each have detailed
   descriptions. 
-  The functions \code{\link{queryTest}} and \code{\link{queryTestScript}}
+  The functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.
-  The functions \code{\link{ruleTest}} and \code{\link{ruleTestScript}}
+  The functions \code{\link{testPredicate}} and
+  \code{\link{testPredicateScript}} can be used to test that rule
+  conditions function properly. 
+  The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
-  properly together.
+  properly together.  The class \code{\linkS4class{RuleTest}} stores a
+  rule test. 
 
   \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
   describe the JSON conversion system. 

@@ -101,8 +101,8 @@ executePredicate(predicate, state, event)
   describes the condition part of the rule, and
   \code{\link{checkCondition}} checks the conditions.
 
-  The functions \code{\link{predicateTest}} and
-  \code{\link{predicateTestScript}} 
+  The functions \code{\link{testPredicate}} and
+  \code{\link{testPredicateScript}} 
   can be used to test that rule conditions function properly.
   
   Other classes in the EIEvent system:

@@ -1,5 +1,9 @@
 ## Put all of the generic functions in a place they will be loaded first.
 
+## These are used so that the database is initialized at first use and
+## not during load.
+
+
 ## Contexts
 setGeneric("name", function (x) standardGeneric("name"))
 setGeneric("doc", function (x) standardGeneric("doc"))
@@ -9,6 +13,14 @@ setGeneric("ruleType",function(x) standardGeneric("ruleType"))
 setGeneric("priority",function(x) standardGeneric("priority"))
 setGeneric("condition",function(x) standardGeneric("condition"))
 setGeneric("predicate",function(x) standardGeneric("predicate"))
+
+## Rule Tests
+setGeneric("initial",function(x) standardGeneric("initial"))
+setGeneric("event",function(x) standardGeneric("event"))
+setGeneric("rule",function(x) standardGeneric("rule"))
+setGeneric("queryResult",function(x) standardGeneric("queryResult"))
+setGeneric("final",function(x) standardGeneric("final"))
+
 
 ## Timers
 setGeneric("start",
@@ -44,5 +56,12 @@ setGeneric("copy",function(prototype,uid) standardGeneric("copy"))
 
 setGeneric("context<-",function(x,value) standardGeneric("context<-"))
 setGeneric("oldContext",function(x) standardGeneric("oldContext"))
+
+## RuleTest
+setGeneric("initial",function(x) standardGeneric("initial"))
+setGeneric("event", function(x) standardGeneric("event"))
+setGeneric("rule", function(x) standardGeneric("rule"))
+setGeneric("queryResult", function(x) standardGeneric("queryResult"))
+setGeneric("final", function(x) standardGeneric("final"))
 
 
