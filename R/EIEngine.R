@@ -28,25 +28,23 @@ EIEngine <-
                          host <- host
                        if (nchar(security) > 0L)
                          host <- paste(security,host,sep="@")
-                       dburi <- paste("mongo:/",host,sep="/")
-                       flog.info("Connecting to database %s/%s\n",dburi,dbname)
-                       events <- NULL # mongo("Events",dbname,dburi)
-                       listenerSet <- ListenerSet(sender=
-                                                    paste("EIEngine[",app,"]"),
-                                                  dbname=dbname,
-                                                  dburi=dburi,
-                                                  listners=listeners,
-                                                  colname="Messages",
-                                                  ...)
-                       rules <- RuleTable$new(app,dbname,dburi)
-                       userRecords <- UserRecordSet$new(app,dbname,dburi)
-                       contexts <- ContextSet$new(app,dbname,dburi)
-                       ruleTests <- TestSet$new(app,dbname,dburi)
-                       callSuper(app=app,dbname=dbname,dburi=dburi,
-                                 listenerSet=listenerSet,
-                                 events=events,
-                                 rule=rules,userRecords=userRecords,
-                                 contexts=contexts,ruleTests=ruleTests,
+                       dburl <- paste("mongo:/",host,sep="/")
+                       flog.info("Connecting to database %s/%s\n",dburl,dbname)
+                       evnts <- NULL # mongo("Events",dbname,dburi)
+                       ls <- ListenerSet(sender= paste("EIEngine[",app,"]"),
+                                         dbname=dbname,
+                                         dburi=dburl,
+                                         listners=listeners,
+                                         colname="Messages",
+                                         ...)
+                       rls <- RuleTable$new(app,dbname,dburl)
+                       urecs <- UserRecordSet$new(app,dbname,dburl)
+                       ctxts <- ContextSet$new(app,dbname,dburl)
+                       rTests <- TestSet$new(app,dbname,dburl)
+                       callSuper(app=app,dbname=dbname,dburi=dburl,
+                                 listenerSet=ls, events=evnts,
+                                 rule=rls,userRecords=urecs,
+                                 contexts=ctexts,ruleTests=rTests,
                                  ...)
                }))
 

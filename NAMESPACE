@@ -14,11 +14,13 @@ export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
        "?any","?all","?not","?and","?or")
 
 ## Context
-export(Context,name,doc,cid, belongsTo, "belongsTo<-",
-       number, "number<-",applicableContexts,parseContext,matchContext)
+export(Context,ContextSet,name,doc,cid, belongsTo, "belongsTo<-",
+       number, "number<-",applicableContexts,parseContext,matchContext,
+       clearContexts,loadContexts,updateContext)
 exportClasses(Context,ContextSet)
 exportMethods(name,doc,cid, belongsTo, "belongsTo<-",
-       number, "number<-",toString,show,matchContext)
+              number, "number<-",toString,show,matchContext,
+              clearContexts,updateContext)
 
 ## Events
 export(Event,verb,object,parseEvent)

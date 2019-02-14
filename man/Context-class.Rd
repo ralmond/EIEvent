@@ -2,6 +2,8 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Context-class}
+\alias{toString,Context-method}
+\title{Constructor for the Context object}
 \title{Class \code{"Context"}}
 \description{
 
@@ -113,6 +115,10 @@ parents (direct and indirect) need to be listed).
       of the context.}
     \item{app}{\code{signature(x = "Context")}: Returns the app
       identifier of the context.}
+    \item{show}{\code{signature(object = "Context")}: Prints the object
+      in a \dQuote{#<Context >} format.}
+    \item{toString}{\code{signature(x = "Context",...)}: Converts the object
+      to a string in a \dQuote{#<Context >} format.}
   }
 }
 \references{
@@ -139,6 +145,9 @@ parents (direct and indirect) need to be listed).
   all parents seems easier to implement.
 }
 \seealso{
+
+  The \code{\linkS4class{ContextSet}} is an object which hold a
+  collection of contexts.
 
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Event}},

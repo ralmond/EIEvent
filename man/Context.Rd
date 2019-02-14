@@ -2,7 +2,7 @@
 \alias{Context}
 \alias{parseContext}
 \alias{as.jlist,Context,list-method}
-\title{Constructor for the Context object}
+\alias{show,Context-method}
 \description{
 
   This is the constructor for the \code{\linkS4class{Context}} objects
@@ -92,7 +92,8 @@ parseContext(rec)
 \author{Russell Almond}
 \seealso{
 
-  \code{\linkS4class{Context}} describes the context object.
+  \code{\linkS4class{Context}} describes the context object,  and
+  \code{\linkS4class{ContextSet}} describes the context set object.
 
   \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
   describe the JSON conversion system.  
