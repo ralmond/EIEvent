@@ -501,14 +501,16 @@ UserRecordSet$methods(
                  flog.debug("Found existing student record for  %s", uid)
                  return (rec)
                }
-               rec <- getStatus("default")
+               rec <- getStatus("*DEFAULT*")
                if(!is.null(rec)) {
                  flog.debug("Found default student record for  %s", uid)
+                 rec@uid <- uid
+                 saveRec(rec,recorddb())
                  return(rec)
                }
                flog.debug("Making blank student record for  %s", uid)
                rec <- Status(uid=uid,context="*INITIAL*",app=app)
-               rec <- saveRec(state,recorddb())
+               rec <- saveRec(rec,recorddb())
                rec
              })
 

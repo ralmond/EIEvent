@@ -1,36 +1,11 @@
-Undocumented code objects:
-  ‘copy’
-   
   
-Functions to document/test:
-
-testRule, testRuleScript
-
-Functions to write:
-
-matchContext (in testRules.R)
-
 Classes to write docs for:
 
-  ‘EIEngine’ ‘matchContext’ ‘testPredicate’
-  ‘testPredicateScript’ ‘testQuery’ ‘testQueryScript’ ‘testRule’
-  ‘testRuleScript’ RuleTest, parseRuleTest
-       initial,event,rule,queryResult,final)
+  ‘EIEngine’ 
 Undocumented S4 classes:
-  ‘EIEngine’ ‘RuleTable’ ‘TestSet’ ‘ContextSet’ ‘UserRecordSet’
+  ‘EIEngine’ ‘RuleTable’ ‘TestSet’ ‘UserRecordSet’
 Undocumented S4 methods:
-  generic 'as.jlist' and siglist 'RuleTest,list'
-  generic 'doc' and siglist 'RuleTest'
-  generic 'matchContext' and siglist 'character,list'
-  generic 'matchContext' and siglist 'integer,list'
-  generic 'name' and siglist 'RuleTest'
   generic 'notifyListeners' and siglist 'EIEngine'
-  generic 'show' and siglist 'Event'
-  generic 'show' and siglist 'Rule'
-  generic 'show' and siglist 'RuleTest'
-  generic 'toString' and siglist 'Event'
-  generic 'toString' and siglist 'Rule'
-  generic 'toString' and siglist 'RuleTest'
 
 
 Rule maintenance

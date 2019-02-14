@@ -2,6 +2,8 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Event-class}
+\alias{show,Event-method}
+\alias{toString,Event-method}
 \title{Class \code{"Event"}}
 \description{
 
@@ -86,6 +88,10 @@ and objects, which should correpsond to the \code{verb} and
     \item{as.jlist}{\code{signature(obj = "Event", ml = "list")}: ... }
     \item{object}{\code{signature(x = "Event")}: Fetches the object component. }
     \item{verb}{\code{signature(x = "Event")}: Fetches the verb component. }
+    \item{show}{\code{signature(object = "Event")}: Prints event object. }
+    \item{toString}{\code{signature(x = "Event")}: Produces <>
+      representation of object. } 
+
   }
 }
 \references{

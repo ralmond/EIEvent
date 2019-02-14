@@ -2,6 +2,8 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Rule-class}
+\alias{show,Rule-method}
+\alias{toString,Rule-method}
 \title{Class \code{"Rule"}}
 \description{
 
@@ -14,7 +16,7 @@
 }
 \section{Objects from the Class}{
   Objects can be created by calls of the function \code{\link{Rule}}, or
-  read from JSON using \code{\link{ParseRule}}.
+  read from JSON using \code{\link{parseRule}}.
   Generally rules are stored in a \code{\linkS4class{RuleTable}}.
 
   When the \code{\linkS4class{EIEngine}} gets a new
@@ -294,6 +296,9 @@
       the priority for the rule; lower numbers are higher priority.}
     \item{verb}{\code{signature(x = "Rule")}: Returns a character
       scalar giving the verb to which the rule is applicable. }
+    \item{show}{\code{signature(object = "Rule")}: Prints rule object. }
+    \item{toString}{\code{signature(x = "Rule")}: Produces <>
+      representation of object. } 
   }
 }
 \references{

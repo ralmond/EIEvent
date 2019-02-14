@@ -81,10 +81,6 @@ or from JSON through \code{\link{parseRuleTest}}.
 
 }
 \author{Russell G. Almond}
-\note{
-
-
-}
 \seealso{
 
   The functions \code{\link{testQuery}}, \code{\link{testPredicate}},
