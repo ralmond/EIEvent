@@ -1,0 +1,122 @@
+[
+    {
+        "name":  "Blower Flag Test",
+         "doc":"",
+        "initial": {
+            "uid": "Test0",
+            "context": "Level 50",
+            "timers":{},
+            "timestamp":"2018-09-25 12:12:28 EDT",
+            "flags":{
+                "blowerUsed": false
+            },
+            "observables":{
+                "blowerManip": 0
+            }
+        },
+        "event": {
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "adjusted",
+            "object": "control",
+            "context": "Blower Level 50",
+            "timestamp":"2018-09-25 12:12:28 EDT",   
+            "data": {
+                "gemeObjectType": "blower",
+                "oldValue": 0,
+                "newValue": 5,
+                "method": "slider"
+            }
+        },
+        "rule": {
+            "name": "Blower flag",
+            "doc": "Set the flag and increment counter blower is used..",
+            "verb": "adjusted",
+            "object": "control",
+            "context": "One Blower Lvls",
+            "ruleType": "Status",
+            "priority": 5, 
+            "conditions": {
+                "event.data.gemeObjectType":"blower",
+                "event.data.oldValue":{"?ne":"event.data.newValue"}
+            },
+            "predicate": {
+                "!set":{"state.flags.blowerUsed":true},
+                "!incr":{"state.observables.blowerManip":1}
+            }
+        },
+        "queryResult":true,
+          "final":{
+            "uid": "Test0",
+            "context": "Level 50",
+            "timers":{},
+            "timestamp":"2018-09-25 12:12:28 EDT", 
+            "flags":{
+                "blowerUsed": true
+            },
+            "observables":{
+                "blowerManip":1
+            } 
+        }
+    },
+    {
+        "name": "Reset Blower Rule Test",
+         "doc":"",
+        "initial": {
+            "uid": "Test0",
+            "context": "Level 50",
+            "timers":{},
+            "timestamp":"2018-09-25 12:12:28 EDT", 
+            "flags":{
+                "blowerUsed": true
+            },
+            "observables":{
+                "blowerManip":3
+            }
+        },
+        "event": {
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "play",
+            "object": "params",
+            "context": "Mass Level 50",
+            "timestamp":"2018-09-25 12:12:28 EDT",   
+            "data": {
+            }
+        },
+        "rule": {
+            "name": "Reset Blower Flags and Counters",
+            "doc": "Set flags to false and Counters to 0",
+            "verb": "play",
+            "object": "params",
+            "context": "One Blower Lvls",
+            "ruleType": "Reset",
+            "priority": 10,       // Want to run late
+            "conditions": {
+            },
+            "predicate": {
+                "!set":{"state.flags.blowerUsed":false},
+                "!set":{"state.observables.blowerManip":0}
+                }
+                        
+            }
+        },
+        "queryResult": true,
+          "final":{
+            "uid": "Test0",
+            "context": "Mass Level 50",
+            "timers":{},
+            "timestamp":"2018-09-25 12:12:28 EDT", 
+            "flags":{
+                "massUsed": false,
+                "airUsed": false,
+                "gravityUsed":false
+            },
+            "observables":{
+                "massManip":0,
+                "airManip":0,
+                "gravityManip":0
+            } 
+        }
+    }
+]
