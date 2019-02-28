@@ -1,0 +1,300 @@
+[
+    {"name":  "Start Timer",
+        "doc":"",
+        "initial":{
+            "uid": "Test0",
+            "context": "Level 1",
+            "timers":{},
+            "timestamp":"2018-09-25 12:00:00 EDT",  
+            "flags":{
+            },
+            "observables":{
+            }
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "initialized",
+            "object": "game level",
+            "context": "42",
+            "timestamp":"2018-09-25 12:00:00 EDT",   
+            "data": {
+                "gameLevelID":42
+            }
+        },
+        "rule":{
+            "name": "Start Timer",
+            "doc": "When Level Starts, Start the timer",
+            "verb": "initialized",
+            "object": "game level",
+            "context": "ALL",
+            "ruleType": "Status",
+            "priority": 2,
+            "conditions": {
+            },
+            "predicate": {
+                "!start":"state.timers.levelTime"
+            }
+        },
+        "queryResult":true,
+          "final":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "2018-09-25 12:00:00 EDT",
+                    "totalTime":{"time":0, "units":"secs"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+            } 
+        }
+    },
+    {"name":  "Pause on Suspend",
+        "doc":"",
+        "initial":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "2018-09-25 12:00:00 EDT",
+                    "totalTime":{"time":0, "units":"secs"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+            } 
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "suspended",
+            "object": "game level",
+            "context": "42",
+            "timestamp":"2018-09-25 12:01:00 EDT",   
+            "data": {
+                "gameLevelID":42
+            }
+        },
+        "rule":{
+            "name": "Pause on Suspend",
+            "doc": "When Level is paused, pause the timer",
+            "verb": "suspended",
+            "object": "game level",
+            "context": "ALL",
+            "ruleType": "Status",
+            "priority": 2,
+            "conditions": {
+            },
+            "predicate": {
+                "!set":{"state.timers.levelTime.running":false}
+            }
+        },
+        "queryResult":true,
+          "final":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "NA",
+                    "totalTime":{"time":1, "units":"mins"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+            } 
+        }
+    },
+    {"name":  "Resume on Resume",
+        "doc":"",
+        "initial":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "NA",
+                    "totalTime":{"time":1, "units":"mins"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+            } 
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "resumed",
+            "object": "game level",
+            "context": "42",
+            "timestamp":"2018-09-25 12:01:30 EDT",   
+            "data": {
+                "gameLevelID":42
+            }
+        },
+        "rule":{
+            "name": "Resume on Resume",
+            "doc": "When Level is paused, pause the timer",
+            "verb": "resumed",
+            "object": "game level",
+            "context": "ALL",
+            "ruleType": "Status",
+            "priority": 2,
+            "conditions": {
+            },
+            "predicate": {
+                "!set":{"state.timers.levelTime.running":true}
+            }
+        },
+        "queryResult":true,           
+        "final":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "2018-09-25 12:01:30 EDT",
+                    "totalTime":{"time":1, "units":"mins"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+            } 
+        }
+    },
+    {
+        "name":  "Set observable at end of level",
+        "doc":"",
+        "initial":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "2018-09-25 12:01:30 EDT",
+                    "totalTime":{"time":1, "units":"mins"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+            } 
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "exited",
+            "object": "game level",
+            "context": "42",
+            "timestamp":"2018-09-25 12:01:35 EDT",   
+            "data": {
+                "gameLevelID":42
+            }
+        },
+        "rule":{
+            "name": "Set observable at end of level",
+            "doc": "When Level is exited, set total time.",
+            "verb": "exited",
+            "object": "game level",
+            "context": "ALL",
+            "ruleType": "Status",
+            "priority": 2,
+            "conditions": {
+            },
+            "predicate": {
+                "!set":{"state.timers.levelTime.running":false},
+                "!set":{"state.observables.levelTime":
+                        "state.timers.levelTime"}
+            }
+        },
+        "queryResult":true,           
+        "final":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "NA",
+                    "totalTime":{"time":95, "units":"secs"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+                "state.timers.levelTime":{"time":95,"units":"secs"}
+            } 
+        }
+    },
+    {
+        "name":  "Set observable at end of level",
+        "doc":"",
+        "initial":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "2018-09-25 12:01:30 EDT",
+                    "totalTime":{"time":1, "units":"mins"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+            } 
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "satisfied",
+            "object": "game level",
+            "context": "42",
+            "timestamp":"2018-09-25 12:01:35 EDT",   
+            "data": {
+                "gameLevelID":42
+            }
+        },
+        "rule":{
+            "name": "Set observable at end of level",
+            "doc": "When player earns coin, set total time.",
+            "verb": "satisfied",
+            "object": "game level",
+            "context": "ALL",
+            "ruleType": "Status",
+            "priority": 2,
+            "conditions": {
+            },
+            "predicate": {
+                "!set":{"state.timers.levelTime.running":false},
+                "!set":{"state.observables.levelTime":
+                        "state.timers.levelTime"}
+            }
+        },
+        "queryResult":true,          
+        "final":{
+            "uid": "Test0",
+            "context": 42,
+            "timers":{
+                "levelTime":{
+                    "name":"levelTime",
+                    "startTime": "NA",
+                    "totalTime":{"time":95, "units":"secs"}
+                }
+            },
+            "flags":{
+            },
+            "observables":{
+                "state.timers.levelTime":{"time":95,"units":"secs"}
+            } 
+        }
+    }
+]
