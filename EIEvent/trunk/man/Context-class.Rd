@@ -3,7 +3,6 @@
 \docType{class}
 \alias{Context-class}
 \alias{toString,Context-method}
-\title{Constructor for the Context object}
 \title{Class \code{"Context"}}
 \description{
 

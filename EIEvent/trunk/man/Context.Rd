@@ -3,6 +3,7 @@
 \alias{parseContext}
 \alias{as.jlist,Context,list-method}
 \alias{show,Context-method}
+\title{Constructor for the Context object}
 \description{
 
   This is the constructor for the \code{\linkS4class{Context}} objects
