@@ -1,0 +1,62 @@
+[
+    {
+        "name":"End of Level Generic Test",
+        "doc": "Check that output message is correct."
+        "initial":{
+            "uid": "Test0",
+            "context": "Level 84",
+            "oldContext": "Level 84",
+            "timestamp":"2018-09-25 12:12:28 EDT",   
+            "timers":{},
+            "flags":{
+            },
+            "observables":{
+                "badge":"gold",
+                "attempts":3,
+             }
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "verb": "satisfied",
+            "object": "game level",
+            "context": "Level 84",
+            "timestamp":"2018-09-25 12:12:28 EDT",   
+            "data": {
+                "badge":"gold"
+            }
+        },
+        "rule":{
+            "name": "Satisfied Trigger",
+            "doc": "When the level is satisifed, send the observables.",
+            "verb": "satisfied",
+            "object": "game level",
+            "context": "ALL",
+            "ruleType": "Trigger", 
+            "priority": 2,
+            "conditions": {
+            },
+            "predicate": {
+                "!send":{
+                    "message":"Observables Available",
+                    "listeners":"EA",
+                    "context":"state.oldContext",
+                    "data":{}
+                }
+            }
+        },
+        "queryResult": true,
+        "final":{
+            "app": "https://epls.coe.fsu.edu/PPTest",
+            "uid": "Test0",
+            "context": "Level 84",
+            "sender":["EI","EIEvent"],
+            "message":"Observables Available",
+            "timestamp":"2018-09-25 12:12:28 EDT",   
+            "data":{
+                "badge":"gold",
+                "attempts":3
+            } 
+        }
+    }
+]

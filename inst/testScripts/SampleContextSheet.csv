@@ -1,0 +1,10 @@
+CID,Number,Name,Sketching,Lever,Manipulation,Blower,BlowerAtLeft,Doc
+Sketching,-100,Sketching Levels,0,0,0,0,0,Context set for all sketching levels
+Lever,-110,Lever Levels,1,0,0,0,0,Context set for Level Levels
+Manipulation,-200,Mainpulation Levels,0,0,0,0,0,Context set for all manipulation levels
+Blower,-220,Blower Levels,0,0,1,0,0,Context set for all blower levels
+BlowerAtLeft,-221,Blower at Left ,0,0,1,1,0,Context set for levels with two blowers where the on the left is important
+Balance,204,Balance,0,0,1,1,1,
+BlockedByBlocks,205,Blocked by Blocks,0,0,1,0,0,
+SpiderWeb,27,Spider Web,1,0,0,0,0,
+Stairs,28,Stairs,1,1,0,0,0,
