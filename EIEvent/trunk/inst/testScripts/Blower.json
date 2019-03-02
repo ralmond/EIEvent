@@ -1,7 +1,7 @@
 [
     {
         "name":  "Blower Flag Test",
-         "doc":"",
+        "doc":"",
         "initial": {
             "uid": "Test0",
             "context": "Level 50",
@@ -46,7 +46,7 @@
             }
         },
         "queryResult":true,
-          "final":{
+        "final":{
             "uid": "Test0",
             "context": "Level 50",
             "timers":{},
@@ -61,7 +61,7 @@
     },
     {
         "name": "Reset Blower Rule Test",
-         "doc":"",
+        "doc":"",
         "initial": {
             "uid": "Test0",
             "context": "Level 50",
@@ -97,12 +97,10 @@
             "predicate": {
                 "!set":{"state.flags.blowerUsed":false},
                 "!set":{"state.observables.blowerManip":0}
-                }
-                        
             }
         },
         "queryResult": true,
-          "final":{
+        "final":{
             "uid": "Test0",
             "context": "Mass Level 50",
             "timers":{},

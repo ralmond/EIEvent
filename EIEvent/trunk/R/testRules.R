@@ -84,9 +84,13 @@ testQuery <- function (test) {
   flog.info(context)
   if (!is.null(doc(test))) flog.debug(doc(test))
   rule <- rule(test)
+  if(is.null(rule)) stop("Missing rule in test",name(test))
   initial <- initial(test)
+  if(is.null(initial)) stop("Missing initial state in test",name(test))
   event <- event(test)
+  if(is.null(event)) stop("Missing event in test",name(test))
   expected <- queryResult(test)
+  if(is.null(expected)) stop("Missing Query Result in test",name(test))
   actual <-withFlogging(checkCondition(condition(rule),initial,event),
                         context=context,rule=rule,
                         initial=initial,event=event)
@@ -99,7 +103,7 @@ testQuery <- function (test) {
             ifelse(is.na(result),"Error",ifelse(result,"Passed","Failed")))
   if (!is.na(result) && !result) {
     flog.debug("Rule:",rule,capture=TRUE)
-    flog.debug("Initial State:",initial,capture=TRUE)
+    flog.debug("Initial State:",initial(test),capture=TRUE)
     flog.debug("Event:",event,capture=TRUE)
     flog.debug("Expected Result:",expected,capture=TRUE)
   }
@@ -197,13 +201,17 @@ testPredicate <- function (test) {
   flog.info(context)
   if (!is.null(doc(test))) flog.debug(doc(test))
   rule <- rule(test)
+  if(is.null(rule)) stop("Missing rule in test",name(test))
   state <- initial(test)
+  if(is.null(state)) stop("Missing initial state in test",name(test))
   event <- event(test)
+  if(is.null(event)) stop("Missing event in test",name(test))
   expected <- final(test)
+  if(is.null(expected)) stop("Missing final state in test",name(test))
 
   actual <-withFlogging(executePredicate(predicate(rule),state,event),
                         context=context,rule=rule,
-                        initial=initial,event=event)
+                        initial=state,event=event)
   if (is(actual,"try-error")) {
     flog.info("Test %s:  Error.",name(test))
     result <- NA
@@ -211,7 +219,7 @@ testPredicate <- function (test) {
     result <- withFlogging(all.equal(expected,actual),
                            context=paste(context,": Checking results"),
                            rule=rule,
-                           initial=initial,event=event)
+                           initial=state,event=event)
     if (is(result,"try-error")) {
       flog.info("Test %s:  Error.",name(test))
       result <- NA
@@ -226,9 +234,10 @@ testPredicate <- function (test) {
   }
   if (!is.na(result) && !result) {
     flog.debug("Rule:",rule,capture=TRUE)
-    flog.debug("Initial State:",initial,capture=TRUE)
+    flog.debug("Initial State:",initial(test),capture=TRUE)
     flog.debug("Event:",event,capture=TRUE)
     flog.debug("Expected Result:",expected,capture=TRUE)
+    flog.debug("Actual Result:",actual,capture=TRUE)
   }
   return (result)
 }
@@ -259,7 +268,7 @@ testPredicateScript <- function (filename,  suiteName=basename(filename)) {
       next
     }
     if (is.null(doc(test))) test@doc <- paste("Test",i,"in suite",suiteName,".")
-    result[i] <- testQuery(test)
+    result[i] <- testPredicate(test)
   }
   ## Remove Skiped tests.
   result <- result[run]
@@ -276,9 +285,13 @@ testRule <- function (test, contextSet=NULL) {
   flog.info(context)
   if (!is.null(doc(test))) flog.debug(doc(test))
   rule <- rule(test)
+  if(is.null(rule)) stop("Missing rule in test",name(test))
   state <- initial(test)
+  if(is.null(state)) stop("Missing initial state in test",name(state))
   event <- event(test)
+  if(is.null(event)) stop("Missing event in test",name(test))
   expected <- final(test)
+  if(is.null(expected)) stop("Missing final state in test",name(test))
   ### Check the verb, object and context
   actual <- state                       #Default is no change.
   verbmatch <- verb(rule)=="ALL" | verb(rule)==verb(event)
@@ -296,7 +309,7 @@ testRule <- function (test, contextSet=NULL) {
     }
     contextmatch <- context(rule) %in% conSet
   }
-  flog.debug("Verb match: %s, Object match: %s, Context match:",
+  flog.info("Verb match: %s, Object match: %s, Context match:",
              verbmatch, objmatch,contextmatch)
   satisfied <- FALSE
   if (verbmatch && objmatch &&
@@ -314,9 +327,9 @@ testRule <- function (test, contextSet=NULL) {
   if (satisfied) {
     actual <-withFlogging(executePredicate(predicate(rule),state,event),
                           context=paste(context,"Predicate"),rule=rule,
-                          initial=initial,event=event)
+                          initial=state,event=event)
   } else {
-    flog.debug("Skipping predicate for %s, condition is false.",name(test))
+    flog.info("Skipping predicate for %s, condition is false.",name(test))
     actual <- state
   }
   if (is(actual,"try-error")) {
@@ -326,7 +339,7 @@ testRule <- function (test, contextSet=NULL) {
     result <- withFlogging(all.equal(expected,actual),
                            context=paste(context,": Checking results"),
                            rule=rule,
-                           initial=initial,event=event)
+                           initial=state,event=event)
     if (is(result,"try-error")) {
       flog.info("Test %s:  Error.",name(test))
       result <- NA
@@ -341,9 +354,10 @@ testRule <- function (test, contextSet=NULL) {
   }
   if (!is.na(result) && !result) {
     flog.debug("Rule:",rule,capture=TRUE)
-    flog.debug("Initial State:",initial,capture=TRUE)
+    flog.debug("Initial State:",initial(test),capture=TRUE)
     flog.debug("Event:",event,capture=TRUE)
     flog.debug("Expected Result:",expected,capture=TRUE)
+    flog.debug("Actual Result:",actual,capture=TRUE)
   }
   return (result)
 }

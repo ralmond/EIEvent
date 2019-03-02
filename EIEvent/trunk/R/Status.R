@@ -6,7 +6,7 @@
 setOldClass("difftime")
 setClass("Timer",
          slots=c(name="character",
-                 startTime="POSIXct",
+                 startTime="POSIXt",
                  totalTime="difftime"))
 Timer <- function(name) {
   new("Timer",name=name,startTime=as.POSIXct(NA),
@@ -28,7 +28,7 @@ setMethod("pause",c("Timer","POSIXt"),
             }
             timer@totalTime <- timer@totalTime +
               as.POSIXct(time) - timer@startTime
-            timer@startTime <- as.POSIXct(NA)
+            timer@startTime <- as.POSIXlt(NA)
             timer})
 
 setMethod("resume",c("Timer","POSIXt"), function(timer,time) start(timer,time))
@@ -42,21 +42,21 @@ setMethod("totalTime","Timer", function(timer) timer@totalTime)
 setMethod("timeSoFar",c("Timer","POSIXt"),
           function(timer,time) {
             if (isRunning(timer)) {
-              timer@totalTime + as.POSIXct(time) - timer@startTime
+              timer@totalTime + as.POSIXlt(time) - timer@startTime
             } else {
               timer@totalTime
             }})
 setMethod("timeSoFar<-",c("Timer","POSIXt"),
           function(timer,time,value) {
             if (isRunning(timer)) {
-              timer@startTime <- as.POSIXct(time)
+              timer@startTime <- as.POSIXlt(time)
             }
             timer@totalTime <- value
             timer})
 
 
 setMethod("reset","Timer", function(timer) {
-  timer@startTime <- as.POSIXct(NA)
+  timer@startTime <- as.POSIXlt(NA)
   timer@totalTime <- as.difftime(0,units="secs")
   timer
 })
@@ -69,8 +69,8 @@ setMethod("as.jlist",c("Timer","list"), function(obj,ml, serialize=TRUE) {
   ## Additional work
   ml$name <- unbox(ml$name)
   ml$startTime <- unboxer(ml$startTime)
-  ml$totalTime <- unboxer(list(tim=as.numeric(ml$totalTime),
-                               units=units(ml$totalTime)))
+  ml$totalTime <- list(time=unboxer(as.numeric(ml$totalTime)),
+                       units=unboxer(units(ml$totalTime)))
 
   ml
   })
@@ -79,10 +79,22 @@ parseTimer <- function (rec) {
   if (is.null(rec$totalTime)) {
     tt <- as.difftime(NA_real_,units="secs")
   } else {
-    tt <- do.call(as.difftime,rec$totalTime)
+    tim <- as.numeric(rec$totalTime[[pmatch("tim",names(rec$totalTime))]])
+    units <- as.character(rec$totalTime$units)
+    tt <- as.difftime(tim,units=units)
+  }
+  if (is.null(rec$startTime) || is.na(rec$startTime) ||
+      (is.character(rec$startTime) && rec$startTime=="NA")) {
+    st <- as.POSIXlt(NA)
+  } else {
+    if (is.list(rec$startTime) && !is.null(rec$startTime[['$date']])) {
+      st <- jsonlite:::parse_date(rec$startTime[['$date']])
+    } else {
+      st <- as.POSIXlt(ununboxer(rec$startTime))
+    }
   }
   new("Timer",name=ununboxer(rec$name),
-      startTime=ununboxer(rec$startTime), totalTime=tt)
+      startTime=st, totalTime=tt)
 }
 
 
@@ -412,14 +424,14 @@ all.equal.Status <- function (target, current, ...) {
       !setequal(fnamet,fnamec)) {
     msg <- c(msg,"Names or number of flags differ.")
     if (length(setdiff(fnamet,fnamec)) > 0L)
-      msg <- c(msg,paste("Flags in target but not in current",
+      msg <- c(msg,paste("Flags in target but not in current:",
                          setdiff(fnamet,fnamec)))
     if (length(setdiff(fnamec,fnamet)) > 0L)
-      msg <- c(msg,paste("Flags in current but not in target",
+      msg <- c(msg,paste("Flags in current but not in target:",
                          setdiff(fnamec,fnamet)))
   }
-  msgf <- all.equal(target@flags[fnamet],target@flags[fnamet],...,
-                    use.names=FALSE)
+  msgf <- all.equal(target@flags,current@flags,...,
+                    check.attributes=FALSE)
   if (!isTRUE(msgf)) msg <- c(msg,msgf)
   ## Check Observables
   onamet <- names(target@observables)
@@ -428,14 +440,14 @@ all.equal.Status <- function (target, current, ...) {
       !setequal(onamet,onamec)) {
     msg <- c(msg,"Names or number of observables differ.")
     if (length(setdiff(onamet,onamec)) > 0L)
-      msg <- c(msg,paste("Observables in target but not in current",
+      msg <- c(msg,paste("Observables in target but not in current:",
                          setdiff(onamet,onamec)))
     if (length(setdiff(onamec,onamet)) > 0L)
-      msg <- c(msg,paste("Observables in current but not in target",
+      msg <- c(msg,paste("Observables in current but not in target:",
                          setdiff(onamec,onamet)))
   }
-  msgo <- all.equal(target@observables[onamet],target@observables[onamet],...,
-                    use.names=FALSE)
+  msgo <- all.equal(target@observables,current@observables,...,
+                    check.attributes=FALSE)
   if (!isTRUE(msgo)) msg <- c(msg,msgo)
   ## Check timers
   tnamet <- names(target@timers)
@@ -444,14 +456,14 @@ all.equal.Status <- function (target, current, ...) {
       !setequal(tnamet,tnamec)) {
     msg <- c(msg,"Names or number of timers differ.")
     if (length(setdiff(tnamet,tnamec)) > 0L)
-      msg <- c(msg,paste("Timers in target but not in current",
+      msg <- c(msg,paste("Timers in target but not in current:",
                          setdiff(tnamet,tnamec)))
     if (length(setdiff(tnamec,tnamet)) > 0L)
-      msg <- c(msg,paste("Timers in current but not in target",
+      msg <- c(msg,paste("Timers in current but not in target:",
                          setdiff(tnamec,tnamet)))
   }
-  msgt <- all.equal(target@timers[tnamet],target@timers[tnamet],...,
-                    use.names=FALSE)
+  msgt <- all.equal(target@timers,current@timers,...,
+                    check.attributes=FALSE)
   if (!isTRUE(msgt)) msg <- c(msg,msgt)
   ## Timestamp
   msgt <- all.equal(timestamp(target),timestamp(current),...)

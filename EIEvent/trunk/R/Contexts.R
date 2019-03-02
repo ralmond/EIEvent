@@ -4,11 +4,11 @@
 setClass("Context",
          slots=c("_id"="character",    #Mongo ID
                  cid="character",       #Context ID
-                name="character",      #Longer name
-                number="integer",       #Context #
-                belongsTo="character",  #Contexts to which this belongs
-                doc="character",
-                app="character"))
+                 name="character",      #Longer name
+                 number="integer",       #Context #
+                 belongsTo="character",  #Contexts to which this belongs
+                 doc="character",
+                 app="character"))
 Context <- function (cid,name,number,belongsTo=character(),
                      doc="", app="default") {
   new("Context","_id"=c(oid=NA_character_),cid=cid,
