@@ -87,19 +87,22 @@ checkOneCondition <- function(condition,target,state,event) {
 }
 
 "?in" <- function (arg,target,state,event) {
-    if (is.character(arg) &&
+  if (is.character(arg) &&
       all(grepl("^(state|event)\\.",arg) )) {
     arg <- lapply(arg, function (value)
       getJS(value,state,event))
   }
-    target %in% arg
+  if (length(target)==0L || length(arg)==0L) return (FALSE)
+  target %in% arg
 }
+
 "?nin" <- function (arg,target,state,event) {
   if (is.character(arg) &&
       all(grepl("^(state|event)\\.",arg) )) {
     arg <- lapply(arg, function (value)
       getJS(value,state,event))
   }
+  if (length(target)==0L || length(arg)==0L) return (FALSE)
   !(target %in% arg)
 }
 

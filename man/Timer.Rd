@@ -89,7 +89,7 @@ parseTimer(rec)
 }
 \examples{
 sw <- Timer("stopwatch")
-swa <- parseTimer(ununboxer(as.jlist(sw,attributes(sw))))
+swa <- parseTimer(as.jlist(sw,attributes(sw)))
 stopifnot(isRunning(swa)==FALSE,
           timeSoFar(swa,as.POSIXct("2018-12-21 00:01"))==
           as.difftime(0,units="mins"),
@@ -97,7 +97,7 @@ stopifnot(isRunning(swa)==FALSE,
 
 ## Start the timer.
 sw <- start(sw,as.POSIXct("2018-12-21 00:01"))
-swa <- parseTimer(ununboxer(as.jlist(sw,attributes(sw))))
+swa <- parseTimer(as.jlist(sw,attributes(sw)))
 ## Note that time so far is based on the time argument.
 stopifnot(isRunning(swa)==TRUE,
           timeSoFar(swa,as.POSIXct("2018-12-21 00:10"))==
@@ -106,7 +106,7 @@ stopifnot(isRunning(swa)==TRUE,
 
 ## Pause the timer.
 sw <- pause(sw,as.POSIXct("2018-12-21 00:10"))
-swa <- parseTimer(ununboxer(as.jlist(sw,attributes(sw))))
+swa <- parseTimer(as.jlist(sw,attributes(sw)))
 stopifnot(isRunning(swa)==FALSE,
           timeSoFar(swa,as.POSIXct("2018-12-21 00:10"))==
           as.difftime(9,units="mins"),

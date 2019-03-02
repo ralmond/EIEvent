@@ -195,6 +195,10 @@ db.createCollection("States", {
                     bsonType: "string",
                     description: "Context (task) ID (string)"
                 },
+                oldContext: {
+                    bsonType: "string",
+                    description: "Previous context (task) ID (string)"
+                },
                 timers: {
                     bsonType: "array",
                     description: "List of timers"

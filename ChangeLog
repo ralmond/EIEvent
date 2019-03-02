@@ -1,3 +1,20 @@
+2019-03-01  Russell Almond  <ralmond@Limu>
+
+	* R/Predicates.R (asif.difftime): Fixed so that defaults to
+	seconds if integer.
+
+	* R/Status.R (parseTimer): Debugged timer parsing.
+
+2019-02-28  Russell Almond  <ralmond@Limu>
+
+	* R/Status.R (all.equal.Status): Bug where not checking value of
+	attributes. 
+
+	* R/Condition.R ("?in"): Check for NULL target value.
+
+	* R/testRules.R (testRule,testQuery,testPredicate): Added check
+	for missing fields in test object.
+
 2019-02-02  Rusell Almond  <ralmond@Cherry>
 
 	* R/AAGenerics.R (MongoDB):  Putting the calls to the mongo()

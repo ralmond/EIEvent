@@ -201,13 +201,15 @@ modify <- function (predicate, state, event, op) {
 ## Difftime could be described as a list.  So we need a special method for that.
 ## This function takes a list all of whose components are
 asif.difftime <- function (e2) {
-  if (is.list(e2)) {
+  if (is.list(e2) || is.numeric(e2)) {
     units <- names(e2)
     if (!is.null(units) &&
         all(units %in% c("secs","mins","hours","days","weeks"))) {
       e2 <-do.call("+",
                    lapply(units,
                           function (u) as.difftime(e2[[u]],units=u)))
+    } else if (is.numeric(e2) && is.null(units)) {
+      e2 <- as.difftime(sum(e2),units="secs")
     }
   }
   e2

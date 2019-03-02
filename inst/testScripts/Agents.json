@@ -52,13 +52,13 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":[],
-        "state.observables.lastAgent":"NA"
+        "agentsUsed":[],
+        "lastAgent":"NA"
       } 
     }
   },
   {
-    "name": "Update agent used test",
+    "name": "Update agent used test Ramp",
     "doc":"",
     "initial":{
       "uid": "Test0",
@@ -68,8 +68,8 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":[],
-        "state.observables.lastAgent":"NA"
+        "agentsUsed":[],
+        "lastAgent":"NA"
       }
     },
     "event":{
@@ -92,7 +92,7 @@
       "ruleType": "Observable Rule",
       "priority": 5,
       "conditions": {
-        "gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
       },
       "predicate": {
         "!push":{"state.observables.agentsUsed":
@@ -110,13 +110,13 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":["Ramp"],
-        "state.observables.lastAgent":"Ramp"
+        "agentsUsed":["Ramp"],
+        "lastAgent":"Ramp"
       } 
     }
   },
   {
-    "name" : "Update agent used test",
+    "name" : "Update agent used test Lever",
     "doc":"",
     "initial":{
       "uid": "Test0",
@@ -126,8 +126,8 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":[],
-        "state.observables.lastAgent":"NA"
+        "agentsUsed":[],
+        "lastAgent":"NA"
       }
     },
     "event":{
@@ -150,7 +150,7 @@
       "ruleType": "Observable Rule",
       "priority": 5,
       "conditions": {
-        "gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
       },
       "predicate": {
         "!push":{"state.observables.agentsUsed":
@@ -168,13 +168,13 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":["Lever","Ramp"],
-        "state.observables.lastAgent":"Lever"
+        "agentsUsed":["Lever","Ramp"],
+        "lastAgent":"Lever"
       } 
     }
   },
   {
-    "name": "Update agent used test",
+    "name": "Update agent used test Springboard",
     "doc":"",
     "initial":{
       "uid": "Test0",
@@ -184,8 +184,8 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":[],
-        "state.observables.lastAgent":"NA"
+        "agentsUsed":[],
+        "lastAgent":"NA"
       }
     },
     "event":{
@@ -208,7 +208,7 @@
       "ruleType": "Observable Rule",
       "priority": 5,
       "conditions": {
-        "gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
       },
       "predicate": {
         "!push":{"state.observables.agentsUsed":
@@ -226,13 +226,13 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":["Springboard","Lever","Ramp"],
-        "state.observables.lastAgent":"Springboard"
+        "agentsUsed":["Springboard","Lever","Ramp"],
+        "lastAgent":"Springboard"
       } 
     }
   },
   {
-    "name":"Update agent used test",
+    "name":"Update agent used test Pendulum",
     "doc":"",
     "initial":{
       "uid": "Test0",
@@ -242,8 +242,8 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":[],
-        "state.observables.lastAgent":"NA"
+        "agentsUsed":[],
+        "lastAgent":"NA"
       }
     },
     "event":{
@@ -266,7 +266,7 @@
       "ruleType": "Observable Rule",
       "priority": 5,
       "conditions": {
-        "gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
       },
       "predicate": {
         "!push":{"state.observables.agentsUsed":
@@ -284,8 +284,8 @@
       "flags":{
       },
       "observables":{
-        "state.observables.agentsUsed":["Pendulum","Springboard","Lever","Ramp"],
-        "state.observables.lastAgent":"Lever"
+        "agentsUsed":["Pendulum","Springboard","Lever","Ramp"],
+        "lastAgent":"Lever"
       } 
     }
   }
