@@ -8,16 +8,26 @@
 ## rule -- the rule being tested.
 ## result -- a logical value.
 
-setClass("RuleTest",
+setClass("EITest",
          list("_id"="character",
               app="character",
               name="character",
               doc="character",
               initial="Status",
               event="Event",
-              rule="Rule",
-              queryResult="logical",
               final="Status"))
+
+setClass("RuleTest",
+         list(rule="Rule",
+              queryResult="logical"),
+         contains="EITest")
+
+
+EITest <- function(name, doc="",app="default",initial,event,
+                     final) {
+  new("RuleTest","_id"=c(oid=NA_character_),app=app,name=name,
+      doc=doc,initial=initial,event=event, final=final)
+}
 
 RuleTest <- function(name=paste("Test of Rule",rule),
                      doc="",app="default",initial,event,rule,queryResult,
@@ -29,37 +39,58 @@ RuleTest <- function(name=paste("Test of Rule",rule),
 }
 
 
-setMethod("name","RuleTest", function(x) x@name)
-setMethod("doc","RuleTest", function(x) x@doc)
-setMethod("initial","RuleTest", function(x) x@initial)
-setMethod("event","RuleTest", function(x) x@event)
+setMethod("name","EITest", function(x) x@name)
+setMethod("doc","EITest", function(x) x@doc)
+setMethod("initial","EITest", function(x) x@initial)
+setMethod("event","EITest", function(x) x@event)
 setMethod("rule","RuleTest", function(x) x@rule)
 setMethod("queryResult","RuleTest", function(x) x@queryResult)
-setMethod("final","RuleTest", function(x) x@final)
+setMethod("final","EITest", function(x) x@final)
 
 
+setMethod("toString","EITest", function(x, ...) {
+  paste('EITest:{',x@name,'}')
+})
 setMethod("toString","RuleTest", function(x, ...) {
   paste('RuleTest:{',x@name,'}')
 })
-setMethod("show","RuleTest",function(object) {
+setMethod("show","EITest",function(object) {
   cat(toString(object),"\n")
 })
 
-setMethod("as.jlist",c("RuleTest","list"), function(obj,ml,serialize=TRUE) {
+setMethod("as.jlist",c("EITest","list"), function(obj,ml,serialize=TRUE) {
   ml$"_id" <- NULL
   ml$class <-NULL
 
   ml$name <- unbox(ml$name)
   ml$doc <- unbox(ml$name)
-  ml$queryResult <- unbox(ml$queryResult)
 
   ml$inital <- as.jlist(ml$initial,attributes(ml$initial),serialize)
   ml$event <- as.jlist(ml$event,attributes(ml$event),serialize)
-  ml$rule <- as.jlist(ml$rule,attributes(ml$rule),serialize)
   ml$final <- as.jlist(ml$final,attributes(ml$initial),serialize)
 
   ml
 })
+
+setMethod("as.jlist",c("RuleTest","list"), function(obj,ml,serialize=TRUE) {
+  ml <- callNextMethod()
+  ml$rule <- as.jlist(ml$rule,attributes(ml$rule),serialize)
+  ml$queryResult <- unbox(ml$queryResult)
+  ml
+})
+
+parseEITest<- function (rec) {
+  if (is.null(rec$"_id")) rec$"_id" <- NA_character_
+  names(rec$"_id") <- "oid"
+  if (is.null(rec$app)) rec$app <- "default"
+  new("EITest","_id"=rec$"_id",
+      app=as.vector(rec$app),
+      name=as.vector(rec$name),
+      doc=as.vector(rec$doc),
+      initial=parseStatus(rec$initial),
+      event=parseEvent(rec$event),
+      final=parseStatus(rec$final))
+}
 
 parseRuleTest<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
@@ -302,7 +333,7 @@ testRule <- function (test, contextSet=NULL) {
     conSet <- withFlogging(applicableContexts(matchContext(context(state),
                                                            contextSet)),
                            context=paste(context,"Matching context"),
-                           target=context(status))
+                           target=context(state))
     if (is(conSet,'try-error')) {
       flog.info("Test %s:  Error.",name(test))
       return (as.logical(NA))
@@ -406,7 +437,7 @@ TestSet <-
                   initialize =
                     function(app="default",
                              dbname="EIRecords",
-                             dburi="mongo://localhost",
+                             dburi="mongodb://localhost",
                              contexts=ContextSet$new(app,dburi),
                              rules=RuleTable$new(app,dbname,dburi),
                              db = NULL,
@@ -419,6 +450,11 @@ TestSet <-
                       db <<- mongo("RuleTests",dbname,dburi)
                     }
                     db
+                  },
+                  clearAll = function () {
+                    flog.info("Clearing Test database for %s",app)
+                    testdb()$remove(buildJQuery(app=app),TRUE)
                   }
+
 
               ))

@@ -1,0 +1,173 @@
+[
+{
+    "name": "Start Level",
+    "doc": "When Level Starts, change the context.",
+    "verb": "initialized",
+    "object": "game level",
+    "context": "ALL",
+    "ruleType": "Context",
+    "priority": 2,
+    "conditions": {
+    },
+    "predicate": {
+        "!set":{"state.context":"event.data.gameLevel"}
+    }
+},
+{
+    "name": "Reset Agents",
+    "doc": "Reset the agentlist",
+    "verb": "end",
+    "object": "Level",
+    "context": "ALL",
+    "ruleType": "Reset",
+    "priority": 2,
+    "conditions": {
+    },
+    "predicate": {
+        "!set":{ "state.observables.agentsUsed":[]},
+        "!unset": {"state.observables.lastAgent":"NA"}
+    }
+},
+{
+    "name": "Update agent used.",
+    "doc": "Adds the agent to the agent list, and sets the last agent.",
+    "verb": "identified",
+    "object": "game object",
+    "context": "Sketching",
+    "ruleType": "Observable",
+    "priority": 5,
+    "conditions": {
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+    },
+    "predicate": {
+        "!push":{"state.observables.agentsUsed":
+                 "event.data.gemeObjectType"},
+        "!set": {"state.observables.lastAgent":
+                 "event.data.gemeObjectType"}
+    }
+},
+{
+    "name": "Blower flag",
+    "doc": "Set the flag and increment counter blower is used..",
+    "verb": "adjusted",
+    "object": "control",
+    "context": "Blower",
+    "ruleType": "Status",
+    "priority": 5, 
+    "conditions": {
+        "event.data.gemeObjectType":"blower",
+        "event.data.oldValue":{"?ne":"event.data.newValue"}
+    },
+    "predicate": {
+        "!set":{"state.flags.blowerUsed":true},
+        "!incr":{"state.observables.blowerManip":1}
+    }
+},
+{
+    "name": "Reset Blower Flags and Counters",
+    "doc": "Set flags to false and Counters to 0",
+    "verb": "play",
+    "object": "params",
+    "context": "Blower",
+    "ruleType": "Reset",
+    "priority": 10,       // Want to run late
+    "conditions": {
+    },
+    "predicate": {
+        "!set":{"state.flags.blowerUsed":false},
+        "!set":{"state.observables.blowerManip":0}
+    }
+},
+{
+    "name": "Coin rule",
+    "doc": "Set the value of the badge to the coin the player earned.",
+    "verb": "satisfied",
+    "object": "game level",
+    "context": "ALL",
+    "ruleType": "Observable", 
+    "priority": 5,
+    "conditions": {
+        "event.data.badge":["silver","gold"]
+    },
+    "predicate": {
+        "!set":{"state.observables.badge":"event.data.badge"}
+    }
+},    
+{
+    "name": "Start Timer",
+    "doc": "When Level Starts, Start the timer",
+    "verb": "initialized",
+    "object": "game level",
+    "context": "ALL",
+    "ruleType": "Status",
+    "priority": 2,
+    "conditions": {
+    },
+    "predicate": {
+        "!start":"state.timers.levelTime"
+    }
+},
+{
+    "name": "Pause on Suspend",
+    "doc": "When Level is paused, pause the timer",
+    "verb": "suspended",
+    "object": "game level",
+    "context": "ALL",
+    "ruleType": "Status",
+    "priority": 2,
+    "conditions": {
+    },
+    "predicate": {
+        "!set":{"state.timers.levelTime.running":false}
+    }
+},
+{
+    "name": "Resume on Resume",
+    "doc": "When Level is paused, pause the timer",
+    "verb": "resumed",
+    "object": "game level",
+    "context": "ALL",
+    "ruleType": "Status",
+    "priority": 2,
+    "conditions": {
+    },
+    "predicate": {
+        "!set":{"state.timers.levelTime.running":true}
+    }
+},
+{
+    "name": "Set observable at end of level",
+    "doc": "When Level is exited, set total time.",
+    "verb": "exited",
+    "object": "game level",
+    "context": "ALL",
+    "ruleType": "Status",
+    "priority": 2,
+    "conditions": {
+    },
+    "predicate": {
+        "!set":{"state.timers.levelTime.running":false},
+        "!set":{"state.observables.levelTime":
+                "state.timers.levelTime"}
+    }
+},    
+{
+    "name": "Satisfied Trigger",
+    "doc": "When the level is satisifed, send the observables.",
+    "verb": "satisfied",
+    "object": "game level",
+    "context": "ALL",
+    "ruleType": "Trigger", 
+    "priority": 2,
+    "conditions": {
+    },
+    "predicate": {
+        "!send":{
+            "mess":"Observables Available",
+            "listeners":"EA",
+            "context":"state.oldContext",
+            "data":{}
+        }
+    }
+}
+]

@@ -1,15 +1,15 @@
 \name{matchContext}
 \alias{matchContext}
-\alias{updateContext}
-\alias{clearContexts}
-\alias{clearContexts,ContextSet-method}
 \alias{matchContext,character,ContextSet-method}
 \alias{matchContext,numeric,ContextSet-method}
-\alias{updateContext,Context,ContextSet-method}
-\alias{clearContexts,list-method}
 \alias{matchContext,character,list-method}
 \alias{matchContext,numeric,list-method}
+\alias{updateContext}
+\alias{updateContext,Context,ContextSet-method}
 \alias{updateContext,Context,list-method}
+\alias{clearContexts}
+\alias{clearContexts,ContextSet-method}
+\alias{clearContexts,list-method}
 \title{Find or replace contexts in a context set}
 \description{
 
@@ -30,8 +30,8 @@ updateContext(con, set)
 \S4method{updateContext}{Context,ContextSet}(con, set)
 \S4method{updateContext}{Context,list}(con, set)
 clearContexts(set)
-\S4method{clearContext}{ContextSet}(set)
-\S4method{clearContext}{list}(set)
+\S4method{clearContexts}{ContextSet}(set)
+\S4method{clearContexts}{list}(set)
 }
 \arguments{
   \item{id}{This should be either a character or numeric scalar giving

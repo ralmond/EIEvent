@@ -8,3 +8,4 @@ Balance,204,Balance,0,0,1,1,1,
 BlockedByBlocks,205,Blocked by Blocks,0,0,1,0,0,
 SpiderWeb,27,Spider Web,1,0,0,0,0,
 Stairs,28,Stairs,1,1,0,0,0,
+*INITIAL*,0,*INITIAL*,0,0,0,0,0,Baseline context before first level.

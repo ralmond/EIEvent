@@ -372,9 +372,10 @@ removeJSfield <- function (target,fieldlist) {
 setMethod("as.jlist",c("Status","list"), function(obj,ml,serialize=TRUE) {
   ml$"_id" <- NULL
   ml$class <-NULL
-
+  ml$app <- unboxer(ml$app)
   ml$uid <- unboxer(ml$uid)
   ml$context <- unboxer(ml$context)
+  ml$oldContext <- unboxer(ml$oldContext)
   ml$timestamp <- unboxer(ml$timestamp)
 
   ml$timers <- unboxer(lapply(ml$timers,
@@ -402,13 +403,14 @@ parseStatus<- function (rec) {
 
 ##We need an all.equal method as we need to suppress checking names on
 ##parts of the data fields which might be different.
-all.equal.Status <- function (target, current, ...) {
+all.equal.Status <- function (target, current, ...,checkTimestamp=FALSE,check_ids=TRUE) {
   if (!is(current,"Status"))
     return(paste("Target is 'Status' and current is '",class(current),"'."))
   msg <- character()
-  if ((is.na(target@"_id") && !is.na(current@"_id")) ||
-      (!is.na(target@"_id") && !isTRUE(target@"_id" ==  current@"_id")))
-    msg <- c(msg,"Database IDs do not match.")
+  if (check_ids)
+    if ((is.na(target@"_id") && !is.na(current@"_id")) ||
+        (!is.na(target@"_id") && !isTRUE(target@"_id" ==  current@"_id")))
+      msg <- c(msg,"Database IDs do not match.")
   if (app(target) != app(current))
     msg <- c(msg,"Application IDs do not match.")
   if (uid(target) != uid(current))
@@ -466,9 +468,12 @@ all.equal.Status <- function (target, current, ...) {
                     check.attributes=FALSE)
   if (!isTRUE(msgt)) msg <- c(msg,msgt)
   ## Timestamp
-  msgt <- all.equal(timestamp(target),timestamp(current),...)
-  if (!isTRUE(msgt)) msg <- c(msg,msgt)
-    ## Return true if message list is empty.
+  if (checkTimestamp) {
+    if (abs(timestamp(target)-timestamp(current)) >
+        asif.difftime(list(secs=.1)))
+      msg <- c(msg,"Timestamps differ by more than .1 secs")
+  }
+  ## Return true if message list is empty.
   if (length(msg)==0L) TRUE
   else msg
 }
@@ -485,7 +490,7 @@ UserRecordSet <-
               methods = list(
                   initialize =
                     function(app="default",dbname="EIRecords",
-                             dburi="mongo://localhost:271017",
+                             dburi="mongodb://localhost:271017",
                              db = NULL,
                              ...)
                       callSuper(app=app,db=db,dbname=dbname,dburi=dburi,...)
@@ -494,12 +499,12 @@ UserRecordSet <-
 
 ## Student Record Methods
 UserRecordSet$methods(
-                  recorddb = function () {
-                    if (is.null(db)) {
-                      db <<- mongo("States",dbname,dburi)
-                    }
-                    db
-                  },
+             recorddb = function () {
+               if (is.null(db)) {
+                 db <<- mongo("States",dbname,dburi)
+               }
+               db
+             },
              getStatus = function (uid) {
                getOneRec(buildJQuery(app=app,uid=uid),recorddb(),
                          parseStatus)
@@ -517,13 +522,23 @@ UserRecordSet$methods(
                if(!is.null(rec)) {
                  flog.debug("Found default student record for  %s", uid)
                  rec@uid <- uid
+                 rec@timestamp <- Sys.time()
                  saveRec(rec,recorddb())
                  return(rec)
                }
                flog.debug("Making blank student record for  %s", uid)
-               rec <- Status(uid=uid,context="*INITIAL*",app=app)
+               rec <- Status(uid=uid,context="*INITIAL*",timestamp=Sys.time(),
+                             app=app)
                rec <- saveRec(rec,recorddb())
                rec
-             })
+             },
+             clearAll = function(clearDefault=FALSE) {
+               flog.info("Clearing User Records for %s",app)
+               if (clearDefault)
+                 recorddb()$remove(buildJQuery(app=app))
+               else
+                 recorddb()$remove(buildJQuery(app=app,uid=c("ne"="*DEFAULT*")))
+             }
+             )
 
 

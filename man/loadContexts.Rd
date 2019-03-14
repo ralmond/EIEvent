@@ -130,9 +130,9 @@ testSet <- ContextSet$new(app="ecd://epls.coe.fsu.edu/rga/test",
 
 clearContexts(testSet)
 loadContexts(conmat,testSet,"ecd://epls.coe.fsu.edu/rga/test")
-matchContext(28L,testSet)
-matchContext("Stairs",testSet)
-
+c1 <- matchContext(28L,testSet)
+c2 <- matchContext("Stairs",testSet)
+stopifnot(all.equal(c1,c2))
 
 }
 \keyword{ manip}

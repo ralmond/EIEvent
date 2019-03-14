@@ -1,3 +1,10 @@
+2019-03-06  Rusell Almond  <ralmond@Cherry>
+
+	* R/Predicates.R (asif.difftime): Rolled back change in
+	asif.difftime.  Not sure what this is going to break, but
+	currently forcing things to difftimes that should stay as ints or
+	reals. 
+
 2019-03-01  Russell Almond  <ralmond@Limu>
 
 	* R/Predicates.R (asif.difftime): Fixed so that defaults to

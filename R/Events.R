@@ -29,6 +29,23 @@ setMethod("show","Event",function(object) {
   cat(toString(object),"\n")
 })
 
+all.equal.Event <- function (target, current, ...,checkTimestamp=FALSE,check_ids=TRUE) {
+  if (!is(current,"Event"))
+    return(paste("Target is 'Event' and current is '",class(current),"'."))
+  msg <- all.equal.P4Message(target,current,...,checkTimestamp=checkTimestamp,
+                             check_ids=check_ids)
+  if (isTRUE(msg)) msg <- character()
+  if (verb(target) != verb(current))
+    msg <- c(msg,"Verbs do not match.")
+  if (object(target) != object(current))
+    msg <- c(msg,"Objects do not match.")
+    ## Return true if message list is empty.
+  if (length(msg)==0L) TRUE
+  else msg
+}
+
+
+
 parseEvent<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   names(rec$"_id") <- "oid"
