@@ -992,10 +992,11 @@ Identification, Test Scoring
     \caption{Special Send Predicate for Trigger Rules}
     \label{json:send}
     \begin{lstlisting}[language=json]
-      send:{
+      !send:{
         message:<message>,
         listeners:<nameOrList>,
         context:<contextVariable>,
+        timestamp:<timestamp>,
         data:{<field1>:<value1>, <field2>:<value2>, ...}
       }
     \end{lstlisting}

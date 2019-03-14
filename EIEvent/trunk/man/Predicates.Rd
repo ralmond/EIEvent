@@ -137,6 +137,8 @@ modify(predicate, state, event, op)
       argument, then the timer is set to that time. Finally, a argument
       which is a list with both a \code{time} (difftime value) and
       \code{running} (logical value) will put the timer in that state.} 
+    \item{\code{\link{!send}} Special predicate for trigger rules which
+      builds messages to be sent to various listeners.}
     \item{\code{!setCall}}{This is a trap door which allows for
       arbitrary R code to be used to calculate the value of the
       \emph{field}.  The argument should be the name of a function with
@@ -247,6 +249,9 @@ modify(predicate, state, event, op)
 
 }
 \seealso{
+
+  The special \code{\link{"!send"}} predicate (and
+  \code{\link{buildMessages}} is documented separately).
 
   \code{\linkS4class{Rule}} describes the rule object and
   \link{Conditions} describes the Conditions.

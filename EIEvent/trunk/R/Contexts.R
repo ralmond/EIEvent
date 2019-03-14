@@ -122,7 +122,6 @@ ContextSet <-
                   },
                   clearAll = function () {
                     flog.info("Clearing Context database for %s",app)
-
                     contextdb()$remove(buildJQuery(app=app))
                   }
               ))

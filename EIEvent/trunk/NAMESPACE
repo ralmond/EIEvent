@@ -2,7 +2,6 @@ import(methods)
 import(Proc4)
 import(futile.logger)
 
-#importFrom("grDevices", "col2rgb", "grey.colors", "hsv", "rgb2hsv")
 importFrom("jsonlite","toJSON","fromJSON","unbox")
 importFrom("utils","limitedLabels")
 importFrom("mongolite","mongo")
@@ -23,7 +22,7 @@ exportMethods(name,doc,cid, belongsTo, "belongsTo<-",
               clearContexts,updateContext)
 
 ## Events
-export(Event,verb,object,parseEvent)
+export(Event,verb,object,parseEvent,all.equal.Event)
 exportClasses(Event)
 exportMethods(as.jlist,verb,object)
 
@@ -31,11 +30,12 @@ exportMethods(as.jlist,verb,object)
 export(executePredicate, "!set", "!unset", modify,
        "!incr", "!decr","!mult","!div","!min","!max",
        "!addToSet","!pullFromSet","!push","!pop",
-       "!start", "!reset", "!setCall", asif.difftime, is.difftime)
+       "!start", "!reset", "!setCall", asif.difftime, is.difftime,
+       "!send",buildMessages, "!send1","!send2")
 
 ## RuleTables (Rules)
 export(Rule,name,doc,context,ruleType,priority,condition,predicate,
-       parseRule)
+       parseRule, all.equal.Rule,loadRulesFromList,testAndLoad)
 exportClass(Rule,RuleTable)
 exportMethods(context,ruleType,priority,condition,predicate)
 
@@ -50,7 +50,8 @@ exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,
 export(Status,timer,"timer<-",setTimer,timerTime,"timerTime<-",
        timerRunning,"timerRunning<-",flag,"flag<-",obs,"obs<-",
        parseStatus,getJS,setJS,removeJS,getJSfield,
-       setJSfield, removeJSfield, "context<-",oldContext)
+       setJSfield, removeJSfield, "context<-",oldContext,
+       all.equal.Status)
 exportClasses(Status,UserRecordSet)
 exportMethods(timer,"timer<-",setTimer,timerTime,"timerTime<-",
               timerRunning,"timerRunning<-",
@@ -59,10 +60,11 @@ exportMethods(timer,"timer<-",setTimer,timerTime,"timerTime<-",
 
 ## testRules
 export(testQuery, testQueryScript, testPredicate, testPredicateScript,
-       testRule, testRuleScript,RuleTest, parseRuleTest,
+       testRule, testRuleScript, EITest, RuleTest,
+       parseEITest, parseRuleTest,
        initial,event,rule,queryResult,final)
 exportMethods(initial,event,rule,queryResult,final)
-exportClasses(RuleTest,TestSet)
+exportClasses(EITest,RuleTest,TestSet)
 
 ## EIEngine
 export(EIEngine)

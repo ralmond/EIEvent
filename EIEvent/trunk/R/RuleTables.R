@@ -15,6 +15,7 @@ setClass("Rule",
                  ))
 
 setMethod("context","Rule", function(x) x@context)
+setMethod("app","Rule", function(x) x@app)
 setMethod("verb","Rule", function(x) x@verb)
 setMethod("object","Rule", function(x) x@object)
 setMethod("name","Rule", function(x) x@name)
@@ -47,11 +48,14 @@ setMethod("as.jlist",c("Rule","list"), function(obj,ml,serialize=TRUE) {
   ml$"_id" <- NULL
   ml$class <-NULL
 
-  ml$name <- unbox(ml$name)
-  ml$verb <- unbox(ml$verb)
-  ml$object <- unbox(ml$object)
-  ml$ruleType <- unbox(ml$ruleType)
-  ml$priority <- unbox(ml$priority)
+  ml$app <- unboxer(ml$app)
+  ml$name <- unboxer(ml$name)
+  ml$doc <- unboxer(ml$doc)
+  ml$verb <- unboxer(ml$verb)
+  ml$object <- unboxer(ml$object)
+  ml$context <- unboxer(ml$context)
+  ml$ruleType <- unboxer(ml$ruleType)
+  ml$priority <- unboxer(ml$priority)
 
   ml$condition <- unparseCondition(ml$condition,serialize)
   ml$predicate <- unparsePredicate(ml$predicate,serialize)
@@ -85,6 +89,44 @@ unparseCondition <- Proc4::unparseData
 unparsePredicate <- Proc4::unparseData
 
 
+##We need an all.equal method as we need to suppress checking names on
+##parts of the data fields which might be different.
+all.equal.Rule <- function (target, current, ...) {
+  if (!is(current,"Rule"))
+    return(paste("Target is 'Rule' and current is '",class(current),"'."))
+  msg <- character()
+  if ((is.na(target@"_id") && !is.na(current@"_id")) ||
+      (!is.na(target@"_id") && !isTRUE(target@"_id" ==  current@"_id")))
+    msg <- c(msg,"Database IDs do not match.")
+  if (app(target) != app(current))
+    msg <- c(msg,"Application IDs do not match.")
+  if (name(target) != name(current))
+    msg <- c(msg,"Names do not match.")
+  if (doc(target) != doc(current))
+    msg <- c(msg,"Doc strings do not match.")
+  if (context(target) != context(current))
+    msg <- c(msg,"Contexts do not match.")
+  if (verb(target) != verb(current))
+    msg <- c(msg,"Verbs do not match.")
+  if (object(target) != object(current))
+    msg <- c(msg,"Objects do not match.")
+  if (ruleType(target) != ruleType(current))
+    msg <- c(msg,"Rule types do not match.")
+  if (priority(target) != priority(current))
+    msg <- c(msg,"Priorities do not match.")
+  cmsg <- all.equal(condition(target),condition(current))
+  if (!isTRUE(cmsg))
+    msg <- c(msg,paste("Condition mismatch:",cmsg))
+  pmsg <- all.equal(predicate(target),predicate(current))
+  if (!isTRUE(pmsg))
+    msg <- c(msg,paste("Predicate mismatch:",pmsg))
+  ## Return true if message list is empty.
+  if (length(msg)==0L) TRUE
+  else msg
+}
+
+
+
 ####################################################################
 ## Rule Table
 ## Rules are indexed by context, verb and object, where each could be
@@ -96,32 +138,61 @@ RuleTable <-
               fields=c(app="character",
                        dbname="character",
                        dburi="character",
-                       db="MongoDB"),
+                       db="MongoDB",
+                       stoponduplicate="logical"),
               methods = list(
                   initialize =
                     function(app="default",
                              dbname="EIRecords",
-                             dburi="mongo://localhost",
+                             dburi="mongodb://localhost",
                              db = NULL, # mongo("Rules",dbname,dburi)
+                             stoponduplicate=FALSE,
                              ...) {
-                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,...)
+                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,
+                                stoponduplicate=stoponduplicate,...)
                     }
               ))
 
 RuleTable$methods(
+  skipDuplicate = function (newval=NULL) {
+    if (missing(newval) || is.null(newval)) stoponduplicate
+    else stoponduplicate <<- newval
+  },
   updateRule = function (rule) {
     if (!is(rule,"Rule"))
       stop("Argument to RuleTable$update must be a rule.")
-    flog.debug("Updating rule %s",name(con))
-    saveRec(con,db)
+    old <- findRuleByName(name(rule))
+    if (!is.null(old)) {
+      if (!is.na(rule@'_id') && rule@'_id' != old@'_id') {
+        flog.error("Two rules with name %s, old id %s, new id %s.  Not added.",
+                   name(rule),old@'_id', rule@'_id')
+        return (rule)
+      }
+      if (stoponduplicate) {
+        flog.error("Two rules with name %s, skipping.", name(rule))
+        return (rule)
+      } else {
+        flog.warn("Replacing rule named %s.",name(rule))
+        rule@'_id' <- old@'_id'
+      }
+    }
+    rule@app <- app
+    flog.debug("Updating rule %s",name(rule))
+    saveRec(rule,db)
+  },
+  findRuleByName = function (name) {
+    getOneRec(buildJQuery(name=name,app=app),ruledb(),parseRule)
   },
   findRules = function (verb,object,context,phase) {
+    flog.debug("Searching for rules v=%s, o=%s, c=%s, ph=%s",
+               verb, object, context, phase)
     if (length(verb)==1L && verb!="ANY") verb <- c(verb,"ANY")
     if (length(object)==1L && object!="ANY") object <- c(object,"ANY")
-    rules <- getManyRecs(jquery(verb=verb,object=object,
-                                context=context,ruleType=phase),
-                         db,parseRule,sort=c("priority"=-1))
-    flog.debug("Found %d rules")
+    rules <- getManyRecs(buildJQuery(verb=verb,object=object,
+                                context=context,ruleType=phase,
+                                app=app),
+                         ruledb(),parseRule,sort=c("priority"=-1))
+    flog.debug("Found %d rules",length(rules))
     if (length(rules) > 0L) {
       flog.trace("Rules: %s",
                  paste(sapply(rules,name),collapse=", "))
@@ -133,10 +204,79 @@ RuleTable$methods(
       db <<- mongo("Rules",dbname,dburi)
     }
     db
+  },
+  clearAll = function () {
+    flog.info("Clearing Rule database for %s",app)
+    ruledb()$remove(buildJQuery(app=app))
   }
 )
 
+loadRulesFromList <- function(set, rulelist, stopOnDups=TRUE) {
+  rnames <- sapply(rulelist,name)
+  dups <- duplicated(rnames)
+  if (any(dups)) {
+    ruleset <- rulelist[!dups]
+    names(ruleset) <- rnames[!dups]
+    for (dup in rulelist[dups]) {
+      orig <- ruleset[[name(dup)]]
+      match <- all.equal(orig,dup)
+      if (isTRUE(match)) {
+        flog.warn("Duplicate rule named %s.",name(dup))
+      } else {
+        flog.error("Two rules named %s which are different.",name(dup))
+        flog.debug(match,capture=TRUE)
+        if (stopOnDups) stop("Duplicate rule name",name(dup))
+        flog.info("Keeping newer version.")
+        ruleset[[name(dup)]] <- dup
+      }
+    }
+  } else {
+    ruleset <- rulelist
+  }
+  olddup <- set$skipDuplicate()
+  set$skipDuplicate(stopOnDups)
+  for (rl in ruleset) {
+    set$updateRule(rl)
+  }
+  set$skipDuplicate(olddup)
+  invisible(set)
+}
 
+testAndLoad <- function (set, filename, stopOnDups=FALSE) {
+  if (!file.exists(filename)) {
+    stop("Cannot find file ",filename)
+  }
+  script <- fromJSON(filename,FALSE)
+  ruleset <- list()
+  for (i in 1L:length(script)) {
+    test <- withFlogging(parseRuleTest(script[[i]]),
+                         context=paste("Parsing test ",i),
+                         json=script[[i]])
+    if (is(test,"try-error")) next
+    result <- testRule(test)
+    if (isTRUE(result)) {
+      rule <- rule(test)
+      dup <- ruleset[[name(rule)]]
+      if (!is.null(dup)) {
+        match <- all.equal(rule,dup)
+        if (isTRUE(match)) {
+          flog.info("Already loaded rule named %s.",name(dup))
+        } else {
+          flog.error("Two rules named %s which are different.",name(dup))
+          flog.debug(match,capture=TRUE)
+          if (stopOnDups) stop("Duplicate rule name",name(dup))
+          flog.info("Keeping newer version.")
+        }
+      }
+      flog.info("Adding rule %s.",name(rule))
+      set$updateRule(rule)
+      ruleset[[name(rule)]] <- rule
+    } else {
+      flog.info("Skipping %s, because failed test.",name(rule))
+    }
+  }
+  invisible(set)
+}
 
 
 

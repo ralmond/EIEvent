@@ -1,6 +1,6 @@
 Package: EIEvent
-Version: 0.1-6
-Date: 2019/03/01
+Version: 0.2-1
+Date: 2019/03/13
 Title: Evidence Identification Event Processing Engine
 Author: Russell Almond
 Maintainer: Russell Almond <ralmond@fsu.edu>

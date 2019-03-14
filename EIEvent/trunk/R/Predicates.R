@@ -1,10 +1,18 @@
 
 executePredicate <- function (predicate, state, event) {
-  for (op in names(predicate)) {
-    state <- do.call(op,list(predicate[[op]],state,event))
+  for (i in 1L:length(predicate)) {
+    ## Need to do this by number as names might not be unique.
+    state <- do.call(names(predicate)[[i]],list(predicate[[i]],state,event))
   }
   return (state)
 }
+
+buildMessages <- function (predicate, state, event) {
+  ## These should all be !send, but might be something else.
+  lapply(names(predicate),
+         function (op) do.call(op,list(predicate[[op]],state,event)))
+}
+
 
 "!set" <- function (predicate, state, event) {
   for (name in names(predicate)) {
@@ -195,6 +203,42 @@ modify <- function (predicate, state, event, op) {
   state
 }
 
+#####################################################
+## !send
+
+## Frequently used idiom.
+getJSval <- function(val,state,event,default) {
+  if (is.character(val) && grepl("^(state|event)\\.",val)) {
+    val <- getJS(val,state,event)
+  }
+  if (is.null(val)) {
+    val <- default
+  }
+  val
+}
+
+## The "!send" predicate is slightly different as it returns a
+## P4Message rather than a new state.
+"!send" <- function (predicate, state, event) {
+  app <- app(event)
+  uid <- uid(state)
+  context <- getJSval(predicate$context,state,event,oldContext(state))
+  mess <-
+    getJSval(predicate$mess,state,event,"Observables Available")
+  timestamp <- timestamp(event)
+  if (is.null(predicate$data) || length(predicate$data)==0L) {
+    details <- state@observables
+  } else {
+    details <- lapply(predicate$data,
+                      function (val) getJSval(val,state,event,NULL))
+    names(details) <- names(predicate$data)
+  }
+  P4Message(uid,context,sender="EIEvent",mess,timestamp,details,app)
+}
+
+"!send1" <- function (predicate, state, event) {"!send"(predicate,state,event)}
+"!send2" <- function (predicate, state, event) {"!send"(predicate,state,event)}
+
 
 ## @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ## difftime arithmatic.
@@ -208,8 +252,6 @@ asif.difftime <- function (e2) {
       e2 <-do.call("+",
                    lapply(units,
                           function (u) as.difftime(e2[[u]],units=u)))
-    } else if (is.numeric(e2) && is.null(units)) {
-      e2 <- as.difftime(sum(e2),units="secs")
     }
   }
   e2
