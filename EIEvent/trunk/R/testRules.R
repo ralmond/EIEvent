@@ -7,6 +7,7 @@
 ## event -- the event
 ## rule -- the rule being tested.
 ## result -- a logical value.
+setClassUnion("Result",c("Status","P4Message","list"))
 
 setClass("EITest",
          list("_id"="character",
@@ -15,7 +16,7 @@ setClass("EITest",
               doc="character",
               initial="Status",
               event="Event",
-              final="Status"))
+              final="Result"))
 
 setClass("RuleTest",
          list(rule="Rule",
@@ -25,7 +26,7 @@ setClass("RuleTest",
 
 EITest <- function(name, doc="",app="default",initial,event,
                      final) {
-  new("RuleTest","_id"=c(oid=NA_character_),app=app,name=name,
+  new("EITest","_id"=c(oid=NA_character_),app=app,name=name,
       doc=doc,initial=initial,event=event, final=final)
 }
 
@@ -63,11 +64,11 @@ setMethod("as.jlist",c("EITest","list"), function(obj,ml,serialize=TRUE) {
   ml$class <-NULL
 
   ml$name <- unbox(ml$name)
-  ml$doc <- unbox(ml$name)
+  ml$doc <- unbox(ml$doc)
 
-  ml$inital <- as.jlist(ml$initial,attributes(ml$initial),serialize)
+  ml$initial <- as.jlist(ml$initial,attributes(ml$initial),serialize)
   ml$event <- as.jlist(ml$event,attributes(ml$event),serialize)
-  ml$final <- as.jlist(ml$final,attributes(ml$initial),serialize)
+  ml$final <- as.jlist(ml$final,attributes(ml$final),serialize)
 
   ml
 })
@@ -79,6 +80,22 @@ setMethod("as.jlist",c("RuleTest","list"), function(obj,ml,serialize=TRUE) {
   ml
 })
 
+parseStatusOrMessage <- function (rec) {
+  ## This field could be a state, a messages, or a list of messages.
+  ## Trick is to figure out which.
+  if (is.null(rec$uid)) {
+    ## List of messages.
+    lapply(rec,parseMessage)
+  } else {
+    if (!is.null(rec$sender)) {
+      parseMessage(rec)
+    } else {
+      parseStatus(rec)
+    }
+  }
+}
+
+
 parseEITest<- function (rec) {
   if (is.null(rec$"_id")) rec$"_id" <- NA_character_
   names(rec$"_id") <- "oid"
@@ -89,7 +106,7 @@ parseEITest<- function (rec) {
       doc=as.vector(rec$doc),
       initial=parseStatus(rec$initial),
       event=parseEvent(rec$event),
-      final=parseStatus(rec$final))
+      final=parseStatusOrMessage(rec$final))
 }
 
 parseRuleTest<- function (rec) {
@@ -104,7 +121,7 @@ parseRuleTest<- function (rec) {
       event=parseEvent(rec$event),
       rule=parseRule(rec$rule),
       queryResult=as.vector(rec$queryResult),
-      final=parseStatus(rec$final))
+      final=parseStatusOrMessage(rec$final))
 }
 
 ########################################################################
