@@ -17,16 +17,6 @@ Classes to write methods for:
 o [write] TestSet
 o [doc] ‘EIEngine’
 o [doc] ‘all.equal.Event’ ‘all.equal.Rule’ ‘all.equal.Status’
-Undocumented S4 methods:
-  generic 'as.jlist' and siglist 'EITest,list'
-  generic 'doc' and siglist 'EITest'
-  generic 'event' and siglist 'EITest'
-  generic 'final' and siglist 'EITest'
-  generic 'initial' and siglist 'EITest'
-  generic 'name' and siglist 'EITest'
-  generic 'show' and siglist 'EITest'
-  generic 'toString' and siglist 'EITest'
-   
    
 o [doc] generic 'notifyListeners' and siglist 'EIEngine'
 

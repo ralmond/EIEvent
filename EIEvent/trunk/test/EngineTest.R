@@ -1,5 +1,5 @@
 library(EIEvent)
-
+flog.threshold(DEBUG)
 cl <- new("CaptureListener")
 
 
@@ -225,9 +225,9 @@ evnt10 <- Event(app=eng$app,uid="Test0",
                timestamp=as.POSIXct("2018-09-25 12:13:30 EDT"),
                details= list("badge"="gold"))
 
-mess2 <- buildMessages(predicate(r4t),st9,evnt10)
+mess2 <- buildMessages(predicate(r4t),st9,evnt10)[[1]]
 
 eng$runTriggerRules(st9,evnt10)
-stopifnot(all.equal(cl$lastMessage(),mess2))
+stopifnot(all.equal(cl$lastMessage(),mess2,check_ids=FALSE))
 
 ### handleEvent
