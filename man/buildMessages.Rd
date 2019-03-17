@@ -29,7 +29,7 @@ buildMessages(predicate, state, event)
 }
 \details{
 
-  The function \code{!send} builds a \code{\linkS4class{P4Message} which
+  The function \code{!send} builds a \code{\linkS4class{P4Message}} which
   is then sent to the registered listeners of the
   \code{\linkS4class{EIEngine}}.  The default message is
   \dQuote{"Observables Available"}, which is what the Evidence
@@ -42,7 +42,7 @@ buildMessages(predicate, state, event)
   \describe{
     \item{context}{The context for the message.  Default is
       \code{oldContext(event)}.  Value can be a direct value of a field
-      name (starting with \dQuote{event.data.} or \dQuote{state.}.}
+      name (starting with \dQuote{event.data.} or \dQuote{state.}).}
     \item{mess}{The text (subject) of the message.  Default is
       \dQuote{Observables Available}.  Value can be a direct value of a field
       reference (starting with \dQuote{event.data.} or \dQuote{state.}).} 
@@ -52,7 +52,7 @@ buildMessages(predicate, state, event)
       character vector or named list.  The names are used as the names
       of the details portion of the message, and the values are field
       references (starting with \dQuote{event.data.} or \dQuote{state.})
-      for where to find the values.
+      for where to find the values.}
   }
 
   The function \code{buildMessages} runs through multiple elements of
@@ -78,7 +78,7 @@ buildMessages(predicate, state, event)
   \item{timestamp}{The timestamp for the message.  The value is
     \code{timestamp(event)}.}
   \item{details}{The data that should be sent with the message.  The
-    default is all of the \code{\link{observables}} of the
+    default is all of the observables of the
     \code{\linkS4class{Status}} argument.}
 
 }
@@ -145,7 +145,7 @@ evnt10 <- Event(uid="Test0",
                details= list("badge"="gold"))
 
 mess0 <- buildMessages(list("!send"=list()),st9,evnt10)[[1]]
-stopifnot(mess(mess0)=="Observeables Available",
+stopifnot(mess(mess0)=="Observables Available",
           length(details(mess0)) == 3L)
 mess1 <- buildMessages(list("!send1"=list()),st9,evnt10)[[1]]
 messb <- buildMessages(list("!send"=list(mess="Badge",

@@ -15,10 +15,8 @@ Classes to write methods for:
    - testRules
    
 o [write] TestSet
-o [doc] EITest
 o [doc] ‘EIEngine’
 o [doc] ‘all.equal.Event’ ‘all.equal.Rule’ ‘all.equal.Status’
-o [doc] ‘parseEITest’
 Undocumented S4 methods:
   generic 'as.jlist' and siglist 'EITest,list'
   generic 'doc' and siglist 'EITest'
@@ -31,8 +29,6 @@ Undocumented S4 methods:
    
    
 o [doc] generic 'notifyListeners' and siglist 'EIEngine'
-o [test] EITest
-o [test] parseEITest
 
 
 * Database Setup -- check schemas in setupMongo.js

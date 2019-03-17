@@ -432,8 +432,7 @@ all.equal.Status <- function (target, current, ...,checkTimestamp=FALSE,check_id
       msg <- c(msg,paste("Flags in current but not in target:",
                          setdiff(fnamec,fnamet)))
   }
-  msgf <- all.equal(target@flags,current@flags,...,
-                    check.attributes=FALSE)
+  msgf <- all.equal(target@flags,current@flags,check.attributes=FALSE)
   if (!isTRUE(msgf)) msg <- c(msg,msgf)
   ## Check Observables
   onamet <- names(target@observables)
@@ -448,8 +447,7 @@ all.equal.Status <- function (target, current, ...,checkTimestamp=FALSE,check_id
       msg <- c(msg,paste("Observables in current but not in target:",
                          setdiff(onamec,onamet)))
   }
-  msgo <- all.equal(target@observables,current@observables,...,
-                    check.attributes=FALSE)
+  msgo <- all.equal(target@observables,current@observables,check.attributes=FALSE)
   if (!isTRUE(msgo)) msg <- c(msg,msgo)
   ## Check timers
   tnamet <- names(target@timers)
@@ -464,8 +462,7 @@ all.equal.Status <- function (target, current, ...,checkTimestamp=FALSE,check_id
       msg <- c(msg,paste("Timers in current but not in target:",
                          setdiff(tnamec,tnamet)))
   }
-  msgt <- all.equal(target@timers,current@timers,...,
-                    check.attributes=FALSE)
+  msgt <- all.equal(target@timers,current@timers,...)
   if (!isTRUE(msgt)) msg <- c(msg,msgt)
   ## Timestamp
   if (checkTimestamp) {

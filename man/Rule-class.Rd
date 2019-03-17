@@ -4,6 +4,7 @@
 \alias{Rule-class}
 \alias{show,Rule-method}
 \alias{toString,Rule-method}
+\alias{app,Rule-method}
 \title{Class \code{"Rule"}}
 \description{
 
@@ -283,6 +284,8 @@
       \code{\link[Proc4]{as.json}}.} 
     \item{condition}{\code{signature(x = "Rule")}: Returns a list giving
       the conditions for the rule.  }
+    \item{app}{\code{signature(x = "Rule")}: Returns a character
+      scalar giving the ID of the application this rule belongs to.}
     \item{context}{\code{signature(x = "Rule")}: Returns a character
       scalar giving the ID of the context or context group to which the
       rule is applicable. } 

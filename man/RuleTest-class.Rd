@@ -2,26 +2,28 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{RuleTest-class}
-\alias{doc,RuleTest-method}
-\alias{event,RuleTest-method}
-\alias{final,RuleTest-method}
-\alias{initial,RuleTest-method}
-\alias{name,RuleTest-method}
 \alias{queryResult,RuleTest-method}
 \alias{rule,RuleTest-method}
-\alias{show,RuleTest-method}
 \alias{toString,RuleTest-method}
 
 \title{Class \code{"RuleTest"}}
-\description{A rule along with a test case for verifying the rule.}
+\description{
+
+  A rule along with a test case for verifying the rule.
+  This is a special case of the more general
+  \code{\linkS4class{EITest}}. 
+
+}
 \section{Objects from the Class}{
 
 A rule test object consists of a \code{\linkS4class{Rule}} object, plus
-a test case for the rule.  The test case has a \emph{initial}
+a test case for the rule.  The test case has an \emph{initial}
 \code{\linkS4class{Status}}, a triggering \code{\linkS4class{Event}},
-and an expected final \code{\link{Status}}.  It also has a logical
-\code{queryResult} field which describes whether or not the rule'
-\code{\link{Conditions}} should be met in the test case.
+and an expected \emph{result} \code{Status}.  In the case of testing
+trigger rules, the result could be a \code{\linkS4class{P4Message}} or
+list of messages.  It also has a logical
+\code{queryResult} field which describes whether or not the rule's
+\code{\link{Conditions}} is satisfied in the test case.
 
 Objects can be created by calls of the form \code{\link{RuleTest}(...)},
 or from JSON through \code{\link{parseRuleTest}}.
@@ -37,38 +39,36 @@ or from JSON through \code{\link{parseRuleTest}}.
       readable name for the test, used in reporting. }
     \item{\code{doc}:}{Object of class \code{"character"}, a
       documentation string describing the test. }
-    \item{\code{initial}:}{Object of class \code{"Status"} which
+    \item{\code{initial}:}{Object of class \code{\linkS4class{Status}} which
       describes the initial state of the system before the test. }
-    \item{\code{event}:}{Object of class \code{"Event"} which describes
-      the incoming event to which the rule is reacting. }
-    \item{\code{rule}:}{Object of class \code{"Rule"}, the rule being tested. }
+    \item{\code{event}:}{Object of class \code{\linkS4class{Event}}
+      which describes the incoming event to which the rule is reacting. }
+    \item{\code{rule}:}{Object of class \code{\linkS4class{Rule}}, the
+      rule being tested. } 
     \item{\code{queryResult}:}{Object of class \code{"logical"} which
       specifies whether or not the rule \code{\link{Conditions}} are met. }
-    \item{\code{final}:}{Object of class \code{"Status"} which describes
-      the expected final state of the system after applying the rule.}
+    \item{\code{final}:}{Object of class \code{\linkS4class{Status}}
+      which describes the expected final state of the system after
+      applying the rule, or an object of class
+      \code{\linkS4class{P4Message}} describing the generated message.}
   }
+}
+\section{Extends}{
+
+Class \code{"\linkS4class{EITest}"}, directly.  This difference is two
+extra slots:  One for 
+
+
 }
 \section{Methods}{
   \describe{
     \item{as.jlist}{\code{signature(obj = "RuleTest", ml = "list")}:
       helper function for converting the test into a JSON object, see
       \code{\link[Proc4]{as.json}}. }
-    \item{doc}{\code{signature(x = "RuleTest")}: Returns the
-      documenation string. }
-    \item{event}{\code{signature(x = "RuleTest")}: Returns the
-      triggering event for the test. }
-    \item{final}{\code{signature(x = "RuleTest")}: Returns the expected
-      final state of the system. }
-    \item{initial}{\code{signature(x = "RuleTest")}: Returns the initial
-      state of the test.}
-    \item{name}{\code{signature(x = "RuleTest")}: Returns the name of
-      the test. }
     \item{queryResult}{\code{signature(x = "RuleTest")}: Returns the
       expected value of the \code{\link{Conditions}} part of the rule.}
     \item{rule}{\code{signature(x = "RuleTest")}: Returns the rule being
-    tested.}
-    \item{show}{\code{signature(object = "RuleTest")}: Displays the rule
-      object.}
+      tested.}
     \item{toString}{\code{signature(x = "RuleTest")}: Returns a string
       describing the rule.}
   }
@@ -86,7 +86,7 @@ or from JSON through \code{\link{parseRuleTest}}.
   The functions \code{\link{testQuery}}, \code{\link{testPredicate}},
   and \code{\link{testRule}} are used to actually execute the tests.
 
-  The functions \code{\link{RuleTest}} and \code{\link{parseRule}} test
+  The functions \code{\link{RuleTest}} and \code{\link{parseRuleTest}}
   are used to construct the rule.
 
   The functions \code{\link{name}}, \code{\link{doc}},
