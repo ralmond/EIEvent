@@ -65,7 +65,8 @@ EIEngine$methods(
              getStatus = function (uid) {
                state <- userRecords$getStatus(uid)
                if (is.null(state)) {
-                 flog.warn("Didn't find expected status for %s, using default.")
+                 flog.warn("Didn't find expected status for %s, using default.",
+                           uid)
                  state <- newStudent(uid)
                }
                flog.trace("Fetching status for %s, timestamp= %s",

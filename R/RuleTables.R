@@ -96,7 +96,8 @@ all.equal.Rule <- function (target, current, ...) {
     return(paste("Target is 'Rule' and current is '",class(current),"'."))
   msg <- character()
   if ((is.na(target@"_id") && !is.na(current@"_id")) ||
-      (!is.na(target@"_id") && !isTRUE(target@"_id" ==  current@"_id")))
+      (!is.na(target@"_id") &&
+       !isTRUE(all.equal(target@"_id", current@"_id"))))
     msg <- c(msg,"Database IDs do not match.")
   if (app(target) != app(current))
     msg <- c(msg,"Application IDs do not match.")
@@ -224,7 +225,7 @@ loadRulesFromList <- function(set, rulelist, stopOnDups=TRUE) {
         flog.warn("Duplicate rule named %s.",name(dup))
       } else {
         flog.error("Two rules named %s which are different.",name(dup))
-        flog.debug(match,capture=TRUE)
+        flog.debug("Difference:",match,capture=TRUE)
         if (stopOnDups) stop("Duplicate rule name",name(dup))
         flog.info("Keeping newer version.")
         ruleset[[name(dup)]] <- dup
@@ -263,7 +264,7 @@ testAndLoad <- function (set, filename, stopOnDups=FALSE) {
           flog.info("Already loaded rule named %s.",name(dup))
         } else {
           flog.error("Two rules named %s which are different.",name(dup))
-          flog.debug(match,capture=TRUE)
+          flog.debug("Difference:",match,capture=TRUE)
           if (stopOnDups) stop("Duplicate rule name",name(dup))
           flog.info("Keeping newer version.")
         }
