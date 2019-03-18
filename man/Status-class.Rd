@@ -9,6 +9,7 @@
 \alias{timerRunning<-,Status-method}
 \alias{timerTime,Status-method}
 \alias{timerTime<-,Status-method}
+\alias{all.equal.Status}
 \title{Class \code{"Status"}}
 \description{
 
@@ -83,6 +84,11 @@ for every student in the system.
       returns the elapsed time of the named timer.}
     \item{timerTime<-}{\code{signature(x = "Status", name = "character")}: 
       sets the elapsed time of the named timer.}
+    \item{all.equal.Status}{\code{(target, current, ..., checkTimestamp=FALSE,
+        check_ids=TRUE)}:  (S3 method) Checks for equality.  The
+      \code{checkTimestamp} flag controls whether or not the timestamp is
+      checked.  The \code{check_ids} flag controls whether or not the
+      database IDs are checked.}
   }
   Note that the \code{\link{getJS}} and \code{\link{setJS}} functions
   are often used to get and set the values of the status object.

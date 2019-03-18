@@ -464,7 +464,7 @@ TestSet <-
                     },
                   testdb = function () {
                     if (is.null(db)) {
-                      db <<- mongo("RuleTests",dbname,dburi)
+                      db <<- mongo("Tests",dbname,dburi)
                     }
                     db
                   },
@@ -475,3 +475,30 @@ TestSet <-
 
 
               ))
+
+############################################################
+## Outside-in tests.
+runTest <- function (eng, test) {
+  cl <- new("CaptureListener")
+  eng$ListenerSet$addListener(name(test),cl)
+  flog.info("Running Test %s",name(test))
+  flog.debug("Details:",doc(test),capture=TRUE)
+  result <- NA
+  withFlogging({
+    actual <- eng$testRules(initial(test),event(test))
+    if (is(final(test),"P4Message")) {
+      actual <- cl$lastMessage()
+    } else if (is(final(test),"list")) {
+      actual <- cl@messages
+    }
+    result <- all.equal(final(test),actual)
+    if (!isTRUE(result)) {
+      flog.info("Test %s failed.",name(test))
+      flog.info("Details:",result,capture=TRUE)
+      flog.debug("Actual Status/Message:",actual,capture=TRUE)
+      result <- FALSE
+    }
+  },context=paste("Running Test",name(test)),test=test)
+  eng$ListenerSet$removeListener(name(test))
+  result
+}

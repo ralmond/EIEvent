@@ -7,7 +7,7 @@ o [test] Process Event Code
 * Grab Event Code
 
 EIEngine Methods that need tests
-o [test] runTriggerRules
+o [test] handleEvent
    
 Classes to write methods for:
 *  EIEngine
@@ -15,9 +15,11 @@ Classes to write methods for:
    - testRules
    
 o [write] TestSet
-o [doc] ‘EIEngine’
-o [doc] ‘all.equal.Event’ ‘all.equal.Rule’ ‘all.equal.Status’
-   
+o [doc] runRule, runTRule
+o [doc] handleEvent, processEvent
+o [doc] runTriggerRules, runStatusRules, runObservableRules,
+   runResetRules, runContextRules
+o [test] runTest   
 o [doc] generic 'notifyListeners' and siglist 'EIEngine'
 
 

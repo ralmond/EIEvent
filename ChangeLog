@@ -1,3 +1,13 @@
+2019-03-18  Rusell Almond  <ralmond@Cherry>
+
+	* R/EIEngine.R (runRule, runTRule): No longer a method of
+	EIEngine, pulled out to RuleTable.R
+	(processEvent, handleEvent): Pulled these out as functions rather
+	than methods.
+	(runTriggerRules, runStatusRules, runObservableRules)
+	(runResetRules, runContextRules): Pulled these out as functions
+	rather than methods.
+
 2019-03-06  Rusell Almond  <ralmond@Cherry>
 
 	* R/Predicates.R (asif.difftime): Rolled back change in
