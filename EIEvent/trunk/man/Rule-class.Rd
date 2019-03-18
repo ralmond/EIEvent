@@ -5,6 +5,7 @@
 \alias{show,Rule-method}
 \alias{toString,Rule-method}
 \alias{app,Rule-method}
+\alias{all.equal.Rule}
 \title{Class \code{"Rule"}}
 \description{
 
@@ -302,6 +303,8 @@
     \item{show}{\code{signature(object = "Rule")}: Prints rule object. }
     \item{toString}{\code{signature(x = "Rule")}: Produces <>
       representation of object. } 
+    \item{all.equal.Rule}{\code{(target, current, ..., checkTimestamp=FALSE,
+        check_ids=TRUE)}:  (S3 method) Checks for equality.}
   }
 }
 \references{

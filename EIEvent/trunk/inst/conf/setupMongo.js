@@ -262,11 +262,11 @@ db.createCollection("Contexts", {
 })
 db.Contexts.createIndex( { app:1, cid: 1});
 db.Contexts.createIndex( { app:1, number: 1});
-db.createCollection("RuleTests", {
+db.createCollection("Tests", {
     validator: {
         $jsonSchema: {
             bsonType: "object",
-            required: ["app","state","event","rule","result"],
+            required: ["app","initial","event","final"],
             properties: {
                 _id: {
                     bsonType: "string",
@@ -284,7 +284,7 @@ db.createCollection("RuleTests", {
                     bsonType: "string",
                     description: "Description of Test"
                 },
-                state: {
+                initial: {
                     bsonType: "object",
                     description: "Intial State"
                 },
@@ -292,11 +292,7 @@ db.createCollection("RuleTests", {
                     bsonType: "object",
                     description: "Triggering Event"
                 },
-                rule: {
-                    bsonType: "object",
-                    description: "Rule to be tested."
-                },
-                result: {
+                "final": {
                     bsonType: "object",
                     description: "Expected Result"
                 }

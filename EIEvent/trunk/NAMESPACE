@@ -35,7 +35,8 @@ export(executePredicate, "!set", "!unset", modify,
 
 ## RuleTables (Rules)
 export(Rule,name,doc,context,ruleType,priority,condition,predicate,
-       parseRule, all.equal.Rule,loadRulesFromList,testAndLoad)
+       parseRule, all.equal.Rule,loadRulesFromList,testAndLoad,
+       runRule,runTRule)
 exportClass(Rule,RuleTable)
 exportMethods(context,ruleType,priority,condition,predicate)
 
@@ -62,12 +63,13 @@ exportMethods(timer,"timer<-",setTimer,timerTime,"timerTime<-",
 export(testQuery, testQueryScript, testPredicate, testPredicateScript,
        testRule, testRuleScript, EITest, RuleTest,
        parseEITest, parseRuleTest,
-       initial,event,rule,queryResult,final)
+       initial,event,rule,queryResult,final, runTest)
 exportMethods(initial,event,rule,queryResult,final)
 exportClasses(EITest,RuleTest,TestSet)
 
 ## EIEngine
-export(EIEngine)
+export(EIEngine, processEvent, handleEvent, runTriggerRules,
+       runStatusRules, runObservableRules, runContextRules)
 exportMethods(notifyListeners)
 exportClasses(EIEngine)
 

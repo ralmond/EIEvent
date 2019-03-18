@@ -46,6 +46,9 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 }
 \seealso{
 
+  The function \code{\link{EIEngine}} tells about the construction and
+  the relationship between the Engine and the database.
+
   The primary classes in the EIEvent system are:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},
   \code{\linkS4class{Status}}, \code{\linkS4class{Event}},

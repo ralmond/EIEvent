@@ -4,6 +4,7 @@
 \alias{Event-class}
 \alias{show,Event-method}
 \alias{toString,Event-method}
+\alias{all.equal.Event}
 \title{Class \code{"Event"}}
 \description{
 
@@ -91,7 +92,11 @@ and objects, which should correpsond to the \code{verb} and
     \item{show}{\code{signature(object = "Event")}: Prints event object. }
     \item{toString}{\code{signature(x = "Event")}: Produces <>
       representation of object. } 
-
+    \item{all.equal.Event}{\code{(target, current, ..., checkTimestamp=FALSE,
+        check_ids=TRUE)}:  (S3 method) Checks for equality.  The
+      \code{checkTimestamp} flag controls whether or not the timestamp is
+      checked.  The \code{check_ids} flag controls whether or not the
+      database IDs are checked.}
   }
 }
 \references{

@@ -126,6 +126,36 @@ all.equal.Rule <- function (target, current, ...) {
   else msg
 }
 
+###################################################################
+## Running Rules
+runRule <- function (state,event,rule,phase) {
+  withFlogging({
+    satisfied <- checkCondition(condition(rule),state,event)
+    flog.trace("Condition for rule %s for %s: %s",
+               name(rule),uid(state),as.character(satisfied))
+    if (isTRUE(satisfied)) {
+      state <- executePredicate(predicate(rule),state,event)
+      flog.trace("New state",state,capture=TRUE)
+    }
+    state
+  },state=state,event=event,rule=rule,phase=phase,
+  context=paste("Running rule",name(rule),"for",uid(state)))
+}
+
+runTRule <- function (state,event,rule,listenerSet) {
+  withFlogging({
+    satisfied <- checkCondition(condition(rule),state,event)
+    flog.trace("Condition for rule %s for %s: %s",
+               name(rule),uid(state),as.character(satisfied))
+    if (isTRUE(satisfied)) {
+      messes <- buildMessages(predicate(rule),state,event)
+      lapply(messes,listenerSet$notifyListeners)
+    }
+  },state=state,event=event,rule=rule,phase="Trigger",
+  context=paste("Running rule",name(rule),"for",uid(state)))
+}
+
+
 
 
 ####################################################################

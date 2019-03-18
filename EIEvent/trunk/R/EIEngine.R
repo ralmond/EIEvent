@@ -36,7 +36,7 @@ EIEngine <-
                                          dburi=dburl,
                                          listeners=listeners,
                                          colname="Messages",
-                                         ...)
+                                          ...)
                        rls <- RuleTable$new(app,dbname,dburl)
                        urecs <- UserRecordSet$new(app,dbname,dburl)
                        ctxts <- ContextSet$new(app,dbname,dburl)
@@ -47,14 +47,6 @@ EIEngine <-
                                  contexts=ctxts,ruleTests=rTests,
                                  ...)
                }))
-
-
-## Listener notification.
-setMethod("notifyListeners","EIEngine",
-           function(sender,mess) {
-             sender$listenerSet$notifyListeners(mess)
-           })
-
 
 ## Student Record Methods
 EIEngine$methods(
@@ -93,36 +85,11 @@ EIEngine$methods(
              }
           )
 
-## Rule Methods
+##Rule Methods
 EIEngine$methods(
              findRules = function (verb,object,context,phase) {
                appcon <- applicableContexts(getContext(context))
                rules$findRules(verb,object,appcon,phase)
-             },
-             runRule = function (state,event,rule,phase) {
-               withFlogging({
-                 satisfied <- checkCondition(condition(rule),state,event)
-                 flog.trace("Condition for rule %s for %s: %s",
-                            name(rule),uid(state),as.character(satisfied))
-                 if (isTRUE(satisfied)) {
-                   state <- executePredicate(predicate(rule),state,event)
-                   flog.trace("New state",state,capture=TRUE)
-                 }
-                 state
-               },state=state,event=event,rule=rule,phase=phase,
-               context=paste("Running rule",name(rule),"for",uid(state)))
-             },
-             runTRule = function (state,event,rule) {
-               withFlogging({
-                 satisfied <- checkCondition(condition(rule),state,event)
-                 flog.trace("Condition for rule %s for %s: %s",
-                            name(rule),uid(state),as.character(satisfied))
-                 if (isTRUE(satisfied)) {
-                   messes <- buildMessages(predicate(rule),state,event)
-                   lapply(messes,listenerSet$notifyListeners)
-                 }
-               },state=state,event=event,rule=rule,phase="Trigger",
-               context=paste("Running rule",name(rule),"for",uid(state)))
              },
              loadRules = function (rlist,stopOnDups=TRUE) {
                loadRulesFromList(rules,rlist,stopOnDups)
@@ -130,8 +97,6 @@ EIEngine$methods(
              loadAndTest=function(script,stopOnDups=FALSE) {
                testAndLoad(rules,script,stopOnDups)
              })
-
-
 
 ## Event Methods
 EIEngine$methods(
@@ -144,119 +109,121 @@ EIEngine$methods(
         )
 
 
-## Handle Event
-EIEngine$methods(
-             handleEvent = function (event) {
-               flog.debug("New Event %s: %s",uid(event),timestamp(event))
-               state <- getStatus(uid(event))
-               out <- runStatusRules(state,event)
-               if (is(out,'try-error')) return (out)
-               else state <- out
-               out <- runObservableRules(state,event)
-               if (is(out,'try-error')) return (out)
-               else state <- out
-               out <- runContextRules(state,event)
-               if (is(out,'try-error')) return (out)
-               else state <- out
-               runTriggerRules(state,event)
-               if (oldContext(state) != context(state)) {
-                 out <- runResetRules(state,event)
-                 if (is(out,'try-error')) return (out)
-                 else state <- out
-                 state@oldContext <- context(state)
-               }
-               state@timestamp <- timestamp(event)
-               saveStatus(state)
-             },
-             runStatusRules = function(state,event) {
-               flog.debug("Status Rules for %s:%s",uid(event),timestamp(event))
-               ruleList <- findRules(verb(event),object(event),context(state),
-                                     "Status")
-               for (rl in ruleList) {
-                 flog.trace("Running Rule %s.",name(rl))
-                 out <- runRule(state,event,rl,"Status")
-                 if (is(out,'try-error')) return (out)
-                 else state <- out
-               }
-               state
-             },
-             runObservableRules = function(state,event) {
-               flog.debug("Observable Rules for %s:%s",uid(event),
-                          timestamp(event))
-               ruleList <- findRules(verb(event),object(event),context(state),
-                                     "Observable")
-               for (rl in ruleList) {
-                 flog.trace("Running Rule %s.",name(rl))
-                 out <- runRule(state,event,rl,"Observable")
-                 if (is(out,'try-error')) return (out)
-                 else state <- out
-               }
-               state
-             },
-             runResetRules = function(state,event) {
-               flog.debug("Reset Rules for %s:%s",uid(event),timestamp(event))
-               ruleList <- findRules(verb(event),object(event),context(state),
-                                     "Reset")
-               for (rl in ruleList) {
-                 flog.trace("Running Rule %s.",name(rl))
-                 out <- runRule(state,event,rl,"Reset")
-                 if (is(out,'try-error')) return (out)
-                 else state <- out
-               }
-               state
-             },
-             runContextRules = function(state,event) {
-               flog.debug("Context Rules for %s:%s",uid(event),timestamp(event))
-               ruleList <- findRules(verb(event),object(event),context(state),
-                                     "Context")
-               for (rl in ruleList) {
-                 flog.trace("Running Rule %s.",name(rl))
-                 out <- runRule(state,event,rl,"Context")
-                 if (is(out,'try-error')) return (out)
-                 else state <- out
-                 if (oldContext(state) != context(state)) {
-                   flog.debug("New context for %s: %s",uid(event),
-                              context(state))
-                   return(state)
-                 }
-               }
-               state
-             },
-             runTriggerRules = function(state,event) {
-               flog.debug("Trigger Rules for %s:%s",uid(event),timestamp(event))
-               ruleList <- findRules(verb(event),object(event),context(event),
-                                     "Trigger")
-               for (rl in ruleList) {
-                 flog.trace("Running Rule %s.",name(rl))
-                 out <- runTRule(state,event,rl)
-                 if (is(out,'try-error')) return (out)
-                 else state <- out
-               }
-               state
-             }
-)
+EIEngine <- function(app="default",listeners=list(),
+                     username="",password="",host="localhost",
+                     port="",dbname="EIRecords",
+                     ...) {
+  new("EIEngine",app=app,listeners=listeners,username=username,
+      password=password,host=host,port=port,dbname=dbname,...)
+}
 
-## Rule Tests
-EIEngine$methods(
-              testRules = function (state, event) {
-                flog.debug("Testing Event %s: %s",uid(event),timestamp(event))
-                out <- runStatusRules(state,event)
-                if (is(out,'try-error')) return (out)
-                else state <- out
-                out <- runObservableRules(state,event)
-                if (is(out,'try-error')) return (out)
-                else state <- out
-                out <- runContextRules(state,event)
-                if (is(out,'try-error')) return (out)
-                else state <- out
-                runTriggerRules(state,event)
-                if (oldContext(state) != context(state)) {
-                  out <- runResetRules(state,event)
-                  if (is(out,'try-error')) return (out)
-                  else state <- out
-                  state@oldContext <- context(state)
-                }
-                state@timestamp <- timestamp(event)
-                state
-              })
+## Listener notification.
+setMethod("notifyListeners","EIEngine",
+           function(sender,mess) {
+             sender$listenerSet$notifyListeners(mess)
+           })
 
+
+##########################################
+## Running Rules.
+## Logic is slightly different for each rule type, so separate functions.
+
+runStatusRules <- function(eng,state,event) {
+  flog.debug("Status Rules for %s:%s",uid(event),timestamp(event))
+  ruleList <- eng$findRules(verb(event),object(event),context(state),
+                            "Status")
+  for (rl in ruleList) {
+    flog.trace("Running Rule %s.",name(rl))
+    out <- runRule(state,event,rl,"Status")
+    if (is(out,'try-error')) return (out)
+    else state <- out
+  }
+  state
+}
+
+runObservableRules <- function(eng,state,event) {
+  flog.debug("Observable Rules for %s:%s",uid(event),
+             timestamp(event))
+  ruleList <- eng$findRules(verb(event),object(event),context(state),
+                            "Observable")
+  for (rl in ruleList) {
+    flog.trace("Running Rule %s.",name(rl))
+    out <- runRule(state,event,rl,"Observable")
+    if (is(out,'try-error')) return (out)
+    else state <- out
+  }
+  state
+}
+
+runResetRules <- function(eng,state,event) {
+  flog.debug("Reset Rules for %s:%s",uid(event),timestamp(event))
+  ruleList <- eng$findRules(verb(event),object(event),context(state),
+                            "Reset")
+  for (rl in ruleList) {
+    flog.trace("Running Rule %s.",name(rl))
+    out <- runRule(state,event,rl,"Reset")
+    if (is(out,'try-error')) return (out)
+    else state <- out
+  }
+  state
+}
+
+runContextRules <- function(eng,state,event) {
+  flog.debug("Context Rules for %s:%s",uid(event),timestamp(event))
+  ruleList <- eng$findRules(verb(event),object(event),context(state),
+                            "Context")
+  for (rl in ruleList) {
+    flog.trace("Running Rule %s.",name(rl))
+    out <- runRule(state,event,rl,"Context")
+    if (is(out,'try-error')) return (out)
+    else state <- out
+    if (oldContext(state) != context(state)) {
+      flog.debug("New context for %s: %s",uid(event),
+                 context(state))
+      return(state)
+    }
+  }
+  state
+}
+
+runTriggerRules <- function(eng,state,event) {
+  flog.debug("Trigger Rules for %s:%s",uid(event),timestamp(event))
+  ruleList <- findRules(verb(event),object(event),context(event),
+                        "Trigger")
+  for (rl in ruleList) {
+    flog.trace("Running Rule %s.",name(rl))
+    out <- runTRule(state,event,rl,eng$listenerSet)
+    if (is(out,'try-error')) return (out)
+    else state <- out
+  }
+  state
+}
+
+processEvent <- function (eng,state,event) {
+  flog.debug("New Event %s: %s",uid(event),timestamp(event))
+  out <- runStatusRules(eng,state,event)
+  if (is(out,'try-error')) return (out)
+  else state <- out
+  out <- runObservableRules(eng,state,event)
+  if (is(out,'try-error')) return (out)
+  else state <- out
+  out <- runContextRules(eng,state,event)
+  if (is(out,'try-error')) return (out)
+  else state <- out
+  runTriggerRules(state,event)
+  if (oldContext(state) != context(state)) {
+    out <- runResetRules(eng,state,event)
+    if (is(out,'try-error')) return (out)
+    else state <- out
+    state@oldContext <- context(state)
+  }
+  state@timestamp <- timestamp(event)
+  state
+}
+
+handleEvent <-  function (eng,event) {
+  state <- eng$getStatus(uid(event))
+  out <- processEvent(eng,state,event)
+  if (is(out,'try-error')) return (out)
+  eng$saveStatus(state)
+}
