@@ -15,10 +15,7 @@ Classes to write methods for:
    - testRules
    
 o [write] TestSet
-o [doc] runRule, runTRule
 o [doc] handleEvent, processEvent
-o [doc] runTriggerRules, runStatusRules, runObservableRules,
-   runResetRules, runContextRules
 o [test] runTest   
 o [doc] generic 'notifyListeners' and siglist 'EIEngine'
 
