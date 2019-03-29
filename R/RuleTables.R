@@ -142,14 +142,14 @@ runRule <- function (state,event,rule,phase) {
   context=paste("Running rule",name(rule),"for",uid(state)))
 }
 
-runTRule <- function (state,event,rule,listenerSet) {
+runTRule <- function (state,event,rule,listeners) {
   withFlogging({
     satisfied <- checkCondition(condition(rule),state,event)
     flog.trace("Condition for rule %s for %s: %s",
                name(rule),uid(state),as.character(satisfied))
     if (isTRUE(satisfied)) {
       messes <- buildMessages(predicate(rule),state,event)
-      lapply(messes,listenerSet$notifyListeners)
+      lapply(messes,function(m) receiveMessage(listeners,m))
     }
   },state=state,event=event,rule=rule,phase="Trigger",
   context=paste("Running rule",name(rule),"for",uid(state)))
