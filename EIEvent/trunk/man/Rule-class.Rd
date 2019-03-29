@@ -335,7 +335,11 @@
   \link{Conditions} and \link{Predicates} each have detailed
   descriptions. The functions \code{\link{checkCondition}} and
   \code{\link{executePredicate}} run the condition and predicate parts
-  of the rule.
+  of the rule.  The functions \code{\link{runRule}} and
+  \code{\link{runTRule}} run the indivual rules, and the functions
+  \code{\link{runTriggerRules}}, \code{\link{runStatusRules}},
+  \code{\link{runObservableRules}}, \code{\link{runResetRules}},
+  and \code{\link{runContextRules}} run sets of rules.
 
   The functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.

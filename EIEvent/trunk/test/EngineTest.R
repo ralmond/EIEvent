@@ -112,7 +112,7 @@ st1exp <- Status(uid="Test0",context="Stairs",
              observables=list(agentsUsed=list("Lever"),
                               lastAgent="Lever"),
              app=eng$app)
-st1act <- eng$runRule(st0,evnt1,r2o,"Observable")
+st1act <- runRule(st0,evnt1,r2o,"Observable")
 stopifnot(all.equal(st1exp,st1act))
 
 
