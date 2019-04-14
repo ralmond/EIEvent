@@ -129,12 +129,13 @@ modify <- function (predicate, state, event, op) {
 "!start" <- function (predicate, state, event) {
   if (is.character(predicate)) {
     for (name in predicate) {
-      state <- setTimer(state,name,asif.difftime(0),TRUE,timestamp(event))
+      state <- setTimer(state,name,as.difftime(0,units="secs"),
+                        TRUE,timestamp(event))
     }
   } else if (is.list(predicate)) {
     for (name in names(predicate)) {
       running <- TRUE
-      value <- asif.difftime(0)
+      value <- as.difftime(0,units="secs")
       val <- asif.difftime(predicate[[name]])
       if (is.character(val) && grepl("^(state|event)\\.",value))
         val <- asif.difftime(getJS(val,state,event))

@@ -1,0 +1,60 @@
+[
+  {
+    "name":"Reset Agents test",
+      "doc":"https://pluto.coe.fsu.edu/bugzilla/show_bug.cgi?id=64",
+      "initial":{
+          "uid": "Test0",
+          "context": "Level 1",
+          "timers":{},
+          "timestamp":"2018-09-25 12:12:28 EDT",
+          "flags":{
+          },
+          "observables":{
+              "agentsUsed": ["Rubbish"],
+              "lastAgent": "Rubbish"
+          }
+      },
+      "event":{
+          "app":"https://epls.coe.fsu.edu/PPTest",
+          "uid": "Test0",
+          "verb": "end",
+          "object": "Level",
+          "context": "Level 1",
+          "timestamp":"2018-09-25 12:12:28 EDT",   
+          "data": {
+              "gemeObjectType":"AirResistanceValueManipulator",
+              "oldValue": 0,
+              "newValue": 5,
+              "method": "input"
+          }
+      },
+      "rule":{
+          "name": "Reset Agents",
+          "doc": "Reset the agentlist",
+          "verb": "end",
+          "object": "Level",
+          "context": "ALL",
+          "ruleType": "Reset",
+          "priority": 2,
+          "conditions": {
+          },
+          "predicate": {
+              "!set":{ "state.observables.agentsUsed":[]},
+              "!unset": {"state.observables.lastAgent":"NA"}
+          }
+      },
+      "queryResult":true,
+      "final":{
+          "uid": "Test0",
+          "context": "Level 1",
+          "timers":{},
+          "timestamp":"2018-09-25 12:12:28 EDT",
+          "flags":{
+          },
+          "observables":{
+              "agentsUsed":[],
+              "lastAgent":"NA"
+          } 
+      }
+  }
+]

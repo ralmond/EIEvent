@@ -188,7 +188,7 @@ runContextRules <- function(eng,state,event) {
 
 runTriggerRules <- function(eng,state,event) {
   flog.debug("Trigger Rules for %s:%s",uid(event),timestamp(event))
-  ruleList <- eng$findRules(verb(event),object(event),context(event),
+  ruleList <- eng$findRules(verb(event),object(event),context(state),
                         "Trigger")
   for (rl in ruleList) {
     flog.trace("Running Rule %s.",name(rl))
@@ -209,7 +209,7 @@ processEvent <- function (eng,state,event) {
   out <- runContextRules(eng,state,event)
   if (is(out,'try-error')) return (out)
   else state <- out
-  runTriggerRules(state,event)
+  runTriggerRules(eng,state,event)
   if (oldContext(state) != context(state)) {
     out <- runResetRules(eng,state,event)
     if (is(out,'try-error')) return (out)
@@ -224,5 +224,5 @@ handleEvent <-  function (eng,event) {
   state <- eng$getStatus(uid(event))
   out <- processEvent(eng,state,event)
   if (is(out,'try-error')) return (out)
-  eng$saveStatus(state)
+  eng$saveStatus(out)
 }
