@@ -7,7 +7,7 @@ o [test] Process Event Code
 * Grab Event Code
 
 EIEngine Methods that need tests
-o [test] handleEvent
+o [doc] handleEvent
    
 Classes to write methods for:
 *  EIEngine

@@ -134,7 +134,7 @@ evnt2 <- Event(app=eng$app,uid="Test0",
 mess1 <- buildMessages(predicate(r4t),st2,evnt2)[[1]]
 
 
-eng$runTRule(st2,evnt2,r4t)
+runTRule(st2,evnt2,r4t,cl)
 mess1a <- cl$lastMessage()
 stopifnot(all.equal(mess1a,mess1,check_ids=FALSE))
 
@@ -158,12 +158,12 @@ st4exp <- Status(uid="Test0",context="Balance",
              observables=list(blowerManip=1),
              app=eng$app)
 
-st4act <- eng$runStatusRules(st3,evnt4)
+st4act <- runStatusRules(eng,st3,evnt4)
 stopifnot(all.equal(st4exp,st4act))
 
 ### runObservableRules
 
-st1act <- eng$runObservableRules(st0,evnt1)
+st1act <- runObservableRules(eng,st0,evnt1)
 stopifnot(all.equal(st1exp,st1act))
 
 
@@ -185,11 +185,11 @@ st6exp <- Status("uid"="Test0", "context"="Balance",
                 "flags"=list("blowerUsed"=FALSE),
                 "observables"=list("blowerManip"=0))
 
-st666 <- eng$runRule(st5,evnt6,r5r,"Reset")
+st666 <- runRule(st5,evnt6,r5r,"Reset")
 stopifnot(all.equal(st666,st6exp,checkTimeStamp=FALSE))
 ##executePredicate(predicate(r5r),st5,evnt6)
 
-st6act <- eng$runResetRules(st5,evnt6)
+st6act <- runResetRules(eng,st5,evnt6)
 stopifnot(all.equal(st6exp,st6act))
 
 
@@ -207,7 +207,7 @@ st8exp <- Status("uid"="Test0", context="Stairs",
                 "timestamp"=as.POSIXct("2018-09-25 12:12:29 EDT"))
 st8exp@oldContext <- "*INITIAL*"
 
-st8act <- eng$runContextRules(st7,evnt8)
+st8act <- runContextRules(eng,st7,evnt8)
 stopifnot(all.equal(st8exp,st8act))
 
 ### runTriggerRules
@@ -227,7 +227,25 @@ evnt10 <- Event(app=eng$app,uid="Test0",
 
 mess2 <- buildMessages(predicate(r4t),st9,evnt10)[[1]]
 
-eng$runTriggerRules(st9,evnt10)
+runTriggerRules(eng,st9,evnt10)
 stopifnot(all.equal(cl$lastMessage(),mess2,check_ids=FALSE))
 
 ### handleEvent
+stpee <- st1exp
+timestamp(stpee) <- timestamp(evnt1)
+stpe <- processEvent(eng,st0,evnt1)
+stopifnot(all.equal(stpe,stpee))
+
+
+evnt8b <- Event(uid="Bess",verb="initialized",object="game level",
+                "timestamp"=as.POSIXct("2019-04-15 12:12:29 EDT"),
+                details=list(gameLevel="Stairs"),
+                app=eng$app)
+handleEvent(eng, evnt8b)
+bout <- eng$getStatus("Bess")
+stopifnot(context(bout)=="Stairs",
+          timerTime(bout,"levelTime",timestamp(evnt8b))
+          == as.difftime(0,units="secs"),
+          timestamp(bout)==timestamp(evnt8b))
+
+

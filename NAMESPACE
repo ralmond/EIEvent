@@ -69,7 +69,8 @@ exportClasses(EITest,RuleTest,TestSet)
 
 ## EIEngine
 export(EIEngine, processEvent, handleEvent, runTriggerRules,
-       runStatusRules, runObservableRules, runContextRules)
+       runStatusRules, runObservableRules, runContextRules,
+       runResetRules)
 exportMethods(notifyListeners)
 exportClasses(EIEngine)
 
