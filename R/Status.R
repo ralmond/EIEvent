@@ -495,7 +495,7 @@ UserRecordSet <-
               ))
 
 
-## Student Record Methods
+## User Record Methods
 UserRecordSet$methods(
              recorddb = function () {
                if (is.null(db)) {
@@ -510,21 +510,21 @@ UserRecordSet$methods(
              saveStatus = function (state) {
                saveRec(state,recorddb())
              },
-             newStudent = function (uid) {
+             newUser = function (uid) {
                rec <- getStatus(uid)
                if (!is.null(rec)) {
-                 flog.debug("Found existing student record for  %s", uid)
+                 flog.debug("Found existing user record for  %s", uid)
                  return (rec)
                }
                rec <- getStatus("*DEFAULT*")
                if(!is.null(rec)) {
-                 flog.debug("Found default student record for  %s", uid)
+                 flog.debug("Found default user record for  %s", uid)
                  rec@uid <- uid
                  rec@timestamp <- Sys.time()
                  saveRec(rec,recorddb())
                  return(rec)
                }
-               flog.debug("Making blank student record for  %s", uid)
+               flog.debug("Making blank user record for  %s", uid)
                rec <- Status(uid=uid,context="*INITIAL*",timestamp=Sys.time(),
                              app=app)
                rec <- saveRec(rec,recorddb())

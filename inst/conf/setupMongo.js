@@ -71,7 +71,7 @@ db.createCollection("Events", {
         }
     },
     validationAction: "warn"
-})
+});
 db.Events.createIndex( { app:1, uid: 1, timestamp:-1});
 db.createCollection("Messages", {
     validator: {
