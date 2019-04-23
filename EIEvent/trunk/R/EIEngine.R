@@ -46,12 +46,15 @@ EIEngine <-
                                  rules=rls,userRecords=urecs,
                                  contexts=ctxts,ruleTests=rTests,
                                  ...)
-               }))
+                     },
+                   show=function() {
+                     methods::show(paste("<EIEvent: ",app,">"))
+                   }))
 
 ## Student Record Methods
 EIEngine$methods(
-             newStudent = function (uid) {
-               state <- userRecords$newStudent(uid)
+             newUser = function (uid) {
+               state <- userRecords$newUser(uid)
                state
              },
              getStatus = function (uid) {
@@ -59,7 +62,7 @@ EIEngine$methods(
                if (is.null(state)) {
                  flog.warn("Didn't find expected status for %s, using default.",
                            uid)
-                 state <- newStudent(uid)
+                 state <- newUser(uid)
                }
                flog.trace("Fetching status for %s, timestamp= %s",
                           uid(state), timestamp(state))
