@@ -66,13 +66,17 @@ db.createCollection("Events", {
                 data: {
                     bsonType: "object",
                     description: "Named list of evidence."
+                },
+                processed: {
+                    bsonType: "bool",
+                    description: "Has this record been processed?"
                 }
             }
         }
     },
     validationAction: "warn"
 });
-db.Events.createIndex( { app:1, uid: 1, timestamp:-1});
+db.Events.createIndex( { app:1, uid: 1, processed: 1, timestamp:-1});
 db.createCollection("Messages", {
     validator: {
         $jsonSchema: {
