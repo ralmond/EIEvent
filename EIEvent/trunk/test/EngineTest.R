@@ -5,7 +5,7 @@ cl <- new("CaptureListener")
 
 ### initialize
 eng <- EIEngine(app="ecd://epls.coe.fsu.edu/EItest",listeners=list(capture=cl))
-
+stopifnot(eng$isActivated())
 
 ### notifyListeners
 
@@ -248,4 +248,24 @@ stopifnot(context(bout)=="Stairs",
           == as.difftime(0,units="secs"),
           timestamp(bout)==timestamp(evnt8b))
 
+
+### Test event marking, and error marking.
+evnt8f <- Event(uid="Fool",verb="initialized",object="game level",
+                "timestamp"=as.POSIXct("2019-04-15 12:12:29 EDT"),
+                details=list(gameLevel="Stairs"),
+                app=eng$app)
+eng$eventdb()$remove(buildJQuery(app=app(eng)))
+evnt8f <- saveRec(evnt8f,eng$eventdb())
+eng$setProcessed(evnt8f)
+eng$setError(evnt8f,try(log("foo")))
+
+eng$P4db()$update(buildJQuery(app=app(eng)),'{"$set":{"active":true}}')
+
+eng$eventdb()$remove(buildJQuery(app=app(eng)))
+evnt8f <- saveRec(evnt8f,eng$eventdb())
+eng$fetchNextEvent()
+
+
+mainLoop(eng)
+##Note:  Need to manually set active to false for clean stop.
 

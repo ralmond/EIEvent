@@ -3,6 +3,9 @@ EIEngine <-
                fields=c(app="character",
                         dburi="character",
                         dbname="character",
+                        P4dbname="character",
+                        p4db="MongoDB",
+                        waittime="numeric",
                         userRecords="UserRecordSet",
                         rules="RuleTable",
                         contexts="ContextSet",
@@ -13,8 +16,8 @@ EIEngine <-
                    initialize =
                      function(app="default",listeners=list(),
                               username="",password="",host="localhost",
-                              port="",dbname="EIRecords",
-                              ...) {
+                              port="",dbname="EIRecords",P4dbname="Proc4",
+                              waittime=.25,...) {
                        security <- ""
                        if (nchar(username) > 0L) {
                          if (nchar(password) > 0L)
@@ -31,6 +34,7 @@ EIEngine <-
                        dburl <- paste("mongodb:/",host,sep="/")
                        flog.info("Connecting to database %s/%s\n",dburl,dbname)
                        evnts <- NULL # mongo("Events",dbname,dburi)
+                       p4DB <- NULL # mongo("AuthorizedApps",P4dbname,dburi)
                        ls <- ListenerSet(sender= paste("EIEngine[",app,"]"),
                                          dbname=dbname,
                                          dburi=dburl,
@@ -45,8 +49,17 @@ EIEngine <-
                                  listenerSet=ls, events=evnts,
                                  rules=rls,userRecords=urecs,
                                  contexts=ctxts,ruleTests=rTests,
-                                 ...)
+                                 P4dbname=P4dbname,p4db=p4DB,
+                                 waittime=waittime, ...)
                      },
+                   P4db = function () {
+                     if(is.null(p4db))
+                       p4db <<- mongo("AuthorizedApps",P4dbname,dburi)
+                     p4db
+                   },
+                   isActivated = function() {
+                     P4db()$find(buildJQuery(app=app(eng)),limit=1)$active
+                   },
                    show=function() {
                      methods::show(paste("<EIEvent: ",app,">"))
                    }))
@@ -108,7 +121,17 @@ EIEngine$methods(
                  events <<- mongo("Events",dbname,dburi)
                }
               events
-            }
+             },
+             setProcessed= function (mess) {
+               markAsProcessed(mess,eventdb())
+             },
+             setError= function (mess,e) {
+               markAsError(mess,eventdb(),e)
+             },
+             fetchNextEvent = function() {
+               getOneRec(buildJQuery(app=app,processed=FALSE),
+                         eventdb(),parseEvent)
+             }
         )
 
 
@@ -127,12 +150,15 @@ setMethod("notifyListeners","EIEngine",
            })
 
 
+setMethod("app","EIEngine", function (x) x$app)
+
+
 ##########################################
 ## Running Rules.
 ## Logic is slightly different for each rule type, so separate functions.
 
 runStatusRules <- function(eng,state,event) {
-  flog.debug("Status Rules for %s:%s",uid(event),timestamp(event))
+  flog.debug("Status Rules for %s:%s",uid(event),toString(timestamp(event)))
   ruleList <- eng$findRules(verb(event),object(event),context(state),
                             "Status")
   for (rl in ruleList) {
@@ -146,7 +172,7 @@ runStatusRules <- function(eng,state,event) {
 
 runObservableRules <- function(eng,state,event) {
   flog.debug("Observable Rules for %s:%s",uid(event),
-             timestamp(event))
+             toString(timestamp(event)))
   ruleList <- eng$findRules(verb(event),object(event),context(state),
                             "Observable")
   for (rl in ruleList) {
@@ -159,7 +185,7 @@ runObservableRules <- function(eng,state,event) {
 }
 
 runResetRules <- function(eng,state,event) {
-  flog.debug("Reset Rules for %s:%s",uid(event),timestamp(event))
+  flog.debug("Reset Rules for %s:%s",uid(event),toString(timestamp(event)))
   ruleList <- eng$findRules(verb(event),object(event),context(state),
                             "Reset")
   for (rl in ruleList) {
@@ -172,7 +198,7 @@ runResetRules <- function(eng,state,event) {
 }
 
 runContextRules <- function(eng,state,event) {
-  flog.debug("Context Rules for %s:%s",uid(event),timestamp(event))
+  flog.debug("Context Rules for %s:%s",uid(event),toString(timestamp(event)))
   ruleList <- eng$findRules(verb(event),object(event),context(state),
                             "Context")
   for (rl in ruleList) {
@@ -190,7 +216,7 @@ runContextRules <- function(eng,state,event) {
 }
 
 runTriggerRules <- function(eng,state,event) {
-  flog.debug("Trigger Rules for %s:%s",uid(event),timestamp(event))
+  flog.debug("Trigger Rules for %s:%s",uid(event),toString(timestamp(event)))
   ruleList <- eng$findRules(verb(event),object(event),context(state),
                         "Trigger")
   for (rl in ruleList) {
@@ -202,7 +228,7 @@ runTriggerRules <- function(eng,state,event) {
 }
 
 processEvent <- function (eng,state,event) {
-  flog.debug("New Event %s: %s",uid(event),timestamp(event))
+  flog.debug("New Event %s: %s",uid(event),toString(timestamp(event)))
   out <- runStatusRules(eng,state,event)
   if (is(out,'try-error')) return (out)
   else state <- out
@@ -229,3 +255,31 @@ handleEvent <-  function (eng,event) {
   if (is(out,'try-error')) return (out)
   eng$saveStatus(out)
 }
+
+mainLoop <- function(eng) {
+  withFlogging({
+    flog.info("Application Engine %s starting.", app(eng))
+    active <- eng$isActivated()
+    while (active) {
+      eve <- eng$fetchNextEvent()
+      if (is.null(eve)) {
+        ## Queue is empty, wait and check again.
+        Sys.sleep(eng$waittime)
+        ## Check for deactivation signal.
+        active <- eng$isActivated()
+      } else {
+        out <- handleEvent(eng,eve)
+        if (is(out,'try-error')) {
+          eng$setError(eve,out)
+        }
+        eng$setProcessed(eve)
+      }
+    }
+  flog.info("Application Engine %s was deactivated.",
+            app(eng))
+  },
+  context=sprintf("Running Application %s",app(eng)))
+  flog.info("Application Engine %s stopping.",app(eng))
+}
+
+
