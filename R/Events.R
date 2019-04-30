@@ -15,10 +15,11 @@ setMethod("object","Event", function(x) x@object)
 
 
 Event <- function(uid,verb,object="",timestamp=Sys.time(),
-                  details=list(),app="default",context="") {
+                  details=list(),app="default",context="",
+                  processed=FALSE) {
   new("Event",app=app,uid=uid,verb=verb,object=object,
       timestamp=timestamp,context=context,data=details,
-      "_id"=c(oid=NA_character_))
+      "_id"=c(oid=NA_character_),processed=processed)
 }
 
 setMethod("toString","Event", function(x, ...) {
@@ -47,16 +48,19 @@ all.equal.Event <- function (target, current, ...,checkTimestamp=FALSE,check_ids
 
 
 parseEvent<- function (rec) {
-  if (is.null(rec$"_id")) rec$"_id" <- NA_character_
-  names(rec$"_id") <- "oid"
-  if (is.null(rec$app)) rec$app <- "default"
-  if (is.null(rec$object)) rec$app <- ""
-  if (is.null(rec$timestamp)) rec$timestamp <- Sys.time()
-  new("Event","_id"=rec$"_id", app=as.vector(rec$app),
+  rec <- cleanMessageJlist(rec)
+  if (is.null(rec$verb) || length(rec$verb)==0L) rec$verb <- ""
+  if (is.null(rec$object) || length(rec$object)==0L) rec$object <- ""
+  new("Event","_id"=ununboxer(rec$"_id"),
+      app=as.vector(rec$app),
       uid=as.vector(rec$uid),
-      context=as.vector(rec$context),verb=as.vector(rec$verb),
+      context=as.vector(rec$context),
+      sender=as.vector(ununboxer(rec$sender)),
+      mess=as.vector(ununboxer(rec$mess)),
+      verb=as.vector(rec$verb),
       object=as.vector(rec$object),
       timestamp=as.POSIXlt(ununboxer(rec$timestamp)),
+      processed=ununboxer(rec$processed),pError=rec$pError,
       data=parseData(ununboxer(rec$data)))
 }
 

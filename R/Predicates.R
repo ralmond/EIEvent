@@ -84,6 +84,24 @@ modify <- function (predicate, state, event, op) {
              c(curr,val)
          })
 
+"!setKeyValue" <- function (predicate, state, event) {
+    for (name in names(predicate)) {
+      curr <- getJS(name,state,event)
+      arg <- predicate[[name]]
+      key <- arg[["key"]]
+      value <- arg[["value"]]
+      if (is.character(key) &&
+          grepl("^(state|event)\\.",key) )
+        key <- getJS(key,state,event)
+      if (is.character(value) &&
+          grepl("^(state|event)\\.",value) )
+        value <- getJS(value,state,event)
+      curr[[key]] <- value
+      state <- setJS(name,state,timestamp(event),curr)
+  }
+  state
+}
+
 "!pullFromSet" <- function (predicate, state, event)
   modify(predicate,state,event,setdiff)
 "!push" <- function (predicate, state, event)

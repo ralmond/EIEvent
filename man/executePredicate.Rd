@@ -221,6 +221,29 @@ st1 <- executePredicate(
        #Set value to return value of myOp.
 stopifnot(!is.finite(flag(st1,"value")))
 
+stx <- Status("Phred","Level 1",timerNames=c("learningsupports"),
+   flags=list(lastagent="lever",agentlist=c("lever"),
+              noobj=7,noagents=0),
+   observables=list(trophyHall=list(),bankBalance=0),
+   timestamp=as.POSIXct("2018-12-21 00:01"))
+
+eve <- Event("001c1","initialized","newMoneyEarned",
+             timestamp=as.POSIXct("2019-04-29 15:34:35.761500"),
+             details=list(gameLevelId="Down Hill",
+                          earningType="goldWin",
+                          moneyEarned="20",
+                          currentMoney="60"
+                          ), context="Down Hill")
+
+stx1 <- executePredicate(
+          list("!set"=list("state.observables.bankBalance"=
+                           "event.data.currentMoney"),
+               "!setKeyValue"=list("state.observables.trophyHall"=
+                    list(key="event.data.gameLevelId",
+                         value="event.data.earningType"))),stx,eve)
+
+         
+
 }
 \keyword{ interface }
 \keyword{ logic }

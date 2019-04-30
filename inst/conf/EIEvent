@@ -1,0 +1,2 @@
+#!/bin/bash
+R  --slave "--args app=$1 log=$2 waittime=$3 level=$4" <EIEvent.R 

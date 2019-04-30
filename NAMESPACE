@@ -29,7 +29,7 @@ exportMethods(as.jlist,verb,object)
 ## Predicates
 export(executePredicate, "!set", "!unset", modify,
        "!incr", "!decr","!mult","!div","!min","!max",
-       "!addToSet","!pullFromSet","!push","!pop",
+       "!addToSet","!pullFromSet","!push","!pop","!setKeyValue",
        "!start", "!reset", "!setCall", asif.difftime, is.difftime,
        "!send",buildMessages, "!send1","!send2")
 
@@ -70,7 +70,7 @@ exportClasses(EITest,RuleTest,TestSet)
 ## EIEngine
 export(EIEngine, processEvent, handleEvent, runTriggerRules,
        runStatusRules, runObservableRules, runContextRules,
-       runResetRules)
+       runResetRules, mainLoop)
 exportMethods(notifyListeners)
 exportClasses(EIEngine)
 
