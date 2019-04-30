@@ -4,25 +4,19 @@ library(EIEvent)
 app <- cmdArg("app",NULL)
 if (is.null(app) || !grepl("^ecd://",app))
   stop("No app specified, use '--args app=ecd://...'")
+loglevel <- cmdArg("level","INFO")
 
-appstem <- basename(app)
-logfile <- cmdArg("log",file.path("/usr/local/share/Proc4/log",
-                                  paste(appstem,"log",sep=".")))
-
-waittime <- as.numeric(cmdArg("waittime",.25))
-
-loglevel <- cmdArg("level","DEBUG")
-
-cat("App: ",app,"\n")
-cat("Logfile: ",logfile,"\n")
-cat("Waiting time: ",waittime, " Logging Level: ", loglevel,"\n")
+source("/usr/local/share/Proc4/EIini.R")
 
 flog.appender(appender.tee(logfile))
 flog.threshold(loglevel)
 
-cl <- new("CaptureListener")
+listeners <- sapply(names(EI.listenerSpecs),
+                    function (ll) do.call(ll,EI.listenerSpecs[[ll]]))
 
-eng <- EIEngine(app=app,listeners=list(capture=cl),waittime=waittime)
+eng <- do.call(EIEngine,c(EIeng.params,list(listeners=listeners),
+                          EIeng.common))
+
 ## Activate engine (if not already activated.)
 eng$P4db()$update(buildJQuery(app=app(eng)),'{"$set":{"active":true}}')
 mainLoop(eng)
