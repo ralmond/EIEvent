@@ -10,8 +10,12 @@ EIeng.params <- list(app=app)
 logfile <- file.path("/usr/local/share/Proc4/logs",
                      paste("EI_",appstem,".log",sep=""))
 
-data2json <- function(dat) {
-  toJSON(sapply(dat,unboxer))
+trophy2json <- function(dat) {
+  paste('{', '"trophyHall"', ':','[',
+        paste(
+            paste('{"',names(dat$trophyHall),'":"',dat$trophyHall,'"}',
+                  sep=""), collapse=", "), '],',
+        '"bankBalance"', ':', dat$bankBalance, '}')
 }
 
 EI.listenerSpecs <-
@@ -21,5 +25,5 @@ EI.listenerSpecs <-
        "UpdateListener"=list(dbname="Proc4",dburi="mongodb://localhost",
             colname="Players",targetField="data",
             messSet=c("Money Earned","Money Spent"),
-            jsonEncoder="data2json"))
+            jsonEncoder="trophy2json"))
 
