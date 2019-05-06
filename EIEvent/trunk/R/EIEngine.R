@@ -104,7 +104,13 @@ EIEngine$methods(
 ##Rule Methods
 EIEngine$methods(
              findRules = function (verb,object,context,phase) {
-               appcon <- applicableContexts(getContext(context))
+               conObj <- getContext(context)
+               if (is.null(conObj)) {   #Missing from databalse
+                 flog.warn("Context %s missing from database.",context)
+                 appcon <- c(context,"ALL")
+               } else {
+                 appcon <- applicableContexts(conObj)
+               }
                rules$findRules(verb,object,appcon,phase)
              },
              loadRules = function (rlist,stopOnDups=TRUE) {
