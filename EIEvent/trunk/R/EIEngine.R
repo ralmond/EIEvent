@@ -108,6 +108,7 @@ EIEngine$methods(
                if (is.null(conObj)) {   #Missing from databalse
                  flog.warn("Context %s missing from database.",context)
                  appcon <- c(context,"ALL")
+                 names(appcon) <- NULL  #Gets a name from some where.
                } else {
                  appcon <- applicableContexts(conObj)
                }
