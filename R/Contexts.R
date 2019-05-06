@@ -26,6 +26,10 @@ setMethod("belongsTo","Context", function(c) c@belongsTo)
 setMethod("belongsTo<-","Context", function(c,value) {
   c@belongsTo <- value
   c})
+setMethod("belongsTo<-","list", function(c,value) {
+  character()
+  })
+
 setMethod("number","Context", function(c) c@number)
 setMethod("number<-","Context", function(c,value) {
   c@number <- as.integer(value)
