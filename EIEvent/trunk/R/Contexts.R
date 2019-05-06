@@ -26,7 +26,7 @@ setMethod("belongsTo","Context", function(c) c@belongsTo)
 setMethod("belongsTo<-","Context", function(c,value) {
   c@belongsTo <- value
   c})
-setMethod("belongsTo<-","list", function(c,value) {
+setMethod("belongsTo","list", function(c) {
   character()
   })
 
