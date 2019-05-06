@@ -130,7 +130,7 @@ EIEngine$methods(
              },
              fetchNextEvent = function() {
                getOneRec(buildJQuery(app=app,processed=FALSE),
-                         eventdb(),parseEvent)
+                         eventdb(),parseEvent,sort = c(timestamp = 1))
              }
         )
 
