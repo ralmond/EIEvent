@@ -99,6 +99,7 @@ ContextSet <-
                     con
                   },
                   named = function (id) {
+                    names(id) <- NULL   #Interpreted as an operator
                     con <- getOneRec(buildJQuery(app=app,cid=id),
                                      contextdb(), parseContext)
                     if (is.null(con)) {
