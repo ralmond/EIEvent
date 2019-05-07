@@ -83,7 +83,7 @@ parseTimer <- function (rec) {
     units <- as.character(rec$totalTime$units)
     tt <- as.difftime(tim,units=units)
   }
-  if (is.null(rec$startTime) || is.na(rec$startTime) ||
+  if (length(rec$startTime)==0L || is.na(rec$startTime) ||
       (is.character(rec$startTime) && rec$startTime=="NA")) {
     st <- as.POSIXlt(NA)
   } else {
