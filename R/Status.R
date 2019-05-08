@@ -527,7 +527,7 @@ UserRecordSet$methods(
                  return(rec)
                }
                flog.debug("Making blank user record for  %s", uid)
-               rec <- Status(uid=uid,context="*INITIAL*",oldContext="*INITIAL*",
+               rec <- Status(uid=uid,context="*INITIAL*",
                              timestamp=Sys.time(),
                              app=app)
                rec <- saveRec(rec,recorddb())
