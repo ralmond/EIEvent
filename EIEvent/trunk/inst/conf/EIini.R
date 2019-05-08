@@ -21,7 +21,7 @@ trophy2json <- function(dat) {
 EI.listenerSpecs <-
   list("InjectionListener"=list(sender=paste("EI",appstem,sep="_"),
             dbname="EARecords",dburi="mongodb://localhost",
-            colname="Observables",messSet="New Observables"),
+            colname="EvidenceSets",messSet="New Observables"),
        "UpdateListener"=list(dbname="Proc4",dburi="mongodb://localhost",
             colname="Players",targetField="data",
             messSet=c("Money Earned","Money Spent"),

@@ -191,12 +191,14 @@ setMethod("obs<-","Status", function(x,name,value) {
   x
 })
 
-setMethod("copy","Status", function(prototype,uid) {
-  new("Status",uid=uid,context=prototype@context,
+copyStatus <- function(prototype,uid) {
+  new("Status","_id"=c(oid=NA_character_),
+      uid=uid,context=prototype@context,
+      oldContext=prototype@oldContext,
       timers=prototype@timers, flags=prototype@flags,
       observables=prototype@observables,
-      timestamp=prototype@timestamp)
-})
+      timestamp=prototype@timestamp,app=prototype@app)
+}
 
 splitfield <- function (field) {
   strsplit(gsub("]","",field),"[.[]")[[1]]
@@ -519,13 +521,14 @@ UserRecordSet$methods(
                rec <- getStatus("*DEFAULT*")
                if(!is.null(rec)) {
                  flog.debug("Found default user record for  %s", uid)
-                 rec@uid <- uid
+                 rec <- copyStatus(rec,uid)
                  rec@timestamp <- Sys.time()
-                 saveRec(rec,recorddb())
+                 rec <- saveRec(rec,recorddb()) #Need to save new ID
                  return(rec)
                }
                flog.debug("Making blank user record for  %s", uid)
-               rec <- Status(uid=uid,context="*INITIAL*",timestamp=Sys.time(),
+               rec <- Status(uid=uid,context="*INITIAL*",oldContext="*INITIAL*",
+                             timestamp=Sys.time(),
                              app=app)
                rec <- saveRec(rec,recorddb())
                rec
