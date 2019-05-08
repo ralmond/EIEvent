@@ -271,6 +271,10 @@ asif.difftime <- function (e2) {
       e2 <-do.call("+",
                    lapply(units,
                           function (u) as.difftime(e2[[u]],units=u)))
+    } else if (is.list(e2) && all(units %in% c("tim","units"))) {
+      flog.trace("class(e2)=%s",class(e2))
+      flog.trace("e2=",e2,capture=TRUE)
+      e2 <- do.call(as.difftime,e2)
     }
   }
   e2
