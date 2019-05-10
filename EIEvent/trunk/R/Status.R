@@ -35,7 +35,7 @@ setMethod("resume",c("Timer","POSIXt"), function(timer,time) start(timer,time))
 
 setMethod("isRunning","Timer",
           function(timer)
-            !is.na(timer@startTime))
+            !is.na(timer@startTime) && !is.null(timer@startTime))
 
 setMethod("totalTime","Timer", function(timer) timer@totalTime)
 
@@ -79,7 +79,10 @@ parseTimer <- function (rec) {
   if (is.null(rec$totalTime)) {
     tt <- as.difftime(NA_real_,units="secs")
   } else {
-    tim <- as.numeric(rec$totalTime[[pmatch("tim",names(rec$totalTime))]])
+    tstring <- rec$totalTime[[pmatch("tim",names(rec$totalTime))]]
+    # if (is.null(tstring) || tstring=="NA") tim <- NA_real_
+    # else
+      tim <- as.numeric(tstring)
     units <- as.character(rec$totalTime$units)
     tt <- as.difftime(tim,units=units)
   }
@@ -384,7 +387,7 @@ setMethod("as.jlist",c("Status","list"), function(obj,ml,serialize=TRUE) {
                               function(tim) as.jlist(tim,attributes(tim))))
   ml$flags <- unparseData(ml$flags,serialize)
   ml$observables <- unparseData(ml$observables,serialize)
-
+  print(ml)
   ml
 })
 

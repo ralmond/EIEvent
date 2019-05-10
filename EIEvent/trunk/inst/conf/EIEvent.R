@@ -22,6 +22,11 @@ names(listeners) <- names(EI.listenerSpecs)
 eng <- do.call(EIEngine,c(EIeng.params,list(listeners=listeners),
                           EIeng.common))
 
+if (interactive()) {
+  eng$processN <- 52
+}
+
+
 ## Activate engine (if not already activated.)
 eng$activate()
 mainLoop(eng)
