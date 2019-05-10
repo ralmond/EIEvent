@@ -11,13 +11,14 @@ EIEngine <-
                         contexts="ContextSet",
                         events="MongoDB",
                         ruleTests="TestSet",
-                        listenerSet="ListenerSet"),
+                        listenerSet="ListenerSet",
+                        processN="numeric"),
                methods = list(
                    initialize =
                      function(app="default",listeners=list(),
                               username="",password="",host="localhost",
                               port="",dbname="EIRecords",P4dbname="Proc4",
-                              waittime=.25,...) {
+                              waittime=.25,processN=Inf,...) {
                        security <- ""
                        if (nchar(username) > 0L) {
                          if (nchar(password) > 0L)
@@ -50,7 +51,9 @@ EIEngine <-
                                  rules=rls,userRecords=urecs,
                                  contexts=ctxts,ruleTests=rTests,
                                  P4dbname=P4dbname,p4db=p4DB,
-                                 waittime=waittime, ...)
+                                 waittime=waittime,
+                                 processN=processN,
+                                 ...)
                      },
                    P4db = function () {
                      if(is.null(p4db))
@@ -154,10 +157,12 @@ EIEngine$methods(
 
 EIEngine <- function(app="default",listeners=list(),
                      username="",password="",host="localhost",
-                     port="",dbname="EIRecords",
+                     port="",dbname="EIRecords",P4dbname="Proc4",
+                     processN=Inf,
                      ...) {
   new("EIEngine",app=app,listeners=listeners,username=username,
-      password=password,host=host,port=port,dbname=dbname,...)
+      password=password,host=host,port=port,dbname=dbname,
+      processN=processN,P4dbnam=P4dbname,...)
 }
 
 ## Listener notification.
@@ -280,7 +285,7 @@ handleEvent <-  function (eng,event) {
   }
   if (interactive() && FALSE) recover()
   eng$saveStatus(out)
-  if (interactive() && TRUE) recover()
+  if (interactive() && FALSE) recover()
 }
 
 mainLoop <- function(eng) {
@@ -300,6 +305,8 @@ mainLoop <- function(eng) {
           eng$setError(eve,out)
         }
         eng$setProcessed(eve)
+        eng$processN <- eng$processN -1
+        active <- eng$processN > 0
       }
     }
   flog.info("Application Engine %s was deactivated.",

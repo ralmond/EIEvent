@@ -38,9 +38,9 @@ buildMessages <- function (predicate, state, event) {
     if (is.character(value) &&
         grepl("^(state|event)\\.",value) )
       value <- asif.difftime(getJS(value,state,event))
-    if (is.null(value) || toupper(value)=="NULL")
+    if (is.null(value) || isTRUE(toupper(value)=="NULL"))
       state <- setJS(name,state,timestamp(event),NULL)
-    else if (is.na(value) || toupper(value)=="NA")
+    else if (is.na(value) || isTRUE(toupper(value)=="NA"))
       state <- setJS(name,state,timestamp(event),NA)
     else
       state <- removeJS(name,state)
@@ -271,7 +271,8 @@ asif.difftime <- function (e2) {
       e2 <-do.call("+",
                    lapply(units,
                           function (u) as.difftime(e2[[u]],units=u)))
-    } else if (is.list(e2) && all(units %in% c("tim","units"))) {
+    } else if (is.list(e2) && length(e2)==2 &&
+               all(units %in% c("tim","units"))) {
       flog.trace("class(e2)=%s",class(e2))
       flog.trace("e2=",e2,capture=TRUE)
       e2 <- do.call(as.difftime,e2)

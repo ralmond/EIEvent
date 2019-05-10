@@ -229,7 +229,7 @@ db.createCollection("Contexts", {
     validator: {
         $jsonSchema: {
             bsonType: "object",
-            required: ["app","cid","number"],
+            required: ["app","cid","name","number"],
             properties: {
                 _id: {
                     bsonType: "string",
@@ -266,6 +266,7 @@ db.createCollection("Contexts", {
 })
 db.Contexts.createIndex( { app:1, cid: 1});
 db.Contexts.createIndex( { app:1, number: 1});
+db.Contexts.createIndex( { app:1, name: 1});
 db.createCollection("Tests", {
     validator: {
         $jsonSchema: {
