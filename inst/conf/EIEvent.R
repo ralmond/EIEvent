@@ -40,7 +40,7 @@ if (!is.null(eventFile)) {
   system2("mongoimport",
           sprintf('-d %s -c Events --jsonArray', eng$dbname),
           stdin=eventFile)
-  NN <- eng$evidenceSets()$count(buildJQuery(app=app(eng)))
+  NN <- eng$evidenceSets()$count(buildJQuery(app=app(eng),processed=FALSE))
 }
 
 
