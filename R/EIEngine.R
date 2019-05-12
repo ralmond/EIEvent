@@ -290,7 +290,7 @@ handleEvent <-  function (eng,event) {
 
 mainLoop <- function(eng) {
   withFlogging({
-    flog.info("Application Engine %s starting.", app(eng))
+    flog.info("Evidence Identification Engine %s starting.", app(eng))
     active <- eng$isActivated()
     while (active) {
       eve <- eng$fetchNextEvent()
@@ -309,11 +309,11 @@ mainLoop <- function(eng) {
         active <- eng$processN > 0
       }
     }
-  flog.info("Application Engine %s was deactivated.",
+  flog.info("EI Engine %s was deactivated.",
             app(eng))
   },
-  context=sprintf("Running Application %s",app(eng)))
-  flog.info("Application Engine %s stopping.",app(eng))
+  context=sprintf("Running EI Application %s",app(eng)))
+  flog.info("Evidence Identification Engine %s stopping.",app(eng))
 }
 
 

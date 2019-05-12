@@ -8,7 +8,7 @@ EIeng.params <- list(app=app)
 
 
 logfile <- file.path("/usr/local/share/Proc4/logs",
-                     paste("EI_",appstem,".log",sep=""))
+                     paste("EI_",appstem,"0.log",sep=""))
 
 trophy2json <- function(dat) {
   paste('{', '"trophyHall"', ':','[',
