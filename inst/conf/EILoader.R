@@ -66,6 +66,10 @@ engAdapt$loadRules(sRules)
 engAdapt$loadRules(tRules)
 
 ## Load default student records.
+engTest$userRecords$clearAll(TRUE)   #Clear default records
+engUser$userRecords$clearAll(TRUE)   #Clear default records
+engLin$userRecords$clearAll(TRUE)   #Clear default records
+engAdapt$userRecords$clearAll(TRUE)   #Clear default records
 system2("mongoimport",args=sprintf("-d EIRecords -c States --jsonArray %s",
                                    file.path(config.dir,"defaultSR.json")))
 
