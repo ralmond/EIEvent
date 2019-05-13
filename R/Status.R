@@ -23,12 +23,14 @@ setMethod("start",c("Timer","POSIXt"),
 
 setMethod("pause",c("Timer","POSIXt"),
           function(timer,time,runningCheck=TRUE) {
-            if (runningCheck && !isRunning(timer)) {
-              stop("Timer ",timer@name,"is not running.")
+            if (!isRunning(timer)) {
+              if (runningCheck)
+                stop("Timer ",timer@name,"is not running.")
+            } else {
+              timer@totalTime <- timer@totalTime +
+                as.POSIXct(time) - timer@startTime
+              timer@startTime <- as.POSIXlt(NA)
             }
-            timer@totalTime <- timer@totalTime +
-              as.POSIXct(time) - timer@startTime
-            timer@startTime <- as.POSIXlt(NA)
             timer})
 
 setMethod("resume",c("Timer","POSIXt"), function(timer,time) start(timer,time))
@@ -80,9 +82,8 @@ parseTimer <- function (rec) {
     tt <- as.difftime(NA_real_,units="secs")
   } else {
     tstring <- rec$totalTime[[pmatch("tim",names(rec$totalTime))]]
-    # if (is.null(tstring) || tstring=="NA") tim <- NA_real_
-    # else
-      tim <- as.numeric(tstring)
+    if (is.null(tstring) || tstring=="NA") tim <- NA_real_
+    else tim <- as.numeric(tstring)
     units <- as.character(rec$totalTime$units)
     tt <- as.difftime(tim,units=units)
   }
@@ -282,15 +283,18 @@ setJS <- function (field,state,now,value) {
     if (length(fieldexp) == 3L) {
       if (is.logical(value))
         timerRunning(state,fieldexp[3], now) <-value
-      else if (is.difftime(value))
+      else if (is.difftime(value)) {
+        flog.trace("Setting timer %s to %s",fieldexp[3],toString(value))
         timerTime(state,fieldexp[3],now) <- value
-      else
+      } else
         stop ("Timer ",fieldexp[3],"set to a value that is not a time or logical.")
     } else {
       switch(fieldexp[4],
-             time=, value=
-                      timerTime(state,fieldexp[3], now) <-
-                      asif.difftime(value),
+             time=, value= {
+               value <- as.diffitem(value)
+               flog.trace("Setting timer %s to %s",fieldexp[3],toString(value))
+               timerTime(state,fieldexp[3], now) <-value
+             },
              run=, running=
                      timerRunning(state,fieldexp[3], now) <-value,
              stop("Timer ",fieldexp[4],
