@@ -5,7 +5,7 @@ library(EIEvent)
 flog.threshold(INFO)
 cl <- new("CaptureListener")
 
-config.dir <- "/home/ralmond/ownCloud/Projects/NSFCyberlearning/EvidenceID"
+source("/usr/local/share/Proc4/EIini.R")
 
 engTest <- EIEngine(app="ecd://epls.coe.fsu.edu/P4test",
                     listeners=list(capture=cl))
