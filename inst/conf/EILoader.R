@@ -45,6 +45,9 @@ engAdapt$addContexts(manipCon)
 sRules <- lapply(fromJSON(file.path(config.dir, "Rules",
                                     "CombinedRules.json"),FALSE),
                  parseRule)
+sRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+                                    "CorrectDuration.json"),FALSE),
+                 parseRule)
 tRules <- lapply(fromJSON(file.path(config.dir, "Rules",
                                     "TrophyHallRules.json"),FALSE),
                  parseRule)

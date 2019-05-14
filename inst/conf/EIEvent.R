@@ -5,7 +5,7 @@ if (interactive()) {
   app <- "ecd://epls.coe.fsu.edu/P4test"
   loglevel <- "DEBUG"
   cleanFirst <- TRUE
-  eventFile <- "/home/ralmond/Projects/EvidenceID/tester2.json"
+  eventFile <- "/home/ralmond/Projects/EvidenceID/c081c3.core.json"
 } else {
   app <- cmdArg("app",NULL)
   if (is.null(app) || !grepl("^ecd://",app))
@@ -17,12 +17,20 @@ if (interactive()) {
 
 source("/usr/local/share/Proc4/EIini.R")
 
-flog.appender(appender.tee(logfile))
+if (interactive()) {
+  flog.appender(appender.tee(logfile))
+} else {
+  flog.appender(appender.file(logfile))
+}
 flog.threshold(loglevel)
 
 listeners <- lapply(names(EI.listenerSpecs),
                     function (ll) do.call(ll,EI.listenerSpecs[[ll]]))
 names(listeners) <- names(EI.listenerSpecs)
+if (interactive()) {
+  cl <- new("CaptureListener")
+  listeners <- c(listeners,cl=cl)
+}
 eng <- do.call(EIEngine,c(EIeng.params,list(listeners=listeners),
                           EIeng.common))
 
@@ -40,11 +48,11 @@ if (!is.null(eventFile)) {
   system2("mongoimport",
           sprintf('-d %s -c Events --jsonArray', eng$dbname),
           stdin=eventFile)
-  NN <- eng$evidenceSets()$count(buildJQuery(app=app(eng),processed=FALSE))
+  NN <- eng$eventdb()$count(buildJQuery(app=app(eng),processed=FALSE))
 }
 
 
-if (interactive() && !is.null(eventFile)) {
+if (!is.null(eventFile)) {
   eng$processN <- NN
 }
 
@@ -60,5 +68,9 @@ if (interactive() && FALSE) {
   eng$setProcessed(eve)
 }
 
-
+## This shows the details of the last message.  If the test script is
+## set up properly, this should be the observables.
+if (interactive() && TRUE) {
+  details(cl$lastMessage())
+}
 
