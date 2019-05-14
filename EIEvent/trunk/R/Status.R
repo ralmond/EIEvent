@@ -291,7 +291,7 @@ setJS <- function (field,state,now,value) {
     } else {
       switch(fieldexp[4],
              time=, value= {
-               value <- as.diffitem(value)
+               value <- asif.difftime(value)
                flog.trace("Setting timer %s to %s",fieldexp[3],toString(value))
                timerTime(state,fieldexp[3], now) <-value
              },
@@ -391,7 +391,6 @@ setMethod("as.jlist",c("Status","list"), function(obj,ml,serialize=TRUE) {
                               function(tim) as.jlist(tim,attributes(tim))))
   ml$flags <- unparseData(ml$flags,serialize)
   ml$observables <- unparseData(ml$observables,serialize)
-  print(ml)
   ml
 })
 

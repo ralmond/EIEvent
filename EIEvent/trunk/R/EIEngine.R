@@ -300,6 +300,8 @@ mainLoop <- function(eng) {
         ## Check for deactivation signal.
         active <- eng$isActivated()
       } else {
+        if (is.finite(eng$processN))
+          flog.debug("Processing event %d.",eng$processN)
         out <- handleEvent(eng,eve)
         if (is(out,'try-error')) {
           eng$setError(eve,out)

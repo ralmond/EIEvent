@@ -1,3 +1,7 @@
+2019-05-12  Rusell Almond  <ralmond@Cherry>
+
+	* R/Status.R (Timer): NA in duration bug.
+
 2019-05-07  Russell Almond  <ralmond@Limu>
 
 	* R/EIEngine.R: Added activate() method, to either insert up
