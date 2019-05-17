@@ -6,6 +6,7 @@ appstem <- basename(app)
 ## These are for application specific parameters
 EIeng.params <- list(app=app)
 
+config.dir <- "/home/ralmond/ownCloud/Projects/NSFCyberlearning/EvidenceID"
 
 logfile <- file.path("/usr/local/share/Proc4/logs",
                      paste("EI_",appstem,"0.log",sep=""))
