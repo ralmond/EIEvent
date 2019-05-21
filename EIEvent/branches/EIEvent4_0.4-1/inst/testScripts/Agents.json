@@ -1,0 +1,292 @@
+[
+  {
+    "name":"Reset Agents test",
+  "doc":"",
+    "initial":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed": ["Rubbish"],
+        "lastAgent": "Rubbish"
+      }
+    },
+    "event":{
+      "app":"https://epls.coe.fsu.edu/PPTest",
+      "uid": "Test0",
+      "verb": "XXX",
+      "object": "XXXr",
+      "context": "Level 1",
+      "timestamp":"2018-09-25 12:12:28 EDT",   
+      "data": {
+        "gemeObjectType":"AirResistanceValueManipulator",
+        "oldValue": 0,
+        "newValue": 5,
+        "method": "input"
+      }
+    },
+    "rule":{
+      "name": "Reset Agents",
+      "doc": "Reset the agentlist",
+      "verb": "end",
+      "object": "Level",
+      "context": "ALL",
+      "ruleType": "Reset",
+      "priority": 2,
+      "conditions": {
+      },
+      "predicate": {
+        "!set":{ "state.observables.agentsUsed":[]},
+        "!unset": {"state.observables.lastAgent":"NA"}
+      }
+    },
+    "queryResult":true,
+    "final":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":[],
+        "lastAgent":"NA"
+      } 
+    }
+  },
+  {
+    "name": "Update agent used test Ramp",
+    "doc":"",
+    "initial":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",   
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":[],
+        "lastAgent":"NA"
+      }
+    },
+    "event":{
+      "app":"https://epls.coe.fsu.edu/PPTest",
+      "uid": "Test0",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Level 1",
+      "timestamp":"2018-09-25 12:12:28 EDT",   
+      "data": {
+        "gemeObjectType": "Ramp"
+      }
+    },
+    "rule":{
+      "name": "Update agent used.",
+      "doc": "Adds the agent to the agent list, and sets the last agent.",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Drawing Level",
+      "ruleType": "Observable Rule",
+      "priority": 5,
+      "conditions": {
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+      },
+      "predicate": {
+        "!push":{"state.observables.agentsUsed":
+            "event.data.gemeObjectType"},
+        "!set": {"state.observables.lastAgent":
+            "event.data.gemeObjectType"}
+      }
+    },
+    "queryResult": true,
+    "final":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",   
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":["Ramp"],
+        "lastAgent":"Ramp"
+      } 
+    }
+  },
+  {
+    "name" : "Update agent used test Lever",
+    "doc":"",
+    "initial":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":[],
+        "lastAgent":"NA"
+      }
+    },
+    "event":{
+      "app":"https://epls.coe.fsu.edu/PPTest",
+      "uid": "Test0",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Level 1",
+      "timestamp":"2018-09-25 12:12:28 EDT",   
+      "data": {
+        "gemeObjectType": "Lever"
+      }
+    },
+    "rule":{
+      "name": "Update agent used.",
+      "doc": "Adds the agent to the agent list, and sets the last agent.",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Drawing Level",
+      "ruleType": "Observable Rule",
+      "priority": 5,
+      "conditions": {
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+      },
+      "predicate": {
+        "!push":{"state.observables.agentsUsed":
+            "event.data.gemeObjectType"},
+        "!set": {"state.observables.lastAgent":
+            "event.data.gemeObjectType"}
+      }
+    },
+    "queryResult": true,
+    "final":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":["Lever","Ramp"],
+        "lastAgent":"Lever"
+      } 
+    }
+  },
+  {
+    "name": "Update agent used test Springboard",
+    "doc":"",
+    "initial":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":[],
+        "lastAgent":"NA"
+      }
+    },
+    "event":{
+      "app":"https://epls.coe.fsu.edu/PPTest",
+      "uid": "Test0",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Level 1",
+      "timestamp":"2018-09-25 12:12:28 EDT",   
+      "data": {
+        "gemeObjectType": "Springboard"
+      }
+    },
+    "rule":{
+      "name": "Update agent used.",
+      "doc": "Adds the agent to the agent list, and sets the last agent.",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Drawing Level",
+      "ruleType": "Observable Rule",
+      "priority": 5,
+      "conditions": {
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+      },
+      "predicate": {
+        "!push":{"state.observables.agentsUsed":
+            "event.data.gemeObjectType"},
+        "!set": {"state.observables.lastAgent":
+            "event.data.gemeObjectType"}
+      }
+    },
+    "queryResult": true,
+    "final":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":["Springboard","Lever","Ramp"],
+        "lastAgent":"Springboard"
+      } 
+    }
+  },
+  {
+    "name":"Update agent used test Pendulum",
+    "doc":"",
+    "initial":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":[],
+        "lastAgent":"NA"
+      }
+    },
+    "event":{
+      "app":"https://epls.coe.fsu.edu/PPTest",
+      "uid": "Test0",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Level 1",
+      "timestamp":"2018-09-25 12:12:28 EDT",   
+      "data": {
+        "gemeObjectType": "Pendulum"
+      }
+    },
+    "rule":{
+      "name": "Update agent used.",
+      "doc": "Adds the agent to the agent list, and sets the last agent.",
+      "verb": "identified",
+      "object": "game object",
+      "context": "Drawing Level",
+      "ruleType": "Observable Rule",
+      "priority": 5,
+      "conditions": {
+        "event.data.gemeObjectType":["Ramp","Lever","Springboard","Pendulum"]
+      },
+      "predicate": {
+        "!push":{"state.observables.agentsUsed":
+            "event.data.gemeObjectType"},
+        "!set": {"state.observables.lastAgent":
+            "event.data.gemeObjectType"}
+      }
+    },
+    "queryResult": true,
+    "final":{
+      "uid": "Test0",
+      "context": "Level 1",
+      "timers":{},
+      "timestamp":"2018-09-25 12:12:28 EDT",
+      "flags":{
+      },
+      "observables":{
+        "agentsUsed":["Pendulum","Springboard","Lever","Ramp"],
+        "lastAgent":"Lever"
+      } 
+    }
+  }
+  ]

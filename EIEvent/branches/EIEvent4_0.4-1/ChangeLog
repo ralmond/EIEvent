@@ -1,0 +1,102 @@
+2019-05-12  Rusell Almond  <ralmond@Cherry>
+
+	* R/Status.R (Timer): NA in duration bug.
+
+2019-05-07  Russell Almond  <ralmond@Limu>
+
+	* R/EIEngine.R: Added activate() method, to either insert up
+	update as appropriate.
+
+2019-03-18  Rusell Almond  <ralmond@Cherry>
+
+	* R/EIEngine.R (runRule, runTRule): No longer a method of
+	EIEngine, pulled out to RuleTable.R
+	(processEvent, handleEvent): Pulled these out as functions rather
+	than methods.
+	(runTriggerRules, runStatusRules, runObservableRules)
+	(runResetRules, runContextRules): Pulled these out as functions
+	rather than methods.
+
+2019-03-06  Rusell Almond  <ralmond@Cherry>
+
+	* R/Predicates.R (asif.difftime): Rolled back change in
+	asif.difftime.  Not sure what this is going to break, but
+	currently forcing things to difftimes that should stay as ints or
+	reals. 
+
+2019-03-01  Russell Almond  <ralmond@Limu>
+
+	* R/Predicates.R (asif.difftime): Fixed so that defaults to
+	seconds if integer.
+
+	* R/Status.R (parseTimer): Debugged timer parsing.
+
+2019-02-28  Russell Almond  <ralmond@Limu>
+
+	* R/Status.R (all.equal.Status): Bug where not checking value of
+	attributes. 
+
+	* R/Condition.R ("?in"): Check for NULL target value.
+
+	* R/testRules.R (testRule,testQuery,testPredicate): Added check
+	for missing fields in test object.
+
+2019-02-02  Rusell Almond  <ralmond@Cherry>
+
+	* R/AAGenerics.R (MongoDB):  Putting the calls to the mongo()
+	constructor in the reference class objects (EIEngine, &c) was
+	causing problems because R would try to build prototype instances
+	of the class at package load, and would fail if the mongo string
+	was not correct.  Now, uri is set when class is initialized, but
+	call to mongo does not occur until database is first accessed.
+	Note that this means databases should be accessed by the method
+	and not the raw field.
+
+2019-01-21  Rusell Almond  <ralmond@Cherry>
+
+	* R/testRules.R (queryTest, predicateTest, ruleTest)
+	(ruleTestScript, predicateTestScript, predicateTest): Refactoring
+	to (a) use new RuleTest class and (b) use futile.logger.
+	(RuleTest): Added this class as a formal class.  
+
+2019-01-19  Rusell Almond  <ralmond@Cherry>
+
+	* R/ErrorHandling.R (withJavaLogging): This probably needs to get
+	replaced with an appropriate function from futile.logger. (ftry).
+	
+
+2019-01-06  Rusell Almond  <ralmond@Cherry>
+
+	* R/Status.R (all.equal.Status): Status equality checks were
+	failing because of name issues.  Fixed by creating an equality
+	test method for Statuses which is a little bit more lax.  Not
+	thoroughly tested.
+
+2018-12-31  Russell Almond  <ralmond@Limu>
+
+	* R/testRules.R (queryTest, queryTestScript):  Added.
+
+	* R/Status.R (parseStatus): Added default values for missing fields.
+	* R/Events.R (parseEvent): Same thing.
+	* R/RuleTable.R (parseRule): Same thing.
+
+
+2018-12-27  Russell Almond  <ralmond@Limu>
+
+	* R/Status.R (as.jlist): R/RuleTables.R (as.jlist): changed to
+	unparseData prototocol.
+
+2018-09-27  Russell Almond  <ralmond@Limu>
+
+	* R/RuleTables.R (Rule): Added app to Rule.
+
+	* R/Status.R (Status): Added app and timestamp to Status.
+
+2018-08-14  Rusell Almond  <ralmond@Cherry>
+
+	* DESCRIPTION (Package): Renamed from EIEngine
+
+2018-07-28  Rusell Almond  <ralmond@Cherry>
+
+	* DESCRIPTION (Package): Created the package.
+

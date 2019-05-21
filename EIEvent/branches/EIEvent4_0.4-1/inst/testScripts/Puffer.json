@@ -1,0 +1,112 @@
+[
+{
+  state: {
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      PufferUsed: false
+    },
+    observables:{
+      NumberPufferManip: 0 
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "adjusted",
+            object: "control",
+            context: "25",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "Puffer",
+      position: "(258.8, 398.9)",
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Click Puffer",
+    doc: "Increments the click counter"
+    verb: "adjusted",
+    object: "control",
+    context: "Manipulation Levels",
+    ruleType: "Status",
+    priority: 2,
+    conditions: {
+      gemeObjectType: "Puffer" 
+    },
+    predicate: {
+      !set:{state.flags.PufferUsed: true},
+      !incr:{state.observables.NumberPufferManip: 1},
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      PufferUsed: true
+        },
+    observables:{
+      NumberPufferManip: 1
+    }
+  }
+},
+{
+  state: {
+    uid: "Test0",
+    context: "25",
+    timers:{},
+    flags:{
+      PufferUsed: false,
+      PufferPositionVal: "NA"
+    },
+    observables:{
+      PufferManip:"Clicked"
+    }
+  },
+  event: {
+            app:"https://epls.coe.fsu.edu/PPTest",
+            uid: "Test0",
+            verb: "adjusted",
+            object: "control",
+            context: "25",
+            timestamp:"2018-09-25 12:12:28 EDT",   
+            data: {
+      gemeObjectType: "Puffer",
+      position: "(258.8, 398.9)",
+      method: "input"
+    }
+  },
+  rule: {
+    name: "Count for Puffer",
+    doc: "Set the value of position for the Puffer"
+    verb: "Puffer",
+    object: "control",
+    context: "Manipulation Levels",
+    ruleType: "Status",
+    priority: 5,
+    conditions: {
+      event.data.gemeObjectType:"Puffer"
+    },
+    predicate: {
+      !set:{
+        state.flags.PufferManip:true,
+        state.flags.PufferPositionVal:"event.data.PositionValue"
+      }
+    }
+  },
+  result:{
+    uid: "Test0",
+    context: "Puffer",
+    timers:{},
+   flags:{
+      PufferUsed: true,
+      position: "(258.8, 398.9)",
+    },
+    observables:{
+      PufferManip:"Clicked"
+    } 
+  }
+}
+]

@@ -1,0 +1,78 @@
+import(methods)
+import(Proc4)
+import(futile.logger)
+
+importFrom("jsonlite","toJSON","fromJSON","unbox")
+importFrom("utils","limitedLabels")
+importFrom("mongolite","mongo")
+
+
+## Condition
+export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
+       "?in","?nin","?exists","?isnull","?isna","?regexp",
+       "?any","?all","?not","?and","?or")
+
+## Context
+export(Context,ContextSet,name,doc,cid, belongsTo, "belongsTo<-",
+       number, "number<-",applicableContexts,parseContext,matchContext,
+       clearContexts,loadContexts,updateContext)
+exportClasses(Context,ContextSet)
+exportMethods(name,doc,cid, belongsTo, "belongsTo<-",
+              number, "number<-",toString,show,matchContext,
+              clearContexts,updateContext)
+
+## Events
+export(Event,verb,object,parseEvent,all.equal.Event)
+exportClasses(Event)
+exportMethods(as.jlist,verb,object)
+
+## Predicates
+export(executePredicate, "!set", "!unset", modify,
+       "!incr", "!decr","!mult","!div","!min","!max",
+       "!addToSet","!pullFromSet","!push","!pop","!setKeyValue",
+       "!start", "!reset", "!setCall", asif.difftime, is.difftime,
+       "!send",buildMessages, "!send1","!send2")
+
+## RuleTables (Rules)
+export(Rule,name,doc,context,ruleType,priority,condition,predicate,
+       parseRule, all.equal.Rule,loadRulesFromList,testAndLoad,
+       runRule,runTRule)
+exportClass(Rule,RuleTable)
+exportMethods(context,ruleType,priority,condition,predicate)
+
+## Status (Timer)
+export(Timer,start,pause,resume,isRunning,totalTime,timeSoFar,
+       "timeSoFar<-",reset,parseTimer)
+exportClass(Timer)
+exportMethods(start,pause,resume,isRunning,totalTime,timeSoFar,
+              "timeSoFar<-",reset)
+
+## Status (Status)
+export(Status,timer,"timer<-",setTimer,timerTime,"timerTime<-",
+       timerRunning,"timerRunning<-",flag,"flag<-",obs,"obs<-",
+       parseStatus,getJS,setJS,removeJS,getJSfield,
+       setJSfield, removeJSfield, "context<-",oldContext,
+       all.equal.Status)
+exportClasses(Status,UserRecordSet)
+exportMethods(timer,"timer<-",setTimer,timerTime,"timerTime<-",
+              timerRunning,"timerRunning<-",
+              flag,"flag<-",obs,"obs<-",timerTime, "context<-",
+              oldContext,app)
+
+## testRules
+export(testQuery, testQueryScript, testPredicate, testPredicateScript,
+       testRule, testRuleScript, EITest, RuleTest,
+       parseEITest, parseRuleTest,
+       initial,event,rule,queryResult,final, runTest)
+exportMethods(initial,event,rule,queryResult,final)
+exportClasses(EITest,RuleTest,TestSet)
+
+## EIEngine
+export(EIEngine, processEvent, handleEvent, runTriggerRules,
+       runStatusRules, runObservableRules, runContextRules,
+       runResetRules, mainLoop)
+exportMethods(notifyListeners)
+exportClasses(EIEngine)
+
+
+

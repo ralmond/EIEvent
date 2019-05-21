@@ -1,0 +1,95 @@
+[
+    {
+        "name":"Color Test True",
+        "doc": "Simple test script.",
+        "initial":{
+            "uid": "Test",
+            "oldContext": "Test",
+            "context": "Test",
+            "timers":{},
+            "flags":{},
+            "timestamp":"2018-09-25 12:12:28 EDT",
+            "observables":{}
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/EIEvent/Selftest",
+            "uid": "Test",
+            "verb": "Equals",
+            "object": "Event Data",
+            "context": "Test",
+            "timestamp":"2018-09-25 12:12:28 EDT",
+            "data":{
+                "color": "red"
+            }
+        },
+        "rule":{
+            "name": "color = red",
+            "doc": "Checks if the color is red",
+            "verb": "ANY",
+            "object": "ANY",
+            "ruleType": "Status",
+            "context": "ANY",
+            "priority": 5,
+            "condition":{
+                "event.data.color": "red"
+            },
+            "predicate":{"!set":{"state.flags.color":"event.data.color"}}
+        },
+        "queryResult":true,
+        "final":{
+            "uid": "Test",
+            "oldContext": "Test",
+            "context": "Test",
+            "timers":{},
+            "flags":{"color":"red"},
+            "timestamp":"2018-09-25 12:12:28 EDT",
+            "observables":{}
+        }
+    },
+    {
+        "name":"Color Test FALSE",
+        "doc": "Simple test script.",
+        "initial":{
+            "uid": "Test",
+            "app":"https://epls.coe.fsu.edu/EIEvent/Selftest",
+            "context": "Test",
+            "timers":{},
+            "flags":{},
+            "timestamp":"2018-09-25 12:12:28 EDT",
+            "observables":{}
+        },
+        "event":{
+            "app":"https://epls.coe.fsu.edu/EIEvent/Selftest",
+            "uid": "Test",
+            "verb": "Equals",
+            "object": "Event Data",
+            "context": "Test",
+            "timestamp":"2018-09-25 12:12:28 EDT",
+            "data":{
+                "color": "blue"
+            }
+        },
+        "rule":{
+            "name": "color = red",
+            "doc": "Checks if the color is red",
+            "verb": "ANY",
+            "object": "ANY",
+            "ruleType": "Status",
+            "priority": 5,
+            "condition":{
+                "event.data.color": "red"
+            },
+            "predicate":{"!set":{"state.flags.color":"event.data.color"}}
+        },
+        "queryResult":false,
+        "final":{
+            "uid": "Test",
+            "app":"https://epls.coe.fsu.edu/EIEvent/Selftest",
+            "context": "Test",
+            "timers":{},
+            "flags":{},
+            "timestamp":"2018-09-25 12:12:28 EDT",
+            "observables":{}
+        }
+    }
+]

@@ -1,0 +1,27 @@
+* Rule Test & Complete Test 
+* Better Handling for missing (mispelled) fields in Tests
+o [doc] Load Rule Set
+* Execute Tests
+* Event Loop
+o [test] Process Event Code
+* Grab Event Code
+
+EIEngine Methods that need tests
+o [doc] handleEvent
+   
+Classes to write methods for:
+*  EIEngine
+   - Start/Stop
+   - testRules
+   
+o [write] TestSet
+o [doc] handleEvent, processEvent
+o [test] runTest   
+o [doc] generic 'notifyListeners' and siglist 'EIEngine'
+
+
+* Database Setup -- check schemas in setupMongo.js
+
+* Shiny page
+
+

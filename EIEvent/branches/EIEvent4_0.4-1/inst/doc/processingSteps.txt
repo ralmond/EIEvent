@@ -1,0 +1,9 @@
+0) Main loop activates.
+1) Check for oldest unprocessed message in queue.
+2) Run handle event to update event.
+3) log any trigger messages:
+   -- Observable output
+   -- PP details (coin, $$)
+4) save state (in handleEvent)
+5) mark message as processed.
+6) check for shutdown.
