@@ -1,10 +1,10 @@
 Package: EIEvent
-Version: 0.4-1
-Date: 2019/05/12
+Version: 0.4-2
+Date: 2019/07/01
 Title: Evidence Identification Event Processing Engine
 Author: Russell Almond
 Maintainer: Russell Almond <ralmond@fsu.edu>
-Depends: R (>= 3.0), methods, utils, Proc4 (>= 0.2), jsonlite, mongolite, futile.logger
+Depends: R (>= 3.0), methods, utils, R.utils, Proc4 (>= 0.4), jsonlite, mongolite, futile.logger
 Description: Extracts observables from a sequence of events.
 License: Artistic-2.0 
 URL: https://pluto.coe.fsu.edu/Proc4

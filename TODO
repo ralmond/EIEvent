@@ -15,13 +15,17 @@ Classes to write methods for:
    - testRules
    
 o [write] TestSet
-o [doc] handleEvent, processEvent
 o [test] runTest   
-o [doc] generic 'notifyListeners' and siglist 'EIEngine'
 
 
 * Database Setup -- check schemas in setupMongo.js
 
 * Shiny page
+
+* checking Rd cross-references ... WARNING
+
+
+
+
 
 

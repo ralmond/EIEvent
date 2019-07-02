@@ -225,5 +225,4 @@ for every student in the system.
 \examples{
 showClass("Status")
 }
-\keyword{classes
-}
+\keyword{classes}

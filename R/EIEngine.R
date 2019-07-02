@@ -98,6 +98,9 @@ EIEngine$methods(
                flog.trace("Saving status for %s, timestamp=%s",
                           uid(state), toString(timestamp(state)))
                userRecords$saveStatus(state)
+             },
+             clearStatusRecords = function(clearDefault=FALSE) {
+               userRecords$clearAll(clearDefault)
              }
              )
 
@@ -123,9 +126,12 @@ EIEngine$methods(
 
 ##Rule Methods
 EIEngine$methods(
-             findRules = function (verb,object,context,phase) {
+             findRules = function (verb,object,context,phase=NULL) {
                appcon <- applicableContexts(getContext(context))
                rules$findRules(verb,object,appcon,phase)
+             },
+             clearAllRules = function() {
+               rules$clearAll()
              },
              loadRules = function (rlist,stopOnDups=TRUE) {
                loadRulesFromList(rules,rlist,stopOnDups)
@@ -179,10 +185,10 @@ setMethod("app","EIEngine", function (x) x$app)
 ## Running Rules.
 ## Logic is slightly different for each rule type, so separate functions.
 
-runStatusRules <- function(eng,state,event) {
-  flog.debug("Status Rules for %s:%s",uid(event),toString(timestamp(event)))
-  ruleList <- eng$findRules(verb(event),object(event),context(state),
-                            "Status")
+runStatusRules <- function(eng,state,event,rules) {
+  ruleList <- rules[sapply(rules,function(r) ruleType(r)=="Status")]
+  flog.debug("%d Status Rules for %s:%s", length(ruleList),
+             uid(event),toString(timestamp(event)))
   for (rl in ruleList) {
     flog.trace("Running Rule %s.",name(rl))
     out <- runRule(state,event,rl,"Status")
@@ -192,11 +198,10 @@ runStatusRules <- function(eng,state,event) {
   state
 }
 
-runObservableRules <- function(eng,state,event) {
-  flog.debug("Observable Rules for %s:%s",uid(event),
-             toString(timestamp(event)))
-  ruleList <- eng$findRules(verb(event),object(event),context(state),
-                            "Observable")
+runObservableRules <- function(eng,state,event,rules) {
+  ruleList <- rules[sapply(rules,function(r) ruleType(r)=="Observable")]
+  flog.debug("%d Observable Rules for %s:%s",length(ruleList),
+             uid(event), toString(timestamp(event)))
   for (rl in ruleList) {
     flog.trace("Running Rule %s.",name(rl))
     out <- runRule(state,event,rl,"Observable")
@@ -206,10 +211,10 @@ runObservableRules <- function(eng,state,event) {
   state
 }
 
-runResetRules <- function(eng,state,event) {
-  flog.debug("Reset Rules for %s:%s",uid(event),toString(timestamp(event)))
-  ruleList <- eng$findRules(verb(event),object(event),context(state),
-                            "Reset")
+runResetRules <- function(eng,state,event,rules) {
+  ruleList <- rules[sapply(rules,function(r) ruleType(r)=="Reset")]
+  flog.debug("%d Rest Rules for %s:%s",length(ruleList),
+             uid(event), toString(timestamp(event)))
   for (rl in ruleList) {
     flog.trace("Running Rule %s.",name(rl))
     out <- runRule(state,event,rl,"Reset")
@@ -219,10 +224,10 @@ runResetRules <- function(eng,state,event) {
   state
 }
 
-runContextRules <- function(eng,state,event) {
-  flog.debug("Context Rules for %s:%s",uid(event),toString(timestamp(event)))
-  ruleList <- eng$findRules(verb(event),object(event),context(state),
-                            "Context")
+runContextRules <- function(eng,state,event,rules) {
+  ruleList <- rules[sapply(rules,function(r) ruleType(r)=="Context")]
+  flog.debug("%d Context Rules for %s:%s",length(ruleList),
+             uid(event), toString(timestamp(event)))
   for (rl in ruleList) {
     flog.trace("Running Rule %s.",name(rl))
     out <- runRule(state,event,rl,"Context")
@@ -238,10 +243,10 @@ runContextRules <- function(eng,state,event) {
   state
 }
 
-runTriggerRules <- function(eng,state,event) {
-  flog.debug("Trigger Rules for %s:%s",uid(event),toString(timestamp(event)))
-  ruleList <- eng$findRules(verb(event),object(event),context(state),
-                        "Trigger")
+runTriggerRules <- function(eng,state,event,rules) {
+  ruleList <- rules[sapply(rules,function(r) ruleType(r)=="Trigger")]
+  flog.debug("%d Trigger Rules for %s:%s",length(ruleList),
+             uid(event), toString(timestamp(event)))
   for (rl in ruleList) {
     flog.trace("Running Rule %s.",name(rl))
     out <- runTRule(state,event,rl,eng$listenerSet)
@@ -255,6 +260,11 @@ processEvent <- function (eng,state,event) {
   flog.info("New Event for %s: (%s %s) %s",uid(event),
              verb(event),object(event),
              toString(timestamp(event)))
+  rules <- eng$findRules(verb(event),object(event),context(state))
+  if (length(rules)==0L) {
+    flog.info("No rules for event, skipping.")
+    return (NULL)
+  }
   out <- runStatusRules(eng,state,event)
   if (is(out,'try-error')) return (out)
   else state <- out
@@ -278,14 +288,16 @@ processEvent <- function (eng,state,event) {
 handleEvent <-  function (eng,event) {
   state <- eng$getStatus(uid(event))
   out <- processEvent(eng,state,event)
-  if (interactive() && FALSE) recover()
+  if (is.null(out)) {
+    flog.debug("No rules, doing nothing.")
+    return(state)
+  }
   if (is(out,'try-error')) {
     flog.warn("Got error %s, not saving status.",toString(out))
     return (out)
   }
-  if (interactive() && FALSE) recover()
   eng$saveStatus(out)
-  if (interactive() && FALSE) recover()
+  return (out)
 }
 
 mainLoop <- function(eng) {

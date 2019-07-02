@@ -23,8 +23,11 @@ processEvent(eng, state, event)
 }
 \details{
 
-  The function \code{processEvent} runs the following functions in
-  sequence:
+  The function \code{processEvent} first calls \code{eng$findRules} to
+  find rules appropriate for the event.  If no rules exist, it returns
+  NULL (indicating that the state has not changed and does not need to
+  be saved.).  If there are rules, then the following functions are run
+  in sequence:
   \enumerate{
     \item{\code{\link{runStatusRules}}:  update internal status
       variables (flags and timers).}
@@ -37,19 +40,25 @@ processEvent(eng, state, event)
     \item{\code{\link{runResetRules}}:  resets the state for the
       beginning of a new context.}
   }
-  It then updates the timestamp.
+  It then updates the timestamp and returns the modified status.  If an
+  error occurs during any of the steps, then an object of class
+  \code{try-error} is returned (see \code{\link{withFlogging}}).
 
   The function \code{handleEvent} first finds the current status for the
-  user from the \code{\linkS4class{userRecordSet}} linked to the
-  engine. At the end, it saves the updated status.
+  user from the \code{\linkS4class{UserRecordSet}} linked to the
+  engine. It then runs \code{processEvent}, and then if necessary it
+  saves the updated status. 
 }
 \value{
 
-  The both function return the updated state
-  (\code{\linkS4class{Status}}) object, although \code{handleEvent} also
-  saves it to the \code{\linkS4class{UserRecordSet}}.  If an error
-  occurs, the error is logged and an object of type \code{try-error} is
-  returned instead.
+  The function \code{processEvent} returns \code{NULL} if there were no
+  applicable rules, an object of class \code{\linkS4class{Status}} if
+  the rules executed correctly and an object of class \code{try-error}
+  if processing the rules generated an error.
+  
+  The function \code{handleEvent} returns the current
+  \code{\linkS4class{Status}} if the handling was successful and an
+  object of class \code{try-error} in an error was generated.
   
 }
 \references{
@@ -130,8 +139,44 @@ processEvent(eng, state, event)
 
 \examples{
 
-## See test/EngineTest.R
+\dontrun{
+app <- "ecd://epls.coe.fsu.edu/P4test"
+loglevel <- "DEBUG"
+cleanFirst <- TRUE
+eventFile <- "/home/ralmond/Projects/EvidenceID/c081c3.core.json"
+## Adjust the path here as necessary
+source("/usr/local/share/Proc4/EIini.R")
+flog.appender(appender.file(logfile))
+flog.threshold(loglevel)
 
+## Setup Listeners
+listeners <- lapply(names(EI.listenerSpecs),
+                    function (ll) do.call(ll,EI.listenerSpecs[[ll]]))
+names(listeners) <- names(EI.listenerSpecs)
+if (interactive()) {
+  cl <- new("CaptureListener")
+  listeners <- c(listeners,cl=cl)
+}
+
+## Make the EIEngine
+eng <- do.call(EIEngine,c(EIeng.params,list(listeners=listeners),
+                          EIeng.common))
+
+## Process Event file if supplied
+if (!is.null(eventFile)) {
+  system2("mongoimport",
+          sprintf('-d %s -c Events --jsonArray', eng$dbname),
+          stdin=eventFile)
+  ## Count the number of unprocessed events
+  NN <- eng$eventdb()$count(buildJQuery(app=app(eng),processed=FALSE))
+}
+
+for (n in 1L:NN) {
+  eve <- eng$fetchNextEvent()
+  out <- handleEvent(eng,eve)
+  eng$setProcessed(eve)
+}
+}
 }
 \keyword{ manip }
 

@@ -12,7 +12,7 @@
 
 }
 \usage{
-Event(uid, verb, object = "", timestamp = Sys.time(), details = list(), app = "default", context = "")
+Event(uid, verb, object = "", timestamp = Sys.time(), details = list(), app = "default", context = "", processed = FALSE)
 parseEvent(rec)
 \S4method{as.jlist}{Event,list}(obj, ml, serialize = TRUE)
 }
@@ -34,6 +34,8 @@ parseEvent(rec)
   \item{context}{A character string describing the task, item or game
     level during which the event occurred.  It could be blank if the
     context needs to be figured out from surrounding events.}
+  \item{processed}{A logical flag.  Set to true after the event has been
+    processed by the \code{\linkS4class{EIEngine}}.}
   \item{rec}{A named list containing JSON data.}
   \item{obj}{An object of class \code{\linkS4class{Event}} to be
     encoded.}
@@ -42,7 +44,7 @@ parseEvent(rec)
   \item{serialize}{A logical flag. If true,
     \code{\link[jsonlite]{serializeJSON}} is used to protect the
     \code{data} field (and other objects which might contain complex R
-    code.} 
+    code.}
 }
 \details{
 

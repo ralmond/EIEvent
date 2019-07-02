@@ -9,7 +9,7 @@
   mainly consists of the database location and credentials.  
 }
 \usage{
-EIEngine(app = "default", listeners = list(), username = "", password = "", host = "localhost", port = "", dbname = "EIRecords", ...)
+EIEngine(app = "default", listeners = list(), username = "", password = "", host = "localhost", port = "", dbname = "EIRecords", P4dbname = "Proc4", processN = Inf, ...)
 }
 \arguments{
   \item{app}{The application ID for the engine.  See Details.}
@@ -24,7 +24,11 @@ EIEngine(app = "default", listeners = list(), username = "", password = "", host
   \item{port}{This is the port used for the database connection.  If
   left blank, the default port 27017 will be used.}
   \item{dbname}{This the name of the database.  The default name is
-  \dQuote{EIRecords}.} 
+    \dQuote{EIRecords}.}
+  \item{P4dbname}{Database used for checking if the EIEngine should
+    still be active.}
+  \item{processN}{A positive integer.  When the \code{\link{mainLoop}}
+    is started, the engine will process N records before stopping.}
   \item{\dots}{For future expansions, subclasses.}
 }
 \details{
@@ -95,10 +99,10 @@ EIEngine(app = "default", listeners = list(), username = "", password = "", host
 \note{
 
   This class is not currently threadsafe.  In particular, if the
-  \code{$handleEvent()} method is called simultaneously on two different
-  events with the same \code{uid}, the result will not be pretty.
-  However, separate applications can be run in parallel (in different
-  processes or threads).
+  \code{\link{handleEvent}()} function is called simultaneously on two
+  different events with the same \code{uid}, the result will not be
+  pretty.  However, separate applications can be run in parallel (in
+  different processes or threads).
 
 }
 
@@ -116,10 +120,13 @@ EIEngine(app = "default", listeners = list(), username = "", password = "", host
 
   \code{\link[futile.logger]{flog.logger}}
 
+  \code{\link{mainLoop}}, \code{\link{handleEvent}}
+
 }
 \examples{
 cl <- new("CaptureListener")
 eng <- EIEngine(app="ecd://epls.coe.fsu.edu/EItest",listeners=list(capture=cl))
+
 
 }
 \keyword{ interface }

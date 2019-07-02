@@ -214,15 +214,20 @@ RuleTable$methods(
   findRuleByName = function (name) {
     getOneRec(buildJQuery(name=name,app=app),ruledb(),parseRule)
   },
-  findRules = function (verb,object,context,phase) {
+  findRules = function (verb,object,context,phase=NULL) {
     flog.debug("Searching for rules v=%s, o=%s, c=%s, ph=%s",
                verb, object, context, phase)
     if (length(verb)==1L && verb!="ANY") verb <- c(verb,"ANY")
     if (length(object)==1L && object!="ANY") object <- c(object,"ANY")
-    rules <- getManyRecs(buildJQuery(verb=verb,object=object,
-                                context=context,ruleType=phase,
-                                app=app),
-                         ruledb(),parseRule,sort=c("priority"=-1))
+    if (!is.null(phase)) {
+      query <- buildJQuery(verb=verb,object=object,
+                           context=context,ruleType=phase,
+                           app=app)
+    } else {
+      query <- buildJQuery(verb=verb,object=object,
+                           context=context,app=app)
+    }
+    rules <- getManyRecs(query,ruledb(),parseRule,sort=c("priority"=1))
     flog.debug("Found %d rules",length(rules))
     if (length(rules) > 0L) {
       flog.trace("Rules: %s",

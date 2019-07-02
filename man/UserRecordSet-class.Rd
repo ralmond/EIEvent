@@ -55,7 +55,7 @@ showClass("UserRecordSet")
     \item{\code{dburi}:}{Object of class \code{character} giving the uri
       for the database, (e.g., \dQuote{mongodb://localhost}).}
     \item{\code{db}:}{Object of class \code{MongoDB} which is the handle
-      to the database.  As this field is initialized when first
+      to the database collection.  As this field is initialized when first
       requested, it should not be accessed directly, but instead through
       the \code{recorddb()} method. }
   }
