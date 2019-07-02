@@ -2,6 +2,7 @@
 \alias{applicableContexts}
 \alias{belongsTo}
 \alias{belongsTo,Context-method}
+\alias{belongsTo,ANY-method}
 \alias{belongsTo<-}
 \alias{belongsTo<-,Context-method}
 \title{Finds context sets to which a given context belongs.}
@@ -19,6 +20,7 @@
 applicableContexts(c)
 belongsTo(c)
 \S4method{belongsTo}{Context}(c)
+\S4method{belongsTo}{ANY}(c)
 belongsTo(c) <- value
 \S4method{belongsTo}{Context}(c) <- value
 
@@ -31,7 +33,8 @@ belongsTo(c) <- value
 \value{
 
   The function \code{belongsTo} returns a (possibly empty) vector of
-  context set names this context belongs to.  The function
+  context set names this context belongs to.  (The \code{ANY} method
+  always returns the empty list.) The function
   \code{applicableContexts} returns the same vector with the addition of
   the current context ID and the special context \code{"ALL"}.
 

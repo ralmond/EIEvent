@@ -1,8 +1,8 @@
 ## These are application generic parameters
 EIeng.common <- list(host="localhost",username="EI",password="secret",
                      dbname="EIRecords",P4dbname="Proc4",waittime=.25)
-appstem <- basename(app)
 
+appstem <- basename(app)
 ## These are for application specific parameters
 EIeng.params <- list(app=app)
 

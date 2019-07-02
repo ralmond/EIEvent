@@ -15,6 +15,7 @@
 \alias{!start}
 \alias{!reset}
 \alias{!setCall}
+\alias{!setKeyValue}
 \alias{modify}
 \title{Functions that modify state when rule is triggered.}
 \description{
@@ -43,7 +44,11 @@
 "!pop"(predicate, state, event)
 "!start"(predicate, state, event)
 "!reset"(predicate, state, event)
+"!setKeyValue"(predicate, state, event)
 "!setCall"(predicate, state, event)
+"!send"(predicate, state, event)
+"!send1"(predicate, state, event)
+"!send2"(predicate, state, event)
 modify(predicate, state, event, op)
 }
 \arguments{
@@ -117,6 +122,12 @@ modify(predicate, state, event, op)
       operator \code{!addToSet} adds the argument to the set (if it is
       not already present), and \code{!pullFromSet} removes the argument
       (if it is  present).}
+    \item{\code{!setKeyValue}}{This operators assumes
+      that the value of the field is a named list representing an
+      association (dictionary).  The operator \code{!setKeyValue}
+      expects its argument to have two fields:  \code{key:} and
+      \code{value:}.  The association \code{key=value} is added to the
+      set.}
     \item{\code{!push}}{This assumes that the field is a vector which
       represents a stack.  The new value is pushed onto the front of the
       stack.} 
@@ -137,8 +148,12 @@ modify(predicate, state, event, op)
       argument, then the timer is set to that time. Finally, a argument
       which is a list with both a \code{time} (difftime value) and
       \code{running} (logical value) will put the timer in that state.} 
-    \item{\code{\link{!send}}}{Special predicate for trigger rules which
-      builds messages to be sent to various listeners.}
+    \item{\code{\link{!send}}, \code{\link{!send1}},
+      \code{\link{!send2}}}{Special predicate for trigger rules which 
+      builds messages to be sent to various listeners.  The versions
+      with the numbers are to allow for multiple messages (JSON
+      complains if there are two fields with the same key.)  See
+      \code{\link{buildMessages}}. }
     \item{\code{!setCall}}{This is a trap door which allows for
       arbitrary R code to be used to calculate the value of the
       \emph{field}.  The argument should be the name of a function with
@@ -301,6 +316,24 @@ list (
 "!pop"=list("state.flags.objects"="state.flags.lastObject"),
        #Pop first object off the stack and set lastObject to its value.
 
+"!setKeyValue"=
+   list("state.observables.trophyHall"=
+     list("key"="event.data.gameLevelId","value"="gold")),
+
+## Send operator
+"!send" = list("mess"="Money Earned",
+               "context"="state.oldContext",
+               "data"=
+                  list("trophyHall"="state.observables.trophyHall",
+                       "bankBalance"="state.observables.bankBalance")),
+## Can't use the same operator twice in the same call.
+"!send1"=list("mess"="New Observables",
+              "context"="state.oldContext",
+               "data"=list()),   ## All Observables
+
+
+
+## Expansion Operator.
 "!setCall"=list("state.flags.value"="myOp"))
        #Set value to return value of myOp.
 

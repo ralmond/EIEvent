@@ -8,17 +8,16 @@
 \description{
 
   Given a player \code{\linkS4class{Status}} (\code{state}) and an
-  \code{\linkS4class{Event}}, this function finds all of the rules of
-  the appropriate type and runs them in order of the
-  \code{\link{priority}} of the rules.
+  \code{\linkS4class{Event}}, this function runs all of the rules
+  of the appropriate type and in order of the \code{\link{priority}}.
 
 }
 \usage{
-runStatusRules(eng, state, event)
-runObservableRules(eng, state, event)
-runContextRules(eng, state, event)
-runTriggerRules(eng, state, event)
-runResetRules(eng, state, event)
+runStatusRules(eng, state, event, rules)
+runObservableRules(eng, state, event, rules)
+runContextRules(eng, state, event, rules)
+runTriggerRules(eng, state, event, rules)
+runResetRules(eng, state, event, rules)
 }
 \arguments{
   \item{eng}{An object of class \code{\link{EIEngine}} which is
@@ -27,6 +26,9 @@ runResetRules(eng, state, event)
     state of the system before the rules are run.}
   \item{event}{An object of class \code{\link{Event}} which provides
     details of the event being processed.}
+  \item{rules}{An list of objects of class \code{\link{Rule}} sorted in
+    priority.  The rules of the appropriate type will be selected from
+    this list. }
 }
 \details{
 
@@ -133,6 +135,14 @@ runResetRules(eng, state, event)
 \author{Russell Almond}
 \note{
 
+  The signature of this function has changed for reasons of efficiency.
+  In previous versions, each function did a very simlilar database
+  check.  In practice, a lot of time was spent checking the database to
+  find that there were no applicable rules.  Now, the function
+  \code{\link{processEvent}} finds the applicable rules, and the
+  functions merely select the ones that match the status.  If no rules
+  are available, a considerable amount of time is saved.
+
   This function uses the \code{\link[futile.logger]{flog.logger}}
   mechanism.  The following information is reported at various
   thresholds:
@@ -184,8 +194,38 @@ runResetRules(eng, state, event)
 }
 \examples{
 
-## See test/EngineTest.R
+\dontrun{
+processEvent <- function (eng,state,event) {
+  flog.debug("")                        #Blank line for visibility.
+  flog.info("New Event for %s: (%s %s) %s",uid(event),
+             verb(event),object(event),
+             toString(timestamp(event)))
+  rules <- eng$findRules(verb(event),object(event),context(state))
+  if (length(rules)==0L) {
+    flog.info("No rules for event, skipping.")
+    return (NULL)
+  }
+  out <- runStatusRules(eng,state,event)
+  if (is(out,'try-error')) return (out)
+  else state <- out
+  out <- runObservableRules(eng,state,event)
+  if (is(out,'try-error')) return (out)
+  else state <- out
+  out <- runContextRules(eng,state,event)
+  if (is(out,'try-error')) return (out)
+  else state <- out
+  runTriggerRules(eng,state,event)
+  if (oldContext(state) != context(state)) {
+    out <- runResetRules(eng,state,event)
+    if (is(out,'try-error')) return (out)
+    else state <- out
+    state@oldContext <- context(state)
+  }
+  state@timestamp <- timestamp(event)
+  state
+}
 
+}
 }
 \keyword{ manip }
 

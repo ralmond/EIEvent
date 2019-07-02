@@ -75,24 +75,28 @@
   There are five types of rules, which are run in the following
   sequence:
   \enumerate{
-    \item{\emph{State Rules}.  These rules should have predicates
+    \item{\dQuote{Status} Rules.  These rules should have predicates
     which set flag variables and manipulate timers.  These rules are
     run first.}
-    \item{\emph{Observable Rules}.  These rules should have predicates
+    \item{\dQuote{Observable} Rules.  These rules should have predicates
     that set observable values, they are run immediately after the
     state rules.}
-    \item{\emph{Context Rules}.  These rules return a new value for
+    \item{\dQuote{Context} Rules.  These rules return a new value for
     the \emph{context} field, if this needs to be changed.  These
     are run until either the set of context rules is exhausted or one
     of the rules returns a value other than the current context.}
-    \item{\emph{Trigger Rules}.  These rules have a special predicate
+    \item{\dQuote{Trigger} Rules.  These rules have a special predicate
     which sends a message to a process listening to the EIP.  These
     rules are given both the old and new context values as often they
     will trigger when the context changes.}
-    \item{\emph{Reset Rules}.  These rules run only if the context
+    \item{\dQuote{Reset} Rules.  These rules run only if the context
     changes.  They are used to reset values of various timers and
     flags that should be reset for the new context.}
   }
+
+  Note that the \code{ruleType} field should be one of the five keywords
+  \dQuote{Status}, \dQuote{Observable}, \dQuote{Context},
+  \dQuote{Trigger} or \dQuote{Reset}. 
 
   The \code{\linkS4class{EIEngine}} runs these rules in sequence.
 

@@ -1,3 +1,20 @@
+2019-06-26  Rusell Almond  <ralmond@Cherry>
+
+	* R/RuleTables.R (findRules): Fixed priority issue.
+
+2019-06-24  Rusell Almond  <ralmond@Cherry>
+
+	* R/RuleTables.R (findRules): Changed so that the phase argument
+	is now optional.
+
+	* R/EIEngine.R (processEvent, handleEvent, runTriggerRules)
+	(runContextRules, runResetRules, runObservableRules)
+	(runStatusRules): The rule search is now done in processEvent
+	instead of being repeated five times in the individual functions.
+	Also, processEvent returns NULL if the status has not changed, so
+	that it does not need to be resaved if there were no applicable
+	rules. 
+
 2019-05-12  Rusell Almond  <ralmond@Cherry>
 
 	* R/Status.R (Timer): NA in duration bug.

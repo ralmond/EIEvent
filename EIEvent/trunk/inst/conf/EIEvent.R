@@ -2,6 +2,7 @@ library(R.utils)
 library(EIEvent)
 
 if (interactive()) {
+  ## Edit these for the local application
   app <- "ecd://epls.coe.fsu.edu/P4test"
   loglevel <- "DEBUG"
   cleanFirst <- TRUE
@@ -15,8 +16,10 @@ if (interactive()) {
   eventFile <- cmdArg("events",NULL)
 }
 
+## Adjust the path here as necessary
 source("/usr/local/share/Proc4/EIini.R")
 
+## Setup logging
 if (interactive()) {
   flog.appender(appender.tee(logfile))
 } else {
@@ -24,6 +27,7 @@ if (interactive()) {
 }
 flog.threshold(loglevel)
 
+## Setup Listeners
 listeners <- lapply(names(EI.listenerSpecs),
                     function (ll) do.call(ll,EI.listenerSpecs[[ll]]))
 names(listeners) <- names(EI.listenerSpecs)
@@ -31,9 +35,11 @@ if (interactive()) {
   cl <- new("CaptureListener")
   listeners <- c(listeners,cl=cl)
 }
+## Make the EIEngine
 eng <- do.call(EIEngine,c(EIeng.params,list(listeners=listeners),
                           EIeng.common))
 
+## Clean out old records from the database.
 if (cleanFirst) {
   eng$eventdb()$remove(buildJQuery(app=app(eng)))
   eng$userRecords$clearAll(FALSE)   #Don't clear default
@@ -42,17 +48,18 @@ if (cleanFirst) {
     if (is(lis,"UpdateListener") || is(lis,"InjectionListener"))
       lis$messdb()$remove(buildJQuery(app=app(eng)))
   }
-
 }
+
+## Process Event file if supplied
 if (!is.null(eventFile)) {
   system2("mongoimport",
           sprintf('-d %s -c Events --jsonArray', eng$dbname),
           stdin=eventFile)
+  ## Count the number of unprocessed events
   NN <- eng$eventdb()$count(buildJQuery(app=app(eng),processed=FALSE))
 }
-
-
 if (!is.null(eventFile)) {
+  ## This can be set to a different number to process only a subset of events.
   eng$processN <- NN
 }
 
@@ -70,7 +77,7 @@ if (interactive() && FALSE) {
 
 ## This shows the details of the last message.  If the test script is
 ## set up properly, this should be the observables.
-if (interactive() && TRUE) {
+if (!is.null(eventFile) && TRUE) {
   details(cl$lastMessage())
 }
 

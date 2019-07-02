@@ -24,7 +24,7 @@ runTRule(state, event, rule, listeners)
     rule to be executed.}
   \item{phase}{An object of type character giving the phase being
     executed, used mainly for logging and error reporting.}
-  \item{listenerSet}{An object of class \code{\linkS4class{Listener}}
+  \item{listeners}{An object of class \code{\linkS4class{Listener}}
     (often a \code{\linkS4class{ListenerSet}} which will receive the
     messages from the trigger rules.}
 }
