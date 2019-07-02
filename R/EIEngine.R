@@ -265,18 +265,18 @@ processEvent <- function (eng,state,event) {
     flog.info("No rules for event, skipping.")
     return (NULL)
   }
-  out <- runStatusRules(eng,state,event)
+  out <- runStatusRules(eng,state,event,rules)
   if (is(out,'try-error')) return (out)
   else state <- out
-  out <- runObservableRules(eng,state,event)
+  out <- runObservableRules(eng,state,event,rules)
   if (is(out,'try-error')) return (out)
   else state <- out
-  out <- runContextRules(eng,state,event)
+  out <- runContextRules(eng,state,event,rules)
   if (is(out,'try-error')) return (out)
   else state <- out
-  runTriggerRules(eng,state,event)
+  runTriggerRules(eng,state,event,rules)
   if (oldContext(state) != context(state)) {
-    out <- runResetRules(eng,state,event)
+    out <- runResetRules(eng,state,event,rules)
     if (is(out,'try-error')) return (out)
     else state <- out
     state@oldContext <- context(state)
