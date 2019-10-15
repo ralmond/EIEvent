@@ -217,8 +217,8 @@ RuleTable$methods(
   findRules = function (verb,object,context,phase=NULL) {
     flog.debug("Searching for rules v=%s, o=%s, c=%s, ph=%s",
                verb, object, context, phase)
-    if (length(verb)==1L && verb!="ANY") verb <- c(verb,"ANY")
-    if (length(object)==1L && object!="ANY") object <- c(object,"ANY")
+    verb <- unique(c(verb,"ANY","ALL"))
+    object <- unique(c(object,"ANY","ALL"))
     if (!is.null(phase)) {
       query <- buildJQuery(verb=verb,object=object,
                            context=context,ruleType=phase,

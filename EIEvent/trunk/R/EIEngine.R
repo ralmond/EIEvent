@@ -212,6 +212,7 @@ runObservableRules <- function(eng,state,event,rules) {
 }
 
 runResetRules <- function(eng,state,event,rules) {
+  if (length(rules)==0) return (state)
   ruleList <- rules[sapply(rules,function(r) ruleType(r)=="Reset")]
   flog.debug("%d Rest Rules for %s:%s",length(ruleList),
              uid(event), toString(timestamp(event)))
@@ -276,6 +277,9 @@ processEvent <- function (eng,state,event) {
   else state <- out
   runTriggerRules(eng,state,event,rules)
   if (oldContext(state) != context(state)) {
+    ## Need to reset according to new context.  [Bug 82]
+    rules <- eng$findRules(verb(event),object(event),context(state),
+                           "Reset")
     out <- runResetRules(eng,state,event,rules)
     if (is(out,'try-error')) return (out)
     else state <- out
