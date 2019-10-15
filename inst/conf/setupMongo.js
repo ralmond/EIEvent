@@ -76,7 +76,7 @@ db.createCollection("Events", {
     },
     validationAction: "warn"
 });
-db.Events.createIndex( { app:1, uid: 1, processed: 1, timestamp:-1});
+db.Events.createIndex( { app:1, uid: 1, processed: 1, timestamp:1});
 db.createCollection("Messages", {
     validator: {
         $jsonSchema: {

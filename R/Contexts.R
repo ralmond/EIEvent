@@ -48,8 +48,8 @@ setMethod("show","Context",function(object) {
 
 
 applicableContexts <- function (c) {
-  if (length(belongsTo(c))==0L) c(cid(c),"ALL")
-  c(cid(c), belongsTo(c), "ALL")
+  if (length(belongsTo(c))==0L) c(cid(c),"ALL", "ANY")
+  c(cid(c), belongsTo(c), "ALL", "ANY")
 }
 
 parseContext <- function(rec) {

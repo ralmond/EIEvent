@@ -16,16 +16,41 @@ Classes to write methods for:
    
 o [write] TestSet
 o [test] runTest   
-
-
+   
 * Database Setup -- check schemas in setupMongo.js
 
-* Shiny page
+o [test] Durations must show in seconds [Bug 86]
 
-* checking Rd cross-references ... WARNING
+o [test] parseXXX methods should be robust to [Bug 69]
+   - issues with training spaces on context or other fields
+   - robust to errors saves as list instead of simple string
 
+o [test] Reset rules need to be based on old rather than new context.  [Bug 82]
 
+* Difftime parsing issues [Proc4 issue?] [Bug 80]
+   - {time:"40", units:"secs"} needs to be parsed as a difftime.
+   - make sure that
+      all.equal(as.difftime(60,units="secs"),as.difftime(1,units="mins"))
+      is true.
+* Listener that unbundles keylists. [Bug 78]
 
+* Listener that converts lists to strings.
 
+* Need duplicate key association lists. [Bug 77]
 
+o [test] Make ANY and ALL synnonymous [Bug 83]
+
+* Update parser so that the "final" field can be either a message or a
+   state. [Bug 81]
+
+* Integerated game tester [Bug 72]
+   
+
+* Shiny interface for Loader [Bug 70]
+
+* Shiny interface for EIEvent script [Bug 70]
+
+* Bug in all.equal.Status, need to match
+   - character() and integer()
+   - NA_character_ and NA_logical_
 

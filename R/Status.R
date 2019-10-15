@@ -163,7 +163,9 @@ setMethod("timerTime",c("Status","character"), function(x,name,now) {
   if (is.null(x@timers[[name]])) {
     stop("Did not find a timer named ",name)
   }
-  timeSoFar(x@timers[[name]],now)
+  tim <- timeSoFar(x@timers[[name]],now)
+  units(tim) <- "secs"
+  tim
 })
 setMethod("timerTime<-", c("Status","character"), function(x,name,now,value){
   timeSoFar(timer(x,name),now)<-value
