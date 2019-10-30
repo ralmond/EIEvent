@@ -5,7 +5,6 @@
 
 
 ## Contexts
-setGeneric("name", function (x) standardGeneric("name"))
 setGeneric("doc", function (x) standardGeneric("doc"))
 
 ## Rules
