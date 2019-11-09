@@ -12,10 +12,13 @@ logfile <- file.path("/usr/local/share/Proc4/logs",
                      paste("EI_",appstem,"0.log",sep=""))
 
 trophy2json <- function(dat) {
-  paste('{', '"trophyHall"', ':','[',
-        paste(
-            paste('{"',names(dat$trophyHall),'":"',dat$trophyHall,'"}',
-                  sep=""), collapse=", "), '],',
+  thall <- ""
+  if (length(dat$trophyHall) > 0L) {
+    thall <- paste(
+        paste('{"',names(dat$trophyHall),'":"',dat$trophyHall,'"}',
+              sep=""), collapse=", ")
+  }
+  paste('{', '"trophyHall"', ':','[', thall, '],',
         '"bankBalance"', ':', dat$bankBalance, '}')
 }
 
