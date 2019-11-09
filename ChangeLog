@@ -1,3 +1,8 @@
+2019-11-09  Rusell Almond  <ralmond@Cherry>
+
+	* R/Predicates.R ("!setKeyValue"): Mongo rejects blank keys, so
+	check for them here.
+
 2019-06-26  Rusell Almond  <ralmond@Cherry>
 
 	* R/RuleTables.R (findRules): Fixed priority issue.

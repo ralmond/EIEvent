@@ -96,8 +96,12 @@ modify <- function (predicate, state, event, op) {
       if (is.character(value) &&
           grepl("^(state|event)\\.",value) )
         value <- getJS(value,state,event)
-      curr[[key]] <- value
-      state <- setJS(name,state,timestamp(event),curr)
+      if (!is.numeric(key) && nchar(key)==0L) {
+        flog.warn("Blank key while executing: ",precicate,capture=TRUE)
+      } else  {
+        curr[[key]] <- value
+        state <- setJS(name,state,timestamp(event),curr)
+      }
   }
   state
 }
