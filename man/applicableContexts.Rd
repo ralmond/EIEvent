@@ -69,7 +69,7 @@ ct <- Context("Level1","First Tutorial",1,
               app="ecd://epls.coe.fsu.edu/EITest")
 stopifnot(setequal(belongsTo(ct),c("tutorialLevels","easyLevels")))
 stopifnot(setequal(applicableContexts(ct),
-          c("Level1","tutorialLevels","easyLevels","ALL")))
+          c("Level1","tutorialLevels","easyLevels","ALL","ANY")))
 
 belongsTo(ct) <- "tutorialLevels"
 stopifnot(setequal(belongsTo(ct),c("tutorialLevels")))
