@@ -220,6 +220,8 @@ getJS <- function (field,state,event) {
          state=
            switch(fieldexp[2],
                   context=context(state),
+                  verb=verb(state),
+                  object=object(state),
                   oldContext=oldContext(state),
                   flags=getJSfield(flag(state,fieldexp[3]),fieldexp[-(1:3)]),
                   observables=getJSfield(obs(state,fieldexp[3]),

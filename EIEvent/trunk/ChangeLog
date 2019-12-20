@@ -1,3 +1,7 @@
+2019-12-20    <ralmond@pluto.coe.fsu.edu>
+
+	* R/Status.R (getJS): Added object and verb as possible fields.
+
 2019-11-09  Rusell Almond  <ralmond@Cherry>
 
 	* R/Predicates.R ("!setKeyValue"): Mongo rejects blank keys, so
