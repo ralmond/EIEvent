@@ -8,7 +8,7 @@
 library(EIEvent)
 flog.threshold(INFO)
 cl <- new("CaptureListener")
-
+app <- "ecd://epls.coe.fsu.edu/P4test"
 ## Edit this to reflect local preferences
 config.dir <- "/home/ralmond/ownCloud/Projects/NSFCyberlearning/EvidenceID"
 
