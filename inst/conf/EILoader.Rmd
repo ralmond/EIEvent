@@ -1,0 +1,155 @@
+---
+title: "EI Loader"
+output: html_notebook
+---
+
+```{r}
+library(EIEvent)
+EIHome <- library(help="EIEvent")$path
+```
+
+
+
+These are the steps for running the loader mannually.  You can also run ` R --slave <EILoader.R` from the console.  The Loader file can be found at `r file.path(EIHome,"conf","EILoader.R")`.
+
+If desired, increase the logging level.
+
+Modify the `config.dir` path to point to the appropriate place on your computer.
+
+```{r setup}
+
+## This can be set to DEBUG or TRACE for more information.
+flog.threshold(INFO)
+## Edit this to reflect local preferences
+config.dir <- "/home1/ralmond/ownCloud/Projects/NSFCyberlearning/EvidenceID"
+
+
+```
+
+## Context Tables
+
+Context tables tell which _context_ (game level) belongs to which _context set_  They normally come in a Q-matrix like spreadsheet.
+
+```{r readContext}
+## Load the context tables
+sketchCon <- read.csv(file.path(config.dir,"ContextSketching.csv"))
+manipCon <- read.csv(file.path(config.dir,"ContextManipulation.csv"))
+## Special initial context table is required.
+initCon <- data.frame(CID="*INITIAL*",Name="*INITIAL*",Number=0)
+
+```
+
+## Read in rules.
+
+Rules can come packaged in two ways.  The simplest is a json array containing just rules.  In which case, the function `parseRule` needs to be applied to each element in the json array.
+
+The more complicated is in a json array containing rule tests.  In this case `parseRuleTest` needs to be applied to each element of the array.
+
+
+```{r readRules}
+## Load and parse the rule files.
+allRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+                                    "AllLevelRules.json"),FALSE),
+                 parseRule)
+skRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+                                    "SketchingRules.json"),FALSE),
+                 parseRule)
+manipRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+                                    "ManipulationRules.json"),FALSE),
+                 parseRule)
+tRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+                                    "TrophyHallRules.json"),FALSE),
+                 parseRule)
+## hRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+##                                     "LS-HelpB-rules1.json"),FALSE),
+##                  parseRuleTest)
+mRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+                                    "MoneyRules.json"),FALSE),
+                 parseRule)
+lRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+                                    "LS-Events.json"),FALSE),
+                 parseRule)
+
+```
+
+
+
+```{r loadTest}
+## Create an empty listener to satisfy the build requirements. 
+
+cl <- new("CaptureListener")
+
+## Create an engine to open connection to the database.  Only the
+## engTest code is necessary except for the full server setup.
+engTest <- EIEngine(app="ecd://epls.coe.fsu.edu/P4test",
+                    listeners=list(capture=cl))
+
+## Load the context tables into the database
+engTest$clearContexts() ## Clears the database
+engTest$addContexts(initCon)
+engTest$addContexts(sketchCon)
+engTest$addContexts(manipCon)
+
+## Save the rules in the database, changing the app field to match
+## app(eng)
+engTest$rules$clearAll()
+engTest$loadRules(allRules)
+engTest$loadRules(skRules)
+engTest$loadRules(manipRules)
+engTest$loadRules(tRules)
+##engTest$loadAndTest(file.path(config.dir, "Rules",
+##                                     "LS-HelpB-rules1.json"))
+engTest$loadRules(mRules)
+engTest$loadRules(lRules)
+
+## Load default student records.
+engTest$userRecords$clearAll(TRUE)   #Clear default records
+defaultRec <- engTest$newUser("*DEFAULT*")
+obs(defaultRec,"bankBalance") <- 0
+obs(defaultRec,"trophyHall") <- list()
+engTest$saveStatus(defaultRec)
+
+
+```
+
+## Loop through and set details for other engines:
+
+```{r loadeng}
+
+for (app in 
+     c(userControl = "ecd://epls.coe.fsu.edu/PhysicsPlayground/userControl",
+linear = "ecd://epls.coe.fsu.edu/PhysicsPlayground/linear",
+adaptive = "ecd://epls.coe.fsu.edu/PhysicsPlayground/adaptive")) {
+
+## Create an engine to open connection to the database.  Only the
+## engTest code is necessary except for the full server setup.
+eng <- EIEngine(app=app,               listeners=list(capture=cl))
+
+## Load the context tables into the database
+eng$clearContexts() ## Clears the database
+eng$addContexts(initCon)
+eng$addContexts(sketchCon)
+eng$addContexts(manipCon)
+
+## Save the rules in the database, changing the app field to match
+## app(eng)
+eng$rules$clearAll()
+eng$loadRules(allRules)
+eng$loadRules(skRules)
+eng$loadRules(manipRules)
+eng$loadRules(tRules)
+##eng$loadAndTest(file.path(config.dir, "Rules",
+##                                     "LS-HelpB-rules1.json"))
+eng$loadRules(mRules)
+eng$loadRules(lRules)
+
+## Load default student records.
+eng$userRecords$clearAll(TRUE)   #Clear default records
+defaultRec <- engTest$newUser("*DEFAULT*")
+obs(defaultRec,"bankBalance") <- 0
+obs(defaultRec,"trophyHall") <- list()
+eng$saveStatus(defaultRec)
+}
+
+```
+## Now on to running the engine.  
