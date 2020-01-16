@@ -1,3 +1,7 @@
+2020-01-16    <ralmond@pluto.coe.fsu.edu>
+
+	* R/Status.R (Timer): Added "numeric" method to cast zeros into difftime.  Defaults to seconds.
+
 2019-12-20  Rusell Almond  <ralmond@Cherry>
 
 	* R/Predicates.R ("!reset"): Fixed to use difftime of exactly 0 secs.
