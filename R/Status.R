@@ -48,12 +48,19 @@ setMethod("timeSoFar",c("Timer","POSIXt"),
             } else {
               timer@totalTime
             }})
-setMethod("timeSoFar<-",c("Timer","POSIXt"),
+setMethod("timeSoFar<-",c("Timer","POSIXt","difftime"),
           function(timer,time,value) {
             if (isRunning(timer)) {
               timer@startTime <- as.POSIXlt(time)
             }
             timer@totalTime <- value
+            timer})
+setMethod("timeSoFar<-",c("Timer","POSIXt","numeric"),
+          function(timer,time,value) {
+            if (isRunning(timer)) {
+              timer@startTime <- as.POSIXlt(time)
+            }
+            timer@totalTime <- as.difftime(value,units="secs")
             timer})
 
 

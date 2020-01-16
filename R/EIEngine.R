@@ -262,8 +262,8 @@ processEvent <- function (eng,state,event) {
              verb(event),object(event),
              toString(timestamp(event)))
   rules <- eng$findRules(verb(event),object(event),context(state))
+  flog.info("%d rules for event", length(rules))
   if (length(rules)==0L) {
-    flog.info("No rules for event, skipping.")
     return (NULL)
   }
   out <- runStatusRules(eng,state,event,rules)
