@@ -1,3 +1,14 @@
+2020-06-12  Russell Almond  <ralmond@Cherry>
+
+	* R/Runners.R (doLoad): New function for doing the loading process
+	using config.json details.
+	(doRunrun): New function for running using config.json details.
+	
+
+2020-04-27  Russell Almond  <ralmond@Cherry>
+
+	* R/AAGenerics.R (name): Moved from Proc4 to here.
+
 2020-01-16    <ralmond@pluto.coe.fsu.edu>
 
 	* R/Status.R (Timer): Added "numeric" method to cast zeros into difftime.  Defaults to seconds.

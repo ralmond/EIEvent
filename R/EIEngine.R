@@ -55,24 +55,49 @@ EIEngine <-
                                  processN=processN,
                                  ...)
                      },
-                   P4db = function () {
+                  admindb = function () {
                      if(is.null(p4db))
                        p4db <<- mongo("AuthorizedApps",P4dbname,dburi)
                      p4db
                    },
-                   isActivated = function() {
-                     rec <- P4db()$find(buildJQuery(app=app(eng)),limit=1)
-                     if (length(rec)==0L) return(FALSE)
-                     rec$active
-                   },
-                   activate = function() {
-                     if (length(P4db()$find(buildJQuery(app=app(eng))))==0L) {
-                       P4db()$insert(buildJQuery(app=app(eng),active=TRUE))
-                     } else {
-                       P4db()$update(buildJQuery(app=app(eng)),
-                                     '{"$set":{"active":true}}')
-                     }
-                   },
+                  activate = function() {
+                    if (length(admindb()$find(buildJQuery(app=app)))==0L) {
+                      admindb()$insert(buildJQuery(app=app,
+                                                   appStem=basename(app),
+                                                   EIactive=TRUE,
+                                                   EIsignal="running"))
+                    } else {
+                      admindb()$update(buildJQuery(app=app),
+                                       '{"$set":{"EIactive":true,"EIsignal":"running"}}')
+                    }
+                  },
+                  deactivate = function() {
+                    if (length(admindb()$find(buildJQuery(app=app)))==0L) {
+                      admindb()$insert(buildJQuery(app=app,
+                                                   appStem=basename(app),
+                                                   EIactive=FALSE))
+                    } else {
+                      admindb()$update(buildJQuery(app=app),
+                                    '{"$set":{"EIactive":false}}')
+                    }
+                  },
+                  isActivated = function() {
+                    rec <- admindb()$find(buildJQuery(app=app),limit=1)
+                    if (length(rec)==0L) return(FALSE)
+                    return (isTRUE(as.logical(rec$EIactive)))
+                  },
+                  shouldHalt = function() {
+                    rec <- admindb()$find(buildJQuery(app=app),limit=1)
+                    if (length(rec)==0L) return(FALSE)
+                    if (toupper(rec$EIsignal)=="HALT") return(TRUE)
+                    FALSE
+                  },
+                  stopWhenFinished = function() {
+                    rec <- admindb()$find(buildJQuery(app=app),limit=1)
+                    if (length(rec)==0L) return(TRUE)
+                    if (toupper(rec$EIsignal)!="RUNNING") return(TRUE)
+                    FALSE
+                  },
                    show=function() {
                      methods::show(paste("<EIEvent: ",app,">"))
                    }))
@@ -307,14 +332,26 @@ handleEvent <-  function (eng,event) {
 mainLoop <- function(eng) {
   withFlogging({
     flog.info("Evidence Identification Engine %s starting.", app(eng))
-    active <- eng$isActivated()
+    eng$activate()
+    active <- TRUE
     while (active) {
+      if (eng$shouldHalt()) {
+        flog.fatal("EI Engine %s halted because of user request.",
+                   basename(app(eng)))
+        break
+      }
       eve <- eng$fetchNextEvent()
       if (is.null(eve)) {
         ## Queue is empty, wait and check again.
         Sys.sleep(eng$waittime)
         ## Check for deactivation signal.
-        active <- eng$isActivated()
+        if (eng$stopWhenFinished()) {
+          flog.info("EA Engine %s stopping because queue is empty.",
+                    basename(app(eng)))
+          active <- FALSE
+        } else {
+          active <- TRUE
+        }
       } else {
         if (is.finite(eng$processN))
           flog.debug("Processing event %d.",eng$processN)
