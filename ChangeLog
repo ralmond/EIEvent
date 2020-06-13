@@ -1,3 +1,11 @@
+2020-06-13  Russell Almond  <ralmond@Cherry>
+
+	* R/EIEngine.R (EIEngine): Changed Protocol to look more like
+	EABN, with listenerSet added directly.  Eventually, hope to remove
+	dependencies on database.
+	(mainLoop): Changed to use shouldHalt and stopWhenFinished
+	protocol.  Added $activate() and $deactivate() calls.
+
 2020-06-12  Russell Almond  <ralmond@Cherry>
 
 	* R/Runners.R (doLoad): New function for doing the loading process

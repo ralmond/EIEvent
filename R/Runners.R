@@ -7,12 +7,16 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
   sapp <- basename(app)
   cl <- new("CaptureListener")
 
-  ## <<HERE>> This should use configuration from EI.config and EIeng.local.
   flog.info("Building Engine for application %s.",sapp)
-  EIeng.params <- c(EI.config$EIEngine,EIeng.local)
+  EIeng.params <-
+    c(EI.config$EIEngine,
+      EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
+  listeners <- lapply(EI.config$listeners, buildListener,app,dburi)
+  names(listeners) <- sapply(listeners,listenerName)
+
   EIeng.params$listenerSet <-
     ListenerSet(sender= sub("<app>",sapp,EI.config$sender),
-                dbname=EI.config$dbname, dburi=EIeng.local$dburi,
+                dbname=EIeng.local$dbname, dburi=EIeng.local$dburi,
                 listeners=listeners,
                 colname=EI.config$lscolname)
   EIeng.params$app <- app
@@ -63,16 +67,18 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
 
   ruledir <- file.path(config.dir,
                        ifelse(!is.null(EI.config$ruledir),EI.config$ruledir,
-                              "rules"))
+                              "Rules"))
   sapp <- basename(app)
   flog.info("Building and configuring engine.")
   listeners <- lapply(EI.config$listeners, buildListener,app,dburi)
   names(listeners) <- sapply(listeners,listenerName)
 
-  EIeng.params <- c(EI.config$EIEngine,EIeng.local)
+  EIeng.params <-
+    c(EI.config$EIEngine,
+      EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
   EIeng.params$listenerSet <-
     ListenerSet(sender= sub("<app>",sapp,EI.config$sender),
-                dbname=EI.config$dbname, dburi=EIeng.local$dburi,
+                dbname=EIeng.local$dbname, dburi=EIeng.local$dburi,
                 listeners=listeners,
                 colname=EI.config$lscolname)
 
@@ -80,13 +86,13 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   eng <- do.call(EIEngine,EIeng.params)
 
   if (eng$isActivated()) {
-    flog.warning("EI Engine for application %s already running.",sapp)
+    flog.warn("EI Engine for application %s already running.",sapp)
     if (!override) stop("EI Engine already running:", sapp)
   }
 
   flog.info("Preparing Database.")
   if (dburi != "") {
-    if (EI.config$filter$doRemove) {
+    if (isTRUE(EI.config$filter$doRemove)) {
       flog.debug("Clearing old events.")
       remquery <- EI.config$filter$remove
       if (!is.null(names(remquery)))
@@ -106,7 +112,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
       impf <- file.path(config.dir,fil)
       if (!file.exists(impf)) {
         flog.warn("File %s does not exist, skipping import.",
-                  EI.confg$importFile)
+                  EI.config$importFile)
       } else {
         status <-
           system2("mongoimport",c("--jsonArray",
@@ -119,7 +125,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
         }
       }
     }
-    if (EI.config$filter$doPurge) {
+    if (isTRUE(EI.config$filter$doPurge)) {
       flog.debug("Purging Unused events.")
       purquery <- EI.config$filter$purge
       if (!is.null(names(purquery)))

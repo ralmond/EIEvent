@@ -16,9 +16,6 @@
 \alias{!reset}
 \alias{!setCall}
 \alias{!setKeyValue}
-\alias{!send}
-\alias{!send1}
-\alias{!send2}
 \alias{modify}
 \title{Functions that modify state when rule is triggered.}
 \description{

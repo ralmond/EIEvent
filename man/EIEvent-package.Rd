@@ -137,7 +137,9 @@ Maintainer: \packageMaintainer{EIEvent}
       the application.}
   }
   
-  The script \code{\link{EILoader.R}} illustrates the necessary steps.
+  The script \code{EILoader.R} illustrates the necessary steps.  Note
+  that \code{\link{doLoad}} provides a more sophisticated interface to
+  those steps.
 
   Assuming the \code{\linkS4class{EIEngine}} is in an object called
   \code{eng} the following steps load the details.

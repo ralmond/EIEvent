@@ -3,8 +3,8 @@ EIEngine <-
                fields=c(app="character",
                         dburi="character",
                         dbname="character",
-                        P4dbname="character",
-                        p4db="MongoDB",
+                        admindbname="character",
+                        adminDB="MongoDB",
                         waittime="numeric",
                         userRecords="UserRecordSet",
                         rules="RuleTable",
@@ -15,50 +15,29 @@ EIEngine <-
                         processN="numeric"),
                methods = list(
                    initialize =
-                     function(app="default",listeners=list(),
-                              username="",password="",host="localhost",
-                              port="",dbname="EIRecords",P4dbname="Proc4",
+                     function(app="default",listenerSet=NULL,
+                              dburi="",dbname="EIRecords",admindbname="Proc4",
                               waittime=.25,processN=Inf,...) {
-                       security <- ""
-                       if (nchar(username) > 0L) {
-                         if (nchar(password) > 0L)
-                           security <- paste(username,password,sep=":")
-                         else
-                           security <- username
-                       }
-                       if (nchar(port) > 0L)
-                         host <- paste(host,port,sep=":")
-                       else
-                         host <- host
-                       if (nchar(security) > 0L)
-                         host <- paste(security,host,sep="@")
-                       dburl <- paste("mongodb:/",host,sep="/")
-                       flog.info("Connecting to database %s/%s\n",dburl,dbname)
+                       flog.info("Connecting to database %s/%s\n",dburi,dbname)
                        evnts <- NULL # mongo("Events",dbname,dburi)
-                       p4DB <- NULL # mongo("AuthorizedApps",P4dbname,dburi)
-                       ls <- ListenerSet(sender= paste("EIEngine[",app,"]"),
-                                         dbname=dbname,
-                                         dburi=dburl,
-                                         listeners=listeners,
-                                         colname="Messages",
-                                          ...)
-                       rls <- RuleTable$new(app,dbname,dburl)
-                       urecs <- UserRecordSet$new(app,dbname,dburl)
-                       ctxts <- ContextSet$new(app,dbname,dburl)
-                       rTests <- TestSet$new(app,dbname,dburl)
-                       callSuper(app=app,dbname=dbname,dburi=dburl,
-                                 listenerSet=ls, events=evnts,
+                       aDB <- NULL # mongo("AuthorizedApps",adminbname,dburi)
+                       rls <- RuleTable$new(app,dbname,dburi)
+                       urecs <- UserRecordSet$new(app,dbname,dburi)
+                       ctxts <- ContextSet$new(app,dbname,dburi)
+                       rTests <- TestSet$new(app,dbname,dburi)
+                       callSuper(app=app,dbname=dbname,dburi=dburi,
+                                 listenerSet=listenerSet, events=evnts,
                                  rules=rls,userRecords=urecs,
                                  contexts=ctxts,ruleTests=rTests,
-                                 P4dbname=P4dbname,p4db=p4DB,
+                                 admindbname=admindbname,adminDB=aDB,
                                  waittime=waittime,
                                  processN=processN,
                                  ...)
                      },
                   admindb = function () {
-                     if(is.null(p4db))
-                       p4db <<- mongo("AuthorizedApps",P4dbname,dburi)
-                     p4db
+                     if(is.null(adminDB))
+                       adminDB <<- mongo("AuthorizedApps",admindbname,dburi)
+                     adminDB
                    },
                   activate = function() {
                     if (length(admindb()$find(buildJQuery(app=app)))==0L) {
@@ -186,14 +165,14 @@ EIEngine$methods(
         )
 
 
-EIEngine <- function(app="default",listeners=list(),
-                     username="",password="",host="localhost",
-                     port="",dbname="EIRecords",P4dbname="Proc4",
-                     processN=Inf,
+EIEngine <- function(app="default",dburi=makeDBuri(),
+                     listenerSet=NULL,
+                     dbname="EIRecords",admindbname="Proc4",
+                     processN=Inf, waittime=.25,
                      ...) {
-  new("EIEngine",app=app,listeners=listeners,username=username,
-      password=password,host=host,port=port,dbname=dbname,
-      processN=processN,P4dbnam=P4dbname,...)
+  new("EIEngine",app=app,dburi=dburi,listenerSet=listenerSet,
+      dbname=dbname, admindbname=admindbname,processN=processN,
+      waittime=waittime,...)
 }
 
 ## Listener notification.
@@ -330,9 +309,12 @@ handleEvent <-  function (eng,event) {
 }
 
 mainLoop <- function(eng) {
+  flog.info("Evidence Identification Engine %s starting.", app(eng))
+  eng$activate()
+  on.exit({
+    flog.info("EI Engine %s was deactivated.", app(eng))
+    eng$deactivate()})
   withFlogging({
-    flog.info("Evidence Identification Engine %s starting.", app(eng))
-    eng$activate()
     active <- TRUE
     while (active) {
       if (eng$shouldHalt()) {
@@ -364,8 +346,6 @@ mainLoop <- function(eng) {
         active <- eng$processN > 0
       }
     }
-  flog.info("EI Engine %s was deactivated.",
-            app(eng))
   },
   context=sprintf("Running EI Application %s",app(eng)))
   flog.info("Evidence Identification Engine %s stopping.",app(eng))

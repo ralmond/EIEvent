@@ -157,10 +157,19 @@ if (interactive()) {
   cl <- new("CaptureListener")
   listeners <- c(listeners,cl=cl)
 }
+EIeng.params <-
+  c(EI.config$EIEngine,
+    EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
+
+  EIeng.params$listenerSet <-
+    ListenerSet(sender= sub("<app>",sapp,EI.config$sender),
+                dbname=EIeng.local$dbname, dburi=EIeng.local$dburi,
+                listeners=listeners,
+                colname=EI.config$lscolname)
+  EIeng.params$app <- app
 
 ## Make the EIEngine
-eng <- do.call(EIEngine,c(EIeng.params,list(listeners=listeners),
-                          EIeng.common))
+eng <- do.call(EIEngine,EIeng.params)
 
 ## Process Event file if supplied
 if (!is.null(eventFile)) {
