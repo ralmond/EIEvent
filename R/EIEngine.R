@@ -5,6 +5,7 @@ EIEngine <-
                         dbname="character",
                         admindbname="character",
                         adminDB="MongoDB",
+                        fileDB="MongoDB",
                         waittime="numeric",
                         userRecords="UserRecordSet",
                         rules="RuleTable",
@@ -35,9 +36,14 @@ EIEngine <-
                                  ...)
                      },
                   admindb = function () {
-                     if(is.null(adminDB))
+                     if(is.null(adminDB) && length(dburi)>0L)
                        adminDB <<- mongo("AuthorizedApps",admindbname,dburi)
                      adminDB
+                   },
+                  filedb = function () {
+                     if(is.null(fileDB) && length(dburi)>0L)
+                       fileDB <<- mongo("OutputFiles",admindbname,dburi)
+                     fileDB
                    },
                   activate = function() {
                     if (length(admindb()$find(buildJQuery(app=app)))==0L) {
@@ -77,9 +83,23 @@ EIEngine <-
                     if (toupper(rec$EIsignal)!="RUNNING") return(TRUE)
                     FALSE
                   },
-                   show=function() {
-                     methods::show(paste("<EIEvent: ",app,">"))
-                   }))
+                  regFile = function (name,filename,type="data",
+                                      timestamp=Sys.time(),doc="") {
+                    fdb <- filedb()
+                    if (!is.null(fdb)) {
+                      fdb$replace(buildJQuery(app=basename(app),name=name),
+                                  buildJQuery(app=basename(app),
+                                              process="EI", type=type,
+                                              name=name, filename=filename,
+                                              timestamp=timestamp,
+                                              doc=doc),
+                                  upsert=TRUE)
+                    }
+                  },
+                  show=function() {
+                    methods::show(paste("<EIEvent: ",app,">"))
+                  }))
+
 
 ## Student Record Methods
 EIEngine$methods(

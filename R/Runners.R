@@ -32,32 +32,44 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
   initCon <- data.frame(CID="*INITIAL*",Name="*INITIAL*",Number=0)
   eng$addContexts(initCon)
   for (contextFile in EI.config$contextDesriptions) {
-    flog.info("Loading context file %s.",contextFile)
-    conts <- read.csv(file.path(ruledir,paste(contextFile,"csv",sep=".")))
-    eng$addContexts(conts)
+    contex <- sprintf("Loading context file %s.",contextFile)
+    flog.info(contex)
+    withFlogging({
+      conts <- read.csv(file.path(ruledir,paste(contextFile,"csv",sep=".")))
+      eng$addContexts(conts)
+    }, context=contex)
   }
 
   flog.info("Rebuilding Rule Sets for application %s.",sapp)
   eng$rules$clearAll()
 
   for (ruleFile in EI.config$rules) {
-    flog.info("Loading rule file %s.",ruleFile)
-    rules <- lapply(fromJSON(file.path(ruledir,paste(ruleFile,"json",sep=".")),
-                             FALSE),
-                    parseRule)
-    eng$loadRules(rules)
+    contex <- sprintf("Loading rule file %s.",ruleFile)
+    flog.info(contex)
+    withFlogging({
+      rules <- lapply(fromJSON(file.path(ruledir,
+                                         paste(ruleFile,"json",sep=".")),
+                               FALSE),
+                      parseRule)
+      eng$loadRules(rules)
+    }, context=contex)
   }
 
   for (ruleFile in EI.config$rulesWithTests) {
-    flog.info("Loading and Tesing rule file %s.",ruleFile)
-    eng$loadAndTest(file.path(ruledir,paste(ruleFile,"json",sep=".")))
+    contex <- sprintf("Loading and Tesing rule file %s.",ruleFile)
+    flog.info(contex)
+    withFlogging({
+      eng$loadAndTest(file.path(ruledir,paste(ruleFile,"json",sep=".")))
+      }, context=contex)
   }
 
-  flog.info("Rebuilding default student record %s.",sapp)
-  defaultRec <- eng$newUser("*DEFAULT*")
-  defaultRec@observables <- EI.config$defaultRecordData
-  eng$saveStatus(defaultRec)
-
+  contex <- sprintf("Rebuilding default student record %s.",sapp)
+  flog.info(contex)
+  withFlogging({
+    defaultRec <- eng$newUser("*DEFAULT*")
+    defaultRec@observables <- EI.config$defaultRecordData
+    eng$saveStatus(defaultRec)
+  }, context=contex)
 
 }
 
