@@ -37,5 +37,6 @@ for (ext in EI.config$extensions) {
   }
 }
 
-doRunrun(app,EI.config,EIeng.local,config.dir,outdir)
+eng <- doRunrun(app,EI.config,EIeng.local,config.dir,outdir,
+                logfile=logfile)
 

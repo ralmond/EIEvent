@@ -75,7 +75,7 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
 
 doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
                       outdir=config.dir,
-                      override = FALSE) {
+                      override = FALSE, logfile="") {
 
   ruledir <- file.path(config.dir,
                        ifelse(!is.null(EI.config$ruledir),EI.config$ruledir,
@@ -91,9 +91,12 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   EIeng.params$listenerSet <-
     ListenerSet(sender= sub("<app>",sapp,EI.config$sender),
                 dbname=EIeng.local$dbname, dburi=EIeng.local$dburi,
-                listeners=listeners,
+                listeners=listeners,admindbname=EIeng.local$admindbname,
                 colname=EI.config$lscolname)
 
+  if (nchar(logfile)>0L)
+    EIeng.params$listenerSet$registerOutput(basename(logfile),logfile,
+                                              app,"EI","log")
   EIeng.params$app <- app
   eng <- do.call(EIEngine,EIeng.params)
 
@@ -171,13 +174,19 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   } else {
     flog.info("Running in server mode.")
   }
-  mainLoop(eng)
+  tryCatch({
+    withFlogging(mainLoop(eng))
+  }, finally={
+    eng$deactivate()
+  })
 
   for (tl in listeners) {
     if (!is(tl,"TableListeners")) next
     flog.info("Building output Table for %s.",name(tl))
     tab <- tl$returnDF()
-    write.csv(tab,file.path(outdir,paste(name(tl),"csv",sep=".")))
+    fname <- file.path(outdir,paste(name(tl),"csv",sep="."))
+    write.csv(tab, fname)
+    EIeng.params$listenerSet$registerOutput(name(tl),fname,app,"EI")
   }
-
+  invisible(eng)
 }
