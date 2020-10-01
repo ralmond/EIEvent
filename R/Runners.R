@@ -163,7 +163,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   }
 
   if (EI.config$limitNN=="ALL") {
-    eng$processN <- eng$evidenceSets()$count(buildJQuery(app=app,
+    eng$processN <- eng$eventdb()$count(buildJQuery(app=app,
                                                          processed=FALSE))
   } else {
     eng$processN <- as.numeric(EI.config$limitNN)
