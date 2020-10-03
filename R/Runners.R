@@ -154,7 +154,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
     if (isTRUE(EI.config$filter$doReprocess)) {
       flog.debug("Clearing reprocessed flags.")
       rquery <- buildJQuery(c(list(app=app,EI.config$filter$update)))
-      eng$eventdb()$update(rquery,'{"$set":{"processed":false,"pError":""}}}',
+      eng$eventdb()$update(rquery,'{"$set":{"processed":false,"pError":null}}',
                            multiple=TRUE)
     }
   }
