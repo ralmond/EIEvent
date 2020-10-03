@@ -183,11 +183,11 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
 
   for (tl in listeners) {
     if (!is(tl,"TableListener")) next
-    flog.info("Building output Table for %s.",name(tl))
+    flog.info("Building output Table for %s.",listenerName(tl))
     tab <- tl$returnDF()
-    fname <- file.path(outdir,paste(name(tl),"csv",sep="."))
+    fname <- file.path(outdir,paste(listenerName(tl),"csv",sep="."))
     write.csv(tab, fname)
-    EIeng.params$listenerSet$registerOutput(name(tl),fname,app,"EI")
+    EIeng.params$listenerSet$registerOutput(listenerName(tl),fname,app,"EI")
   }
   invisible(eng)
 }
