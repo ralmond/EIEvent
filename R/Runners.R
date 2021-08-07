@@ -75,7 +75,7 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
 
 doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
                       outdir=config.dir,
-                      override = FALSE, logfile="") {
+                      override = FALSE, logfile="", noprep=FALSE) {
 
   ruledir <- file.path(config.dir,
                        ifelse(!is.null(EI.config$ruledir),EI.config$ruledir,
@@ -105,8 +105,8 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
     if (!override) stop("EI Engine already running:", sapp)
   }
 
-  flog.info("Preparing Database.")
-  if (dburi != "") {
+  if (dburi != "" && !noprep) {
+    flog.info("Preparing Database.")
     if (isTRUE(EI.config$filter$doRemove)) {
       flog.debug("Clearing old events.")
       remquery <- EI.config$filter$remove
@@ -157,8 +157,8 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
       eng$eventdb()$update(rquery,'{"$set":{"processed":false}}',multiple=TRUE)
     }
   }
-  flog.info("Reseting Listners.")
-  if (!is.null(EI.config$listenerReset)) {
+  if (!is.null(EI.config$listenerReset) && !noprep) {
+    flog.info("Reseting Listners.")
     resetListeners(eng$listenerSet,as.character(EI.config$listenerReset),app)
   }
 

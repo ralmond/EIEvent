@@ -1,4 +1,11 @@
 #!/bin/bash
-## Typical args app=ecd://epls.coe.fsu.edu/P4test level=DEBUG
-## Optional args clean=TRUE (default FALSE) evidence=<file>.json
-R  --slave </usr/local/share/Proc4/bin/EILoad.R 
+if [ $# -eq 0 ]; then
+    echo "Usage:  EILoader [--override] [--level=DEBUG] [Rlogfile]"
+    exit(1)
+fi
+R_HOME=$(R RHOME)
+EI_SCRIPTPATH=$(${R_HOME}/bin/Rscript -e 'cat(file.path(.libPaths()[1], "EIEvent", "config"))')
+Rlogfile="${!#}.Rout"
+appArgs="${@:1:$#-1}"
+echo "Reloading EI Rules " $1 $2
+nohup R  --slave "--args appArgs" <"EI_SCRIPTPATH/EILoad.R" >& "$Rlogfile" &
