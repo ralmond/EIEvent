@@ -154,7 +154,8 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
     if (isTRUE(EI.config$filter$doReprocess)) {
       flog.debug("Clearing reprocessed flags.")
       rquery <- buildJQuery(c(list(app=app,EI.config$filter$update)))
-      eng$eventdb()$update(rquery,'{"$set":{"processed":false}}',multiple=TRUE)
+      eng$eventdb()$update(rquery,'{"$set":{"processed":false,"pError":null}}',
+                           multiple=TRUE)
     }
   }
   if (!is.null(EI.config$listenerReset) && !noprep) {
@@ -181,12 +182,12 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   })
 
   for (tl in listeners) {
-    if (!is(tl,"TableListeners")) next
-    flog.info("Building output Table for %s.",name(tl))
+    if (!is(tl,"TableListener")) next
+    flog.info("Building output Table for %s.",listenerName(tl))
     tab <- tl$returnDF()
-    fname <- file.path(outdir,paste(name(tl),"csv",sep="."))
+    fname <- file.path(outdir,paste(listenerName(tl),"csv",sep="."))
     write.csv(tab, fname)
-    EIeng.params$listenerSet$registerOutput(name(tl),fname,app,"EI")
+    EIeng.params$listenerSet$registerOutput(listenerName(tl),fname,app,"EI")
   }
   invisible(eng)
 }
