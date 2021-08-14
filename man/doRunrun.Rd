@@ -5,14 +5,15 @@
 
   This is a system to run the evidence identifiation engine, taking most of
   the details from a configuration file.  It creates the
-  \code{\linkS4class{EIEvent}} 
+  \code{\linkS4class{EIEngine}} 
   instance then and then runs it in either scoring or rescoring mode.
   Configuration information in taken from the \code{EI.config} and
   \code{EIeng.local} parameters.
   
 }
 \usage{
-doRunrun(app, EI.config, EIeng.local, config.dir, outdir = config.dir, override = FALSE, logfile = "")
+doRunrun(app, EI.config, EIeng.local, config.dir, outdir = config.dir,
+override = FALSE, logfile = "", noprep = FALSE)
 }
 \arguments{
   \item{app}{A character string giving the global unique identifier for
@@ -32,12 +33,15 @@ doRunrun(app, EI.config, EIeng.local, config.dir, outdir = config.dir, override 
   \item{override}{A logical flag.  If true, the code will ignore locks
     and restart the run anyway.}
   \item{logfile}{Name for the file in which to do logging.}
+  \item{noprep}{A logical flag.  If this value is true then the database
+    preparation operations will be skipped.  This is intended for
+    continuing a run which was interrupted for some reason.}
 }
 \details{
 
   The goal is to start a run for scoring (evidence identificaiton step)
   an assessment using the  
-  \code{\linkS4class{EIEvent}} class.  This function takes care of many
+  \code{\linkS4class{EIEngine}} class.  This function takes care of many
   of the configuration details and preparatory steps and then calls
   \code{\link{mainLoop}} to do the major work.  In particular, the steps
   done by this system are as follows:
@@ -49,7 +53,8 @@ doRunrun(app, EI.config, EIeng.local, config.dir, outdir = config.dir, override 
       configuration.)}
     \item{Remove selected events from the collection. Import new
       evidence sets into the database and mark selected evidence as 
-      unprocessed.} 
+      unprocessed. (This step is skipped if the \code{noprep} flag is
+      true.)}  
     \item{Launch engine using \code{\link{mainLoop}}.}
     \item{Build and register the obserables output file.}
   }
@@ -118,7 +123,7 @@ doRunrun(app, EI.config, EIeng.local, config.dir, outdir = config.dir, override 
     \item{lscolname}{The name of the column to which the listener set
       should log messages. Example value \code{"Messages"}.}
     \item{listeners}{This is a list of listener descriptions. See the
-      section \sQuote{Listner Configuration} below.}
+      section \sQuote{Listener Configuration} below.}
     \item{listenerReset}{Which listeners should be reset before running.
      This should be a character scalar or vector.  The values should be
      names of listeners.  The special value \dQuote{Self} refers to the
@@ -243,7 +248,7 @@ doRunrun(app, EI.config, EIeng.local, config.dir, outdir = config.dir, override 
   logging system.
 
   Both the log file is registered using the
-  \code{\link[Proc4]{ListnerSet}$registerOutput} method.
+  \code{\link[Proc4]{ListenerSet}$registerOutput} method.
 
 }
   
@@ -275,7 +280,7 @@ doRunrun(app, EI.config, EIeng.local, config.dir, outdir = config.dir, override 
 
   \code{\link{doLoad}}
 
-  \code{\linkS4class{EIEninge}}, \code{\link{mainLoop}},
+  \code{\linkS4class{EIEngine}}, \code{\link{mainLoop}},
   \code{\link[Proc4]{ListenerSet}}
 
 
@@ -311,7 +316,7 @@ app <- as.character(Proc4.config$apps[appStem])
 if (length(app)==0L || any(app=="NULL")) {
   stop("Could not find app for ",appStem)
 }
-if (!(appStem %in% EI.config$appStem)) {
+if (!(appStem \%in\% EI.config$appStem)) {
   stop("Configuration not set for app ",appStem)
 }
 
@@ -333,7 +338,7 @@ for (ext in EI.config$extensions) {
     if (file.exists(file.path(config.dir,ext))) {
       source(file.path(config.dir,ext))
     } else {
-      flog.error("Can't find extension file %s.", ext)
+      flog.error(paste("Can't find extension file", ext))
     }
   }
 }

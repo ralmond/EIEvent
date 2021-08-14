@@ -33,7 +33,7 @@ if (interactive()) {
 } else {
   flog.appender(appender.file(logfile))
 }
-flog.threshold(EI.config$loglevel)
+flog.threshold(loglevel)
 
 
 

@@ -39,7 +39,7 @@ if (interactive()) {
 } else {
   flog.appender(appender.file(logfile))
 }
-flog.threshold(EI.config$loglevel)
+flog.threshold(loglevel)
 
 ## Load extensions.
 for (ext in EI.config$extensions) {

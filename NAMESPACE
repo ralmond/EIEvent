@@ -8,6 +8,11 @@ importFrom("mongolite","mongo")
 importFrom("utils","read.csv","write.csv")
 
 
+S3method(all.equal,Event)
+S3method(all.equal,Rule)
+S3method(all.equal,Status)
+
+
 ## Condition
 export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
        "?in","?nin","?exists","?isnull","?isna","?regexp",
