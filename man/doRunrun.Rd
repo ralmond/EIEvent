@@ -309,7 +309,7 @@ if (interactive()) {
 
 source("/usr/local/share/Proc4/EIini.R")
 
-EI.config <- fromJSON(file.path(config.dir,"config.json"),FALSE)
+EI.config <- jsonlite::fromJSON(file.path(config.dir,"config.json"),FALSE)
 
 
 app <- as.character(Proc4.config$apps[appStem])

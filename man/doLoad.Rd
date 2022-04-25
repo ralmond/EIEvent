@@ -134,7 +134,7 @@ library(EIEvent)
 ## config.dir, EIeng.local and Proc4.config
 source("/usr/local/share/Proc4/EIini.R")
 
-EI.config <- fromJSON(file.path(config.dir,"config.json"),FALSE)
+EI.config <- jsonlite::fromJSON(file.path(config.dir,"config.json"),FALSE)
 
 ## appStem is a short nickname for the app
 ## Proc4.config$apps contains the full names indexed by the nicknames.

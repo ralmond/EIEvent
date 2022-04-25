@@ -399,7 +399,7 @@ if (interactive()) {
 }
 
 ## Load the Rules
-ruleList <- lapply(fromJSON("rulefile.json", FALSE), parseRule)
+ruleList <- lapply(jsonlite::fromJSON("rulefile.json", FALSE), parseRule)
 eng$clearAllRules()
 eng$loadRules(ruleList)
 

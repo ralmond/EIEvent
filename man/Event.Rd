@@ -131,7 +131,7 @@ ev3a <- parseEvent(ununboxer(as.jlist(ev3,attributes(ev3))))
 stopifnot(all.equal(ev1,ev1a), all.equal(ev2,ev2a), all.equal(ev3,ev3a))
 
 \dontrun{ #Requires test DB setup.
-testcol <- mongo("Messages",
+testcol <- mongolite::mongo("Messages",
                  url="mongodb://test:secret@127.0.0.1:27017/test")
 ## Mongodb is the protocol
 ## user=test, password =secret
