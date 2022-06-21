@@ -54,3 +54,8 @@ o [test] Make ANY and ALL synnonymous [Bug 83]
    - character() and integer()
    - NA_character_ and NA_logical_
 
+Undocumented code objects:
+  ‘doLoad’ ‘doRunrun’
+Undocumented S4 methods:
+  generic 'timeSoFar<-' and siglist 'Timer,POSIXt,difftime'
+  generic 'timeSoFar<-' and siglist 'Timer,POSIXt,numeric'

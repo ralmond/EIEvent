@@ -9,26 +9,22 @@
   mainly consists of the database location and credentials.  
 }
 \usage{
-EIEngine(app = "default", listeners = list(), username = "", password = "", host = "localhost", port = "", dbname = "EIRecords", P4dbname = "Proc4", processN = Inf, ...)
+EIEngine(app = "default", dburi = makeDBuri(), listenerSet = NULL, dbname = "EIRecords", admindbname = "Proc4", processN = Inf, waittime=.25,...)
 }
 \arguments{
   \item{app}{The application ID for the engine.  See Details.}
-  \item{listeners}{A list of objects of type
-  \code{\linkS4class{Listener}} which will receive messages from the
-  engine.}
-  \item{username}{A username for the database. If left blank the
-  database will be accessed with an anonymous user.}
-  \item{password}{A password for the database.  If left blank, the
-  database will be accessed without a password.}
-  \item{host}{The hostname for the database.  Defaults to \dQuote{localhost}.}
-  \item{port}{This is the port used for the database connection.  If
-  left blank, the default port 27017 will be used.}
+  \item{listenerSet}{A \code{\link[Proc4]{ListenerSet}} which contains the
+    listeners for clients of the engine's messages.}
+  \item{dburi}{A character scalar giving the login information for the
+    mongo database.  See \code{\link[Proc4]{makeDBuri}}.}
   \item{dbname}{This the name of the database.  The default name is
     \dQuote{EIRecords}.}
-  \item{P4dbname}{Database used for checking if the EIEngine should
+  \item{admindbname}{Database used for checking if the EIEngine should
     still be active.}
   \item{processN}{A positive integer.  When the \code{\link{mainLoop}}
     is started, the engine will process N records before stopping.}
+  \item{waittime}{The amout of time (in seconds) to wait before checking
+    again for new evidence sets when the evidence set queue is empty.}
   \item{\dots}{For future expansions, subclasses.}
 }
 \details{
@@ -125,7 +121,11 @@ EIEngine(app = "default", listeners = list(), username = "", password = "", host
 }
 \examples{
 cl <- new("CaptureListener")
-eng <- EIEngine(app="ecd://epls.coe.fsu.edu/EItest",listeners=list(capture=cl))
+app <- "ecd://epls.coe.fsu.edu/EItest"
+lset <- ListenerSet(sender=paste(basename(app),"process"),
+                    dburi="mongod://localhost",dbname="Messages",
+                    listeners=list(cl))
+eng <- EIEngine(app=app,listenerSet=lset)
 
 
 }

@@ -6,6 +6,7 @@
 
 ## Contexts
 setGeneric("doc", function (x) standardGeneric("doc"))
+setGeneric("name", function (x) standardGeneric("name"))
 
 ## Rules
 setGeneric("ruleType",function(x) standardGeneric("ruleType"))

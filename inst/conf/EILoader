@@ -1,0 +1,11 @@
+#!/bin/bash
+if [ $# -eq 0 ]; then
+    echo "Usage:  EILoader [--override] [--level=DEBUG] [Rlogfile]"
+    exit(1)
+fi
+R_HOME=$(R RHOME)
+EI_SCRIPTPATH=$(${R_HOME}/bin/Rscript -e 'cat(file.path(.libPaths()[1], "EIEvent", "config"))')
+Rlogfile="${!#}.Rout"
+appArgs="${@:1:$#-1}"
+echo "Reloading EI Rules " $1 $2
+nohup R  --slave "--args appArgs" <"EI_SCRIPTPATH/EILoad.R" >& "$Rlogfile" &

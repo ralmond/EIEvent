@@ -33,7 +33,7 @@ testAndLoad(set, filename, stopOnDups = FALSE)
   class.  The easiest way to maintain the rules is by a series of one or
   more JSON files.  These can be read using:
 
-  \code{rulelist <- lapply(fromJSON("rulefile.json",FALSE), parseRule)}
+  \code{rulelist <- lapply(jsonlite::fromJSON("rulefile.json",FALSE), parseRule)}
 
   With \code{stopOnDups==FALSE}, the functions will issue warnings when
   they are replacing rules, especially if the versions are different.
@@ -83,7 +83,7 @@ testAndLoad(set, filename, stopOnDups = FALSE)
 \dontrun{
 rls <- RuleTable$new("ecd://epls.coe.fsu.edu/P4test","test",
                      "mongodb://localhost")
-sRules <- lapply(fromJSON(file.path(config.dir, "Rules",
+sRules <- lapply(jsonlite::fromJSON(file.path(config.dir, "Rules",
                                     "CombinedRules.json"),FALSE),
                  parseRule)
 rls$clearAll()

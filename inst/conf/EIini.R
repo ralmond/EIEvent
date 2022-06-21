@@ -1,15 +1,20 @@
+Proc4.config <- fromJSON("/usr/local/share/Proc4/Proc4.json",FALSE)
+
+dbhost <- "localhost"
+dbuser <- "" # "EAP"
+dbport <- "" # "27018"
+
+dburi <-Proc4::makeDBuri(dbuser,Proc4.config$pwds[[dbuser]],
+                         dbhost,dbport)
+config.dir <- "/home/ralmond/Projects/PP-EI"
+outdir <- config.dir
+
+logpath <- "/usr/local/share/Proc4/logs"
+
+
 ## These are application generic parameters
-EIeng.common <- list(host="localhost",username="EI",password="secret",
-                     dbname="EIRecords",P4dbname="Proc4",waittime=.25)
-
-appstem <- basename(app)
-## These are for application specific parameters
-EIeng.params <- list(app=app)
-
-config.dir <- "/home/ralmond/ownCloud/Projects/NSFCyberlearning/EvidenceID"
-
-logfile <- file.path("/usr/local/share/Proc4/logs",
-                     paste("EI_",appstem,"0.log",sep=""))
+EIeng.local <- list(dburi=dburi,
+                    dbname="EIRecords",admindbname="Proc4")
 
 trophy2json <- function(dat) {
   thall <- ""
@@ -22,20 +27,9 @@ trophy2json <- function(dat) {
         '"bankBalance"', ':', dat$bankBalance, '}')
 }
 
-EI.listenerSpecs <-
-  list("InjectionListener"=list(sender=paste("EI",appstem,sep="_"),
-            dbname="EARecords",dburi="mongodb://localhost",
-            colname="EvidenceSets",messSet="New Observables"),
-       "UpdateListener"=list(dbname="Proc4",dburi="mongodb://localhost",
-            colname="Players",targetField="data",
-            messSet=c("Money Earned","Money Spent"),
-            jsonEncoder="trophy2json"))
-
-### Special Applicable Slider Functions
-
 ### Reset rules should set the field "state.flags.applicable" to the
 ### names of the appliable sliders for this level.  Note, can't use
-### the "state.fobservables" prefix.
+### the "state.observables" prefix.
 
 allSliders <- paste("state","observables",
                     c("massManip", "gravityManip", "airManip"),
@@ -88,4 +82,3 @@ mostlyApplicable <- function (name, state, event) {
   }
   val
 }
-

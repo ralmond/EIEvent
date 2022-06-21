@@ -5,6 +5,12 @@ import(futile.logger)
 importFrom("jsonlite","toJSON","fromJSON","unbox")
 importFrom("utils","limitedLabels")
 importFrom("mongolite","mongo")
+importFrom("utils","read.csv","write.csv")
+
+
+S3method(all.equal,Event)
+S3method(all.equal,Rule)
+S3method(all.equal,Status)
 
 
 ## Condition
@@ -15,7 +21,7 @@ export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
 ## Context
 export(Context,ContextSet,doc,cid, belongsTo, "belongsTo<-",
        number, "number<-",applicableContexts,parseContext,matchContext,
-       clearContexts,loadContexts,updateContext)
+       clearContexts,loadContexts,updateContext,"name")
 exportClasses(Context,ContextSet)
 exportMethods(name,doc,cid, belongsTo, "belongsTo<-",
               number, "number<-",toString,show,matchContext,
@@ -74,5 +80,5 @@ export(EIEngine, processEvent, handleEvent, runTriggerRules,
 exportMethods(notifyListeners)
 exportClasses(EIEngine)
 
-
+export(doLoad, doRunrun)
 
