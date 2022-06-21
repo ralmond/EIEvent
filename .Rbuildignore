@@ -3,6 +3,10 @@
 ^.*\.gitignore
 ^.*~
 ^\.git
+.git
+.gitignore
+.Rhistory
+.Rproj.user
 
 
 
