@@ -18,6 +18,7 @@ if (interactive()) {
 
 source("/usr/local/share/Proc4/EIini.R")
 
+## Example in PP-EI project
 EI.config <- fromJSON(file.path(config.dir,"config.json"),FALSE)
 
 

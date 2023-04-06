@@ -99,7 +99,7 @@ mongosh <setupApps.js
 Setup the EIRecords (EIEvent) database collections and indexes:
 ```{bash}
 cd EIEvent/inst/conf
-mongosh <setupProc4.js
+mongosh <setupMongo.js
 ```
 
 
