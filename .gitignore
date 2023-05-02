@@ -1,13 +1,9 @@
 *~
 #*#
 .#*
-
 .Rhistory
 .Rproj.user/*
 .Rproj.user/*/*
-
-
-
 .Rproj.user/50CE44A6/cpp-definition-cache
 .Rproj.user/50CE44A6/rmd-outputs
 .Rproj.user/50CE44A6/saved_source_markers
@@ -17,3 +13,5 @@
 .Rproj.user/50CE44A6/pcs/workbench-pane.pper
 .Rproj.user/shared/notebooks/patch-chunk-names
 .Rproj.user/50CE44A6/
+.Rproj.user
+.DS_Store
