@@ -31,7 +31,7 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
   eng$clearContexts()
   initCon <- data.frame(CID="*INITIAL*",Name="*INITIAL*",Number=0)
   eng$addContexts(initCon)
-  for (contextFile in EI.config$contextDesriptions) {
+  for (contextFile in EI.config$contextDescriptions) {
     contex <- sprintf("Loading context file %s.",contextFile)
     flog.info(contex)
     withFlogging({
