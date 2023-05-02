@@ -82,7 +82,7 @@ ContextSet <-
               fields=c(app="character",
                        dbname="character",
                        dburi="character",
-                       db="MongoDB"),
+                       db="ANY"),
               methods = list(
                   initialize =
                     function(app="default",
