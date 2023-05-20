@@ -67,12 +67,20 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 
   The \code{AuthorizedApps} collection in the \code{Proc4}
   database is used to signal when the EI process should shut down.  The
-  initialization argument \code{P4dbname} is used to set the name of
-  this database, and the \code{P4db()} function to access the
+  initialization argument \code{admindbname} is used to set the name of
+  this database, and the \code{admindb()} function to access the
   collection.  Note that all database collections should be accessed
-  through the accessor function, which inialize the connection on
+  through the accessor function, which initialize the connection on
   demand, rather than by accessing the field directly.
 
+  The class-based methods, \code{eng$activate()} and
+  \code{eng$deactive()} turn on an off the flag in the database that
+  indicates that this app is active.  The methods
+  \code{eng$isActivated()} tests the status of that flag.  The methods
+  \code{eng$shouldHalt()} and \code{eng$stopWhenFinished()} check for
+  signals that the main loop should be terminated immediately or when
+  finished. 
+  
   The listener objects may also access databases.  This is the usual
   mechanism for the EI process to insert messages into the processing
   queue of other processes.  
@@ -81,24 +89,36 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 \section{Activation and Termination}{
 
   The \code{\link{mainLoop}} searches the event database for unprocessed
-  events, and processes them in chronological order.  There are two
+  events, and processes them in chronological order.  There are three
   termination conditions.  First, if the \code{$processN} field (which
   is decrimented after each event is processed) reaches 0, then the main
-  loop will exit.  Second, if the event queue is empty, the engine will
-  check the \code{active} flag in the record for its process in the
-  \code{AuthorizedApps} collection.  This is done with a call to
-  \code{$isActivated()} which returns the value of the flag.
+  loop will exit.  Second, after each event is processed, it checks the
+  \code{eng$shouldHalt()} condition; if this is true, it halts
+  immediately.  Third, if the event queue is empty, the engine will
+  check the \code{eng$stopWhenFinished()} flag and will stop if it is
+  true.  Otherwise, it will wait for the \code{waittime} (in seconds)
+  and check again.
 
-  The method \code{$activate()} sets the activated flag for this app to
-  true.  This should be called before starting the
-  \code{\link{mainLoop}}.
+  The method \code{eng$activate()} sets the activated flag for this app to
+  true and \code{eng$deactivate()} clears it.  These are called from 
+  \code{\link{mainLoop}}.  External processes can check this flag in the
+  database by looking at the value of
+  \code{db.AuthorizedApps.find(\{"app":\{"$regex":"P4test"\}\},
+    \{"appStem":1,"EIactive":1\});}. The code is Mongo shell javascript,
+  and \dQuote{P4test} should be
+  replaced with any string uniquely identifying the app (i.e.,
+  basename(app)). 
 
-  The flag must be manually set to false.  This generally cannot be done
-  from R, as R is busy running the main loop.  The following command run
-  in the mongo shell will cause the main loop to gracefully exit:
+  The to signal to the process to stop, an external program needs to
+  set the value of the \code{EIsignal} field for the appropriate
+  application.  The javascript code 
   \code{db.AuthorizedApps.update(\{app:\{"$regex":"P4test"\}\},
-    \{"$set":\{active:false\}\});}, where \dQuote{P4test} should be
-  replaced with any string uniquely identifying the app.
+    \{"$set":\{"EIsignal":<value>\}\});}, where \dQuote{P4test} should be
+  replaced with any string uniquely identifying the app, run in the
+  Mongo shell will work.  The \code{<value>} should be either
+  \dQuote{finish} or \dQuote{halt}.  The former triggers the
+  \code{eng$shopWhenFinished()} and the latter triggers
+  \code{eng$halt()}.
 
 }
 \section{Events and the Event Queue}{
@@ -288,18 +308,15 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   method.  This, in turn, calls the \code{\link[Proc4]{receiveMessage}}
   method on each of the listeners.
 
-  During construction, the initialization method of the \code{EIEngine}
-  is passed a named list of listener objects.  (It is important that all
-  of the listeners be named, as the ListenerSet iterates over them by
-  name.)
-
-  The ListenerSet object maintains a connection to the \code{Messages}
-  collection in the database used by the \code{EIEngine}.  All messages
-  are logged to this database.  The listeners, in contrast, generally
-  only record messages whose message matches a given criteria.  Many of
-  the listeners connect to a database other than the internal one:  They
-  could either insert messages in the queue for another process or
-  update a record in a database that tracks player status.
+  If the \code{dburi} field in the ListenerSet is set, then the
+  ListenerSet maintains a connection to the \code{Messages} (or other
+  named) collection in the database used by the \code{EIEngine}.  In
+  this case, all messages are logged to this database.  The listeners,
+  in contrast, generally only record messages whose message matches a
+  given criteria.  Many of the listeners connect to a database other
+  than the internal one:  They could either insert messages in the queue
+  for another process or update a record in a database that tracks
+  player status.
 
   The \code{\link[Proc4]{CaptureListener}} is particularly useful for
   testing.  It stores all messages in a list and has a specific method
@@ -319,14 +336,17 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   The function \code{\link{mainLoop}} implements the main processing
   loop.  Generally, it should be the last call in a script for running
   the process (see \code{EIEvent.R} in the \code{config} subdirectory of
-  the package for an example).  It terminates under one of two
+  the package for an example).  It terminates under one of three
   conditions:  (1) When the event queue is empty, it checks the
-  \code{$isActivated()} method which checks the flag in the
+  \code{$stopWhenFinished()} method which checks the flag in the
   \code{AuthorizedApps} collection in the \code{Proc4} database. If the
   function returns false, the main loop will terminate.  (2) The
   \code{$processN} field is decremented with every event processed.  If
   it is given a finite value (the default is infinity) then it will
-  process that many records and then stop.
+  process that many records and then stop.  (3) If the
+  \code{$shouldHalt()} method returns true, the process stops rather
+  than go onto the next method.  (This allows for an emergency shutdown
+  if an error is found in the configuration).
 
   Running \code{\link{mainLoop}} with \code{$processN} set to a positive
   integer is useful for testing.  In one mode a collection of events can
@@ -454,13 +474,13 @@ showClass("EIEngine")
     for the link to the Mongo database}
     \item{\code{dbname}:}{Object of class \code{character} giving the
       name of the user database}
-    \item{\code{P4dbname}:}{Name of the database which contains the
+    \item{\code{admindbname}:}{Name of the database which contains the
       \code{AuthorizedApps} collection used to start and stop the
       engine.} 
-    \item{\code{p4db}:}{Object of class \code{\linkS4class{MongoDB}} referencing
+    \item{\code{adminDB}:}{Object of class \code{\linkS4class{MongoDB}} referencing
       the \code{AuthorizedApps} collection used to start and stop the
       engine. This field should not be referenced directly, instead,
-      the \code{P4db()} should be used as it will initialize the
+      the \code{$admindb()} should be used as it will initialize the
       connection if needed.}
     \item{\code{waittime}:}{The number of seconds to wait before
       rechecking the queue when it is empty.}
@@ -488,17 +508,25 @@ showClass("EIEngine")
 }
 \section{Class-Based Methods}{
   \describe{
-    \item{\code{initialize(app, listeners, username, password, host,
-        port, dbname, waittime, processN, ...)}:}{ This method sets up
+    \item{\code{initialize(app, listenerSet, dburi, dbname, admindbname,
+        waittime, processN, ...)}:}{ This method sets up
       the object.  Note that the listeners object is passed in as an
       argument, as are the database credentials.}
-    \item{\code{P4db()}:}{Returns a handle to the \code{AuthorizedApps}
+    \item{\code{admindb()}:}{Returns a handle to the \code{AuthorizedApps}
       collection in the Proc4 database.  Initializes if needed.}
     \item{\code{isActivated()}:}{Returns true if the active flag is set
       on this applicaiton (\code{app}) in the \code{AuthorizedApps}
       collection.} 
     \item{\code{activate()}:}{Sets the active flag to true for this
       \code{app} in the \code{AuthorizedApps} collection.}
+    \item{\code{deactivate()}:}{Clears the active flag to true for this
+      \code{app} in the \code{AuthorizedApps} collection.}
+    \item{\code{shouldHalt()}:}{ This function checks the database to
+      see whether or not the flag is set to cause the process to halt
+      after processing the current record.. }
+    \item{\code{stopWhenFinished()}:}{ This function checks the database to
+      see whether or not the flag is set to cause the process to stop
+      when the event queue is empty. }
     \item{\code{show()}:}{Provides a short string identifying the
       engine. }
     \item{\code{newUser(uid)}:}{ Generates a new student record.

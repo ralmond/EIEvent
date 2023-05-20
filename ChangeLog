@@ -1,3 +1,34 @@
+2021-08-06  Russell Almond  <ralmond@cherry.local>
+
+	* inst/conf/RunEIEvent.R: Added noprep and override switches
+
+	* inst/conf/EILoad.R: Added tryCatch, finally so lockfile will
+	always be unlinked.  Added override switch.
+
+2021-08-03  Russell Almond  <ralmond@cherry.local>
+
+	* R/Runners.R (doRunrun): Added noprep switch to suppress database
+	operations. 
+
+2020-06-13  Russell Almond  <ralmond@Cherry>
+
+	* R/EIEngine.R (EIEngine): Changed Protocol to look more like
+	EABN, with listenerSet added directly.  Eventually, hope to remove
+	dependencies on database.
+	(mainLoop): Changed to use shouldHalt and stopWhenFinished
+	protocol.  Added $activate() and $deactivate() calls.
+
+2020-06-12  Russell Almond  <ralmond@Cherry>
+
+	* R/Runners.R (doLoad): New function for doing the loading process
+	using config.json details.
+	(doRunrun): New function for running using config.json details.
+	
+
+2020-04-27  Russell Almond  <ralmond@Cherry>
+
+	* R/AAGenerics.R (name): Moved from Proc4 to here.
+
 2020-01-16    <ralmond@pluto.coe.fsu.edu>
 
 	* R/Status.R (Timer): Added "numeric" method to cast zeros into difftime.  Defaults to seconds.

@@ -449,7 +449,7 @@ TestSet <-
                        dburi="character",
                        contexts="ContextSet",
                        rules="RuleTable",
-                       db="MongoDB"),
+                       db="ANY"),
               methods = list(
                   initialize =
                     function(app="default",

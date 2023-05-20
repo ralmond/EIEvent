@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^.*\.gitignore
+^.*~
+^\.git
+.git
+.gitignore
+.Rhistory
+.Rproj.user
+
+
+

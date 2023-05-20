@@ -39,13 +39,18 @@ mainLoop(eng)
   these three statements, with some additional steps related to
   logging and control.
 
-  First, if the event queue is empty, the process sleeps for a time
+  Before processsing the next field, the mainLoop checks the
+  \code{eng$shouldHalt()} method to see if a halt signal has been sent
+  (by setting the \code{EIsignal} field in the \code{AuthorizedApps}
+  collection to \dQuote{halt}).
+
+  If the event queue is empty, the process sleeps for a time
   given by \code{eng$waittime} and then checks the queue again.  At the
   same time, it checks status of the active flag for the process using
-  the \code{eng$isActivated()} call.  By default this checks the
-  \code{active} field of the record corresponding to \code{app(eng)} in
+  the \code{eng$stopWhenFinished()} call.  By default this checks the
+  \code{EIsignal} field of the record corresponding to \code{app(eng)} in
   the collection \code{AuthorizedApps} in the database \code{Proc4}.
-  Setting that field to false manually will result in the
+  Setting that field to \dQuote{finish} manually will result in the
   \code{mainLoop} terminating when the queue is empty.  As R is running
   in server mode when this happens, this often needs to be done using an
   external process.  The following command issues from the Mongo shell
@@ -53,7 +58,7 @@ mainLoop(eng)
   "appName" as part of its name.
 
   \code{db.AuthorizedApps.update(\{app:\{$regex:"appName"\}\},
-    \{$set:\{active:false\}\});}
+    \{$set:\{EIsignal:"finish"\}\});}
 
   To facilitate testing, the field \code{eng$processN} can be set to a
   finite value.  This number is decremented at every cycle, and when
@@ -82,17 +87,6 @@ mainLoop(eng)
 
 }
 \author{Russell Almond}
-\note{
-
-  Currently, when running in server model (i.e., with
-  \code{eng$processN} set to infinity), there are two ways of stopping
-  the engine:  a clean stop after all events are processed using the
-  \code{active} flag, and an immediate stop, possibly mid cycle, by
-  killing the server process.  It became apparent during testing that
-  there was a need for a graceful but immediate stop, i.e., a stop after
-  processing the current event.  This should appear in later versions.
-
-}
 \seealso{
 
   The class \code{\linkS4class{EIEngine}} describes the setup of the
@@ -136,9 +130,20 @@ if (interactive()) {
   cl <- new("CaptureListener")
   listeners <- c(listeners,cl=cl)
 }
+EIeng.params <-
+  c(EI.config$EIEngine,
+    EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
+
+EIeng.params$listenerSet <-
+    ListenerSet(sender= sub("<app>",sapp,EI.config$sender),
+                dbname=EIeng.local$dbname, dburi=EIeng.local$dburi,
+                listeners=listeners,
+                colname=EI.config$lscolname)
+EIeng.params$app <- app
+
 ## Make the EIEngine
-eng <- do.call(EIEngine,c(EIeng.params,list(listeners=listeners),
-                          EIeng.common))
+eng <- do.call(EIEngine,EIeng.params)
+
 ## Clean out old records from the database.
 if (cleanFirst) {
   eng$eventdb()$remove(buildJQuery(app=app(eng)))

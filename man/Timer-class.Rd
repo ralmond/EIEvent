@@ -2,6 +2,8 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{Timer-class}
+\alias{timeSoFar<-,Timer,POSIXt,difftime-method}
+\alias{timeSoFar<-,Timer,POSIXt,numeric-method}
 
 \title{Class \code{"Timer"}}
 \description{
