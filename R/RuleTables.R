@@ -169,7 +169,7 @@ RuleTable <-
               fields=c(app="character",
                        dbname="character",
                        dburi="character",
-                       db="MongoDB",
+                       db="ANY",
                        stoponduplicate="logical"),
               methods = list(
                   initialize =
