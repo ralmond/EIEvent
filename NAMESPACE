@@ -1,10 +1,10 @@
 import(methods)
+import(mongo)
 import(Proc4)
 import(futile.logger)
 
 importFrom("jsonlite","toJSON","fromJSON","unbox")
 importFrom("utils","limitedLabels")
-importFrom("mongolite","mongo")
 importFrom("utils","read.csv","write.csv")
 
 

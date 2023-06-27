@@ -1,100 +1,80 @@
 EIEngine <-
    setRefClass("EIEngine",
                fields=c(app="character",
-                        dburi="character",
-                        dbname="character",
-                        admindbname="character",
-                        adminDB="ANY",
-                        fileDB="ANY",
+                        adminDB="JSONDB",
                         waittime="numeric",
                         userRecords="UserRecordSet",
                         rules="RuleTable",
                         contexts="ContextSet",
-                        events="ANY",
+                        events="MessageQueue",
                         ruleTests="TestSet",
                         listenerSet="ListenerSet",
                         processN="numeric"),
                methods = list(
                    initialize =
-                     function(app="default",listenerSet=NULL,
-                              dburi="",dbname="EIRecords",admindbname="Proc4",
-                              waittime=.25,processN=Inf,...) {
-                       flog.info("Connecting to database %s/%s\n",dburi,dbname)
-                       evnts <- NULL # mongo("Events",dbname,dburi)
-                       aDB <- NULL # mongo("AuthorizedApps",adminbname,dburi)
-                       rls <- RuleTable$new(app,dbname,dburi)
-                       urecs <- UserRecordSet$new(app,dbname,dburi)
-                       ctxts <- ContextSet$new(app,dbname,dburi)
-                       rTests <- TestSet$new(app,dbname,dburi)
-                       callSuper(app=app,dbname=dbname,dburi=dburi,
-                                 listenerSet=listenerSet, events=evnts,
-                                 rules=rls,userRecords=urecs,
-                                 contexts=ctxts,ruleTests=rTests,
-                                 admindbname=admindbname,adminDB=aDB,
-                                 waittime=waittime,
+                     function(app="default",
+                              waittime=.25,processN=Inf,
+                              listenerSet=NULL,
+                              events=new("ListQueue",app),
+                              adminDB = MongoDB("AuthorizedApps","Proc4"),
+                              rules = newRuleTable(app),
+                              userRecords = newUserRecordSet$new(app),
+                              contexts <- newContextSet(app),
+                              ruleTests = newTestSet(app),
+                              ...){
+                       callSuper(app=app,waittime=waittime,
                                  processN=processN,
+                                 listenerSet=listenerSet, events=events,
+                                 rules=rules,userRecords=userRecords,
+                                 contexts=contexts,ruleTests=ruleTests,
+                                 adminDB=adminDB,
                                  ...)
                      },
                   admindb = function () {
-                     if(is.null(adminDB) && length(dburi)>0L)
-                       adminDB <<- mongo("AuthorizedApps",admindbname,dburi)
                      adminDB
                    },
-                  filedb = function () {
-                     if(is.null(fileDB) && length(dburi)>0L)
-                       fileDB <<- mongo("OutputFiles",admindbname,dburi)
-                     fileDB
-                   },
                   activate = function() {
-                    if (length(admindb()$find(buildJQuery(app=app)))==0L) {
-                      admindb()$insert(buildJQuery(app=app,
-                                                   appStem=basename(app),
-                                                   EIactive=TRUE,
-                                                   EIsignal="running"))
+                    if (length(mdbFind(admindb(),buildJQuery(app=app)))==0L) {
+                      mdbInsert(admindb(),buildJQuery(app=app,
+                                                     appStem=basename(app),
+                                                     EIactive=TRUE,
+                                                     EIsignal="running"))
                     } else {
-                      admindb()$update(buildJQuery(app=app),
+                      mdbUpdate(admindb(),buildJQuery(app=app),
                                        '{"$set":{"EIactive":true,"EIsignal":"running"}}')
                     }
                   },
                   deactivate = function() {
-                    if (length(admindb()$find(buildJQuery(app=app)))==0L) {
-                      admindb()$insert(buildJQuery(app=app,
+                    if (length(mdbFind(admindb(),buildJQuery(app=app)))==0L) {
+                      mdbInsert(admindb(),buildJQuery(app=app,
                                                    appStem=basename(app),
                                                    EIactive=FALSE))
                     } else {
-                      admindb()$update(buildJQuery(app=app),
+                      mdbUpdate(admindb(),buildJQuery(app=app),
                                     '{"$set":{"EIactive":false}}')
                     }
                   },
                   isActivated = function() {
-                    rec <- admindb()$find(buildJQuery(app=app),limit=1)
+                    rec <- mdbFind(admindb(),buildJQuery(app=app),limit=1)
                     if (length(rec)==0L) return(FALSE)
                     return (isTRUE(as.logical(rec$EIactive)))
                   },
                   shouldHalt = function() {
-                    rec <- admindb()$find(buildJQuery(app=app),limit=1)
+                    rec <- mdbFind(admindb(),buildJQuery(app=app),limit=1)
                     if (length(rec)==0L) return(FALSE)
                     if (toupper(rec$EIsignal)=="HALT") return(TRUE)
                     FALSE
                   },
                   stopWhenFinished = function() {
-                    rec <- admindb()$find(buildJQuery(app=app),limit=1)
+                    rec <- mdbFind(admindb(),buildJQuery(app=app),limit=1)
                     if (length(rec)==0L) return(TRUE)
                     if (toupper(rec$EIsignal)!="RUNNING") return(TRUE)
                     FALSE
                   },
                   regFile = function (name,filename,type="data",
-                                      timestamp=Sys.time(),doc="") {
-                    fdb <- filedb()
-                    if (!is.null(fdb)) {
-                      fdb$replace(buildJQuery(app=basename(app),name=name),
-                                  buildJQuery(app=basename(app),
-                                              process="EI", type=type,
-                                              name=name, filename=filename,
-                                              timestamp=timestamp,
-                                              doc=doc),
-                                  upsert=TRUE)
-                    }
+                                      doc="") {
+                    registerOutput(listenerSet,name,filename,app,
+                                   processe="EI",type=type,doc=doc)
                   },
                   show=function() {
                     methods::show(paste("<EIEvent: ",app,">"))
@@ -166,33 +146,53 @@ EIEngine$methods(
 
 ## Event Methods
 EIEngine$methods(
-             eventdb = function() {
-               if (is.null(events)) {
-                 events <<- mongo("Events",dbname,dburi)
-               }
+             eventq = function() {
               events
              },
              setProcessed= function (mess) {
-               markAsProcessed(mess,eventdb())
+               markAsProcessed(eventq(),mess)
              },
              setError= function (mess,e) {
-               markAsError(mess,eventdb(),e)
+               markAsError(eventq(),mess,e)
              },
              fetchNextEvent = function() {
-               getOneRec(buildJQuery(app=app,processed=FALSE),
-                         eventdb(),parseEvent,sort = c(timestamp = 1))
+               fetchNextMessage(eventq())
              }
         )
 
 
-EIEngine <- function(app="default",dburi=makeDBuri(),
-                     listenerSet=NULL,
-                     dbname="EIRecords",admindbname="Proc4",
-                     processN=Inf, waittime=.25,
-                     ...) {
-  new("EIEngine",app=app,dburi=dburi,listenerSet=listenerSet,
-      dbname=dbname, admindbname=admindbname,processN=processN,
-      waittime=waittime,...)
+newEngine <- function(app="default",
+                      dbname="EIRecords",
+                      admindbname="Proc4",
+                      waittime=.25,processN=Inf,
+                      dburi=character(),
+                      sslops=mongolite::ssl_options(),
+                      noMongo=length(dburi)==0L,
+                      mongoverbose=FALSE,
+                      listenerSet=NULL,
+                      eventcol="Events",
+                      events=new("MongoQueue",app,
+                                 MongoDB(eventcol,dbname,dburi,
+                                         mongoverbose,noMongo,sslops)),
+                      aacol="AuthorizedAppps",
+                      adminDB=MongoDB(aacol,admindbname,dburi,
+                                      mongoverbose,noMongo,sslops),
+                      rulecol="Rules",
+                      rules=newRuleTable(app,rulecol,dbname,dburi,
+                                         mongoverbose,noMongo,sslops),
+                      urcol="States",
+                      userRecords=newUserRecordSet(app,urcol,dbname,dburi,
+                                                   mongoverbose,noMongo,sslops),
+                      contextcol="Contexts",
+                      contexts=newContextSet(app,contextcol,dbname,dburi,
+                                             mongoverbose,noMongo,sslops),
+                      testcol="Tests",
+                      ruleTests=newTestSet(app,testcol,dbname,dburi,
+                                           mongoverbose,noMongo,sslops)
+                      ) {
+  new("EIEngine",app,waittime,processN,listenerSet,
+              events,adminDB,rules,userRecords,contexts,
+              ruleTests)
 }
 
 ## Listener notification.
@@ -203,6 +203,7 @@ setMethod("notifyListeners","EIEngine",
 
 
 setMethod("app","EIEngine", function (x) x$app)
+
 
 
 ##########################################

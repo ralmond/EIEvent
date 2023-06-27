@@ -80,21 +80,18 @@ setMethod("as.jlist",c("Context","list"), function(obj,ml, serialize=TRUE) {
 ContextSet <-
   setRefClass("ContextSet",
               fields=c(app="character",
-                       dbname="character",
-                       dburi="character",
-                       db="ANY"),
+                       db="JSONDB"),
               methods = list(
                   initialize =
                     function(app="default",
-                             dbname="EIRecrods",
-                             dburi="mongodb://localhost",
-                             db = NULL, #mongo("Contexts",dbname,dburi)
+                             db = MongoDB("Contexts","EIRecords"),
                              ...) {
-                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,...)
+                      callSuper(app=app,db=db,...)
                     },
                   numbered = function (num) {
-                    con <- getOneRec(buildJQuery(app=app,number=num),
-                                     contextdb(), parseContext)
+                    con <- getOneRec(contextdb(),
+                                     buildJQuery(app=app,number=num),
+                                     parseContext)
                     if (is.null(con)) {
                       flog.debug("No context found for number %d",num)
                     } else {
@@ -104,8 +101,9 @@ ContextSet <-
                   },
                   named = function (id) {
                     names(id) <- NULL   #Interpreted as an operator
-                    con <- getOneRec(buildJQuery(app=app,name=id),
-                                     contextdb(), parseContext)
+                    con <- getOneRec(contextdb(),
+                                     buildJQuery(app=app,name=id),
+                                     parseContext)
                     if (is.null(con)) {
                       flog.debug("No context found for %s",id)
                     } else {
@@ -115,8 +113,9 @@ ContextSet <-
                   },
                   withID = function (id) {
                     names(id) <- NULL   #Interpreted as an operator
-                    con <- getOneRec(buildJQuery(app=app,cid=id),
-                                     contextdb(), parseContext)
+                    con <- getOneRec(contextdb(),
+                                     buildJQuery(app=app,cid=id),
+                                     parseContext)
                     if (is.null(con)) {
                       flog.debug("No context found for %s",id)
                     } else {
@@ -128,21 +127,27 @@ ContextSet <-
                     if (!is(con,"Context"))
                       stop("Argument to ContextSet$update must be a context.")
                     flog.debug("Updating context %s",name(con))
-                    saveRec(con,contextdb())
+                    saveRec(contextdb(),con)
                   },
                   contextdb = function () {
-                    if (is.null(db)) {
-                      db <<- mongo("Contexts",dbname,dburi)
-                    }
                     db
                   },
                   clearAll = function () {
                     flog.info("Clearing Context database for %s",app)
-                    contextdb()$remove(buildJQuery(app=app))
+                    mdbRemove(contextdb(),buildJQuery(app=app))
                   }
               ))
 
-
+newContextSet <- function(app="default",colname="Contexts",
+                          dbname="EIRecords",
+                          dburi=character(),
+                          sslops=mongolite::ssl_options(),
+                          noMongo=length(dburi)==0L,
+                          mongoverbose=FALSE,
+                          db=MongoDB(colname,dbname,dburi,
+                                     mongoverbose,noMongo,sslops)) {
+  ContextSet$new(app,db)
+}
 
 setGeneric("matchContext",function(id,set) standardGeneric("matchContext"))
 setMethod("matchContext",c("numeric","list"),

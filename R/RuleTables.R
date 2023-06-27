@@ -3,7 +3,7 @@
 setClass("Rule",
          slots=c("_id"="character",     #Mongo ID
                  app="character",       #Application Identifier
-                 name="character",      #Human idenfier
+                 name="character",      #Human identifier
                  doc="character",       #Human description
                  context="character",   #Applicable context
                  verb="character",      #Applicable verb
@@ -83,10 +83,10 @@ parseRule<- function (rec) {
 
 ## Although in theory we could serialize
 
-parseCondition <- Proc4::parseData
-parsePredicate <- Proc4::parseData
-unparseCondition <- Proc4::unparseData
-unparsePredicate <- Proc4::unparseData
+parseCondition <- mongo::parseData
+parsePredicate <- mongo::parseData
+unparseCondition <- mongo::unparseData
+unparsePredicate <- mongo::unparseData
 
 
 ##We need an all.equal method as we need to suppress checking names on
@@ -167,19 +167,15 @@ runTRule <- function (state,event,rule,listeners) {
 RuleTable <-
   setRefClass("RuleTable",
               fields=c(app="character",
-                       dbname="character",
-                       dburi="character",
-                       db="ANY",
+                       db="JSONDB",
                        stoponduplicate="logical"),
               methods = list(
                   initialize =
                     function(app="default",
-                             dbname="EIRecords",
-                             dburi="mongodb://localhost",
-                             db = NULL, # mongo("Rules",dbname,dburi)
+                             db = MongoDB("Rules","EIRecords"),
                              stoponduplicate=FALSE,
                              ...) {
-                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,
+                      callSuper(app=app,db=db,
                                 stoponduplicate=stoponduplicate,...)
                     }
               ))
@@ -209,10 +205,10 @@ RuleTable$methods(
     }
     rule@app <- app
     flog.debug("Updating rule %s",name(rule))
-    saveRec(rule,db)
+    saveRec(ruledb(),rule)
   },
   findRuleByName = function (name) {
-    getOneRec(buildJQuery(name=name,app=app),ruledb(),parseRule)
+    getOneRec(ruledb(),buildJQuery(name=name,app=app),parseRule)
   },
   findRules = function (verb,object,context,phase=NULL) {
     flog.debug("Searching for rules v=%s, o=%s, c=%s, ph=%s",
@@ -227,7 +223,7 @@ RuleTable$methods(
       query <- buildJQuery(verb=verb,object=object,
                            context=context,app=app)
     }
-    rules <- getManyRecs(query,ruledb(),parseRule,sort=c("priority"=1))
+    rules <- getManyRecs(ruledb(),query,parseRule,sort=c("priority"=1))
     flog.debug("Found %d rules",length(rules))
     if (length(rules) > 0L) {
       flog.trace("Rules: %s",
@@ -236,16 +232,25 @@ RuleTable$methods(
     rules
   },
   ruledb = function () {
-    if (is.null(db)) {
-      db <<- mongo("Rules",dbname,dburi)
-    }
     db
   },
   clearAll = function () {
     flog.info("Clearing Rule database for %s",app)
-    ruledb()$remove(buildJQuery(app=app))
+    mdbRemove(ruledb(),buildJQuery(app=app))
   }
 )
+
+newRuleTable <- function(app="default",colname="Rules",
+                          dbname="EIRecords",
+                          dburi=character(),
+                          sslops=mongolite::ssl_options(),
+                          noMongo=length(dburi)==0L,
+                          mongoverbose=FALSE,
+                          db=MongoDB(colname,dbname,dburi,
+                                     mongoverbose,noMongo,sslops),
+                         stoponduplicate=FALSE) {
+  RuleTable$new(app,db,stoponduplicate)
+}
 
 loadRulesFromList <- function(set, rulelist, stopOnDups=TRUE) {
   rnames <- sapply(rulelist,name)

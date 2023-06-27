@@ -501,33 +501,27 @@ all.equal.Status <- function (target, current, ...,checkTimestamp=FALSE,check_id
 UserRecordSet <-
   setRefClass("UserRecordSet",
               fields=c(app="character",
-                       dbname="character",
-                       dburi="character",
-                       db="ANY"),
+                       db="JSONDB"),
               methods = list(
                   initialize =
-                    function(app="default",dbname="EIRecords",
-                             dburi="mongodb://localhost:271017",
-                             db = NULL,
+                    function(app="default",
+                             db = MongoDB("States","EIRecords")
                              ...)
-                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,...)
+                      callSuper(app=app,db=db,...)
               ))
 
 
 ## User Record Methods
 UserRecordSet$methods(
              recorddb = function () {
-               if (is.null(db)) {
-                 db <<- mongo("States",dbname,dburi)
-               }
                db
              },
              getStatus = function (uid) {
-               getOneRec(buildJQuery(app=app,uid=uid),recorddb(),
+               getOneRec(recorddb(),buildJQuery(app=app,uid=uid),
                          parseStatus)
              },
              saveStatus = function (state) {
-               saveRec(state,recorddb())
+               saveRec(recorddb(),state)
              },
              newUser = function (uid) {
                rec <- getStatus(uid)
@@ -540,23 +534,32 @@ UserRecordSet$methods(
                  flog.debug("Found default user record for  %s", uid)
                  rec <- copyStatus(rec,uid)
                  rec@timestamp <- Sys.time()
-                 rec <- saveRec(rec,recorddb()) #Need to save new ID
+                 rec <- saveRec(recorddb(),rec) #Need to save new ID
                  return(rec)
                }
                flog.debug("Making blank user record for  %s", uid)
                rec <- Status(uid=uid,context="*INITIAL*",
                              timestamp=Sys.time(),
                              app=app)
-               rec <- saveRec(rec,recorddb())
+               rec <- saveRec(recorddb(),rec)
                rec
              },
              clearAll = function(clearDefault=FALSE) {
                flog.info("Clearing User Records for %s",app)
                if (clearDefault)
-                 recorddb()$remove(buildJQuery(app=app))
+                 mdbRemove(recorddb(),buildJQuery(app=app))
                else
-                 recorddb()$remove(buildJQuery(app=app,uid=c("ne"="*DEFAULT*")))
+                 mdbRemove(recorddb(),buildJQuery(app=app,uid=c("ne"="*DEFAULT*")))
              }
              )
 
-
+newUserRecordSet <- function(app="default",colname="States",
+                          dbname="EIRecords",
+                          dburi=character(),
+                          sslops=mongolite::ssl_options(),
+                          noMongo=length(dburi)==0L,
+                          mongoverbose=FALSE,
+                          db=MongoDB(colname,dbname,dburi,
+                                     verbose,noMongo,sslops)) {
+  UserRecordSet$new(app,db)
+}
