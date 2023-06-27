@@ -1,0 +1,105 @@
+---
+title: "Installing EIEvent"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Discrete Partial Credit Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Setting up the Mongo Database
+
+## Installing and Launching Mongo
+
+First, install and configure the mongo database server.  Instructions
+can be found at https://docs.mongodb.com/manual/installation/ .
+
+Next, make sure the mongo database server is running.
+
+You can either do this each time you want to run the server.
+```{bash}
+sudo systemctl start mongod
+sudo systemctl enable mongod
+```
+Or else you can do this once.
+
+```{bash}
+sudo systemctl status mongod
+```
+
+## Create /usr/local/share/Proc4
+
+The directory `/usr/local/share/Proc4` is used to store the
+configuration information for the four processes.  A different
+directory can be substituted, but that requires modifying the scripts
+(generally only in a few places) to point to the alternate directory.
+
+First create the directory and give ownership to the account which
+will run the four processes.
+
+```{bash}
+sudo mkdir /usr/local/share/Proc4
+sudo useradd -s /usr/bin/nologin -d /usr/local/share/Proc4 proc4
+sudo chown -R proc4:proc4 /usr/local/share/Proc4
+sudo chmod 775 proc4
+```
+
+This sets up the target directory, and creates a user `proc4` to
+control it.  Any user in the group `proc4` should be able to modify
+the files.  Next add the administrator accounts to the `proc4` group.
+
+```{bash}
+sudo usermod -a -G proc4 username
+```
+This command addes the user `username` to the `proc4` group, allowing
+me to add files to that directory without worry.  _Note:_ you will not
+show up as belonging to the group until you logout and log back in
+again.  You can use `su username` to get around that problem.
+
+Now, copy the files `Proc4.ini` and `Proc4.js` from the `config`
+directory of the `Proc4` package to the target directory.  Then edit
+them to respect the local configuration.
+
+```{bash}
+## su username
+cd Proc4/inst/config
+cp Proc4.ini Proc4.js Proc4.json /usr/local/share/Proc4
+```
+
+Next, edit the newly created files following the templates.
+
+Each file has a section marked "apps" which gives the short and long
+(url-like) names of the apps.  Keep the long names private, as that is
+used as a kind of a password for web-based interfaces.
+
+Each file as a section marked "pwds" which gives database passwords
+for the various systems.  Edit this for your local configuration.
+
+
+## Configuring the Mongo database
+
+There are a number of ".js" scripts which build and configure the
+databases.  These can be found in the `config` directory of the
+`Proc4`, `EIEvent` and `EABN` packages (or the `inst/config`
+directory of the package sources.)
+
+Setup the databases and premissions.
+```{bash}
+cd Proc4/inst/config
+mongosh <setupDatabses.js
+```
+
+Setup the admin (Proc4) database collections and indexes:
+```{bash}
+cd Proc4/inst/config
+mongosh <setupProc4.js
+mongosh <setupApps.js
+```
+
+Setup the EIRecords (EIEvent) database collections and indexes:
+```{bash}
+cd EIEvent/inst/conf
+mongosh <setupMongo.js
+```
+
+
