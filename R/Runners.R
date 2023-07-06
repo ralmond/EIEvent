@@ -4,14 +4,40 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
   ruledir <- file.path(config.dir,
                        ifelse(!is.null(EI.config$ruledir),EI.config$ruledir,
                               "rules"))
-  sapp <- basename(app)
+  sapp <- basename(appid)
+  dburi <- EAeng.local$dburi
+  if (!is.null(dburi) && dburi == "") dburi <- NULL
+  sslops <- EAeng.local$ssloptions
+  if (is.null(sslops)) sslops <- mongolite::ssl_options()
+  dbname <- EAeng.local$dbname
+  if (is.null(dbname)) dbname<-"EIRecords"
+  admindbname <- EAeng.local$admindbname
+  if (is.null(admindbname)) admindbname<-"Proc4"
   cl <- new("CaptureListener")
 
   flog.info("Building Engine for application %s.",sapp)
   EIeng.params <-
     c(EI.config$EIEngine,
       EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
-  listeners <- lapply(EI.config$listeners, buildListener,app,dburi)
+
+  EIeng.params$listenerSet <-
+    withFlogging({
+      buildListenerSet(sender= sub("<app>",sappid,EI.config$sender),
+                        EI.config$listeners,appid,
+                        EI.config$colnames$listenerSetLog,
+                        dburi,sslops,EI.config$colnames$registry,
+                        admindbname,mongoverbose=FALSE)
+      }, context="Building listener set.")
+    if (is(EIeng.params$listenerSet,'try-error')) {
+      flog.fatal("Could not build listener set: %s",EIeng.params$listenerSet)
+      stop(EIeng.params$listenerSet)
+    }
+    if (nchar(logfile)>0L) {
+      registerOutput(EIeng.params$listenerSet,basename(logfile),logfile,
+                     appid,"EI","log")
+    }
+
+    listeners <- lapply(EI.config$listeners, buildListener,app,dburi)
   names(listeners) <- sapply(listeners,listenerName)
 
   EIeng.params$listenerSet <-
