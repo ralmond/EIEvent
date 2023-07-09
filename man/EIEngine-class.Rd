@@ -45,7 +45,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
       to be processed.  It can be accessed through the function
       \code{$eventdb()}.  Note that each event has a
       \code{\link[Proc4]{processed}} field that makes this collection
-      essentially a queue.  Other processes can queue events to 
+      essentially a queue.  Other processes can queue events to
       be processed by inserting event records into this collection.}
     \item{\emph{Messages}:}{This is used by the
       \code{\link[Proc4]{ListenerSet}} to record messages sent by
@@ -79,12 +79,12 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   \code{eng$isActivated()} tests the status of that flag.  The methods
   \code{eng$shouldHalt()} and \code{eng$stopWhenFinished()} check for
   signals that the main loop should be terminated immediately or when
-  finished. 
-  
+  finished.
+
   The listener objects may also access databases.  This is the usual
   mechanism for the EI process to insert messages into the processing
-  queue of other processes.  
-  
+  queue of other processes.
+
 }
 \section{Activation and Termination}{
 
@@ -100,18 +100,18 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   and check again.
 
   The method \code{eng$activate()} sets the activated flag for this app to
-  true and \code{eng$deactivate()} clears it.  These are called from 
+  true and \code{eng$deactivate()} clears it.  These are called from
   \code{\link{mainLoop}}.  External processes can check this flag in the
   database by looking at the value of
   \code{db.AuthorizedApps.find(\{"app":\{"$regex":"P4test"\}\},
     \{"appStem":1,"EIactive":1\});}. The code is Mongo shell javascript,
   and \dQuote{P4test} should be
   replaced with any string uniquely identifying the app (i.e.,
-  basename(app)). 
+  basename(app)).
 
   The to signal to the process to stop, an external program needs to
   set the value of the \code{EIsignal} field for the appropriate
-  application.  The javascript code 
+  application.  The javascript code
   \code{db.AuthorizedApps.update(\{app:\{"$regex":"P4test"\}\},
     \{"$set":\{"EIsignal":<value>\}\});}, where \dQuote{P4test} should be
   replaced with any string uniquely identifying the app, run in the
@@ -168,7 +168,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   trying to add a second rule with the same name will produce an error,
   unless the second argument (\code{stopOnDups}) is set to \code{FALSE}.
   So generally rules need to be cleared before being reloaded.
-  (For finer replacement see the \code{\linkS4class{RuleTable}} object.)  
+  (For finer replacement see the \code{\linkS4class{RuleTable}} object.)
   Typically, loading the rules is done in three steps:
   \enumerate{
     \item{Load in the rules from a JSON file:  \code{ruleList <- lapply(
@@ -178,7 +178,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
     \item{Clear the old rules using \code{eng$clearAllRules()}.}
     \item{Load the new rules using \code{eng$loadRules(ruleList)}.}
   }
-    
+
   Second, the search for applicable rules can use standard database
   queries.  The function \code{$findRules()} searches the database for
   rules matching the supplied details.  Note that the \code{EIEngine}
@@ -218,7 +218,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   \code{context} field of events using the \code{name} field. (The
   context field of events is trimmed on input to prevent issues with
   mismatches caused by trailing spaces, see
-  \code{\link[Proc4]{parseMessage}}.)
+  \code{\link[Proc4]{buildMessage}}.)
 
   The field \code{$contexts} is a link to a
   \code{\linkS4class{ContextSet}} class which contains all of the
@@ -272,7 +272,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 
   The method \code{$saveStatus()} saves the status back to the
   database.  Note that the return value should be captured, as this will
-  update the \code{_id} (see \code{\link[Proc4]{m_id}}) field of the
+  update the \code{_id} (see \code{\link[mongo]{m_id}}) field of the
   record.  The method \code{$clearStatusRecords(clearDefault)} will
   remove old status records, so that all players start fresh.  With the
   argument set to true, it will also remove the default record.
@@ -320,7 +320,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 
   The \code{\link[Proc4]{CaptureListener}} is particularly useful for
   testing.  It stores all messages in a list and has a specific method
-  for viewing the latest one.  
+  for viewing the latest one.
 
 }
 \section{Main Event Loop}{
@@ -332,7 +332,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   sleeps for a bit and then tries again.  The field \code{$waittime} is
   the amount of time in seconds that the main loop will wait before
   checking again.
-  
+
   The function \code{\link{mainLoop}} implements the main processing
   loop.  Generally, it should be the last call in a script for running
   the process (see \code{EIEvent.R} in the \code{config} subdirectory of
@@ -415,18 +415,18 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
 
   This has not yet been implemented, but the function
   \code{\link{testRuleScript}} provides a mechanism for writing test
-  scripts.  
+  scripts.
 
 }
 \references{
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the rule system.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   There is a \dQuote{quick start} document which describes how to set up the
-  engine.  This is available at 
-  \url{https://pluto.coe.fsu.edu/Proc4/EIQuickStart.pdf}. 
+  engine.  This is available at
+  \url{https://pluto.coe.fsu.edu/Proc4/EIQuickStart.pdf}.
 }
 \author{Russell Almond}
 \note{
@@ -434,7 +434,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   A different EIEninge process is associated with each application
   (application ID), so different applicaitons can run in parallel.  More
   sophisticated concurancy checking is not currently available.
-  
+
 }
 \section{Tracing}{
 
@@ -456,7 +456,7 @@ All reference classes extend and inherit methods from \code{"\linkS4class{envRef
   The EIEngine class is a container for the following classes:
   \code{\linkS4class{UserRecordSet}}, \code{\linkS4class{RuleTable}},
   \code{\linkS4class{ContextSet}},  \code{\linkS4class{TestSet}} and
-  \code{\link[Proc4]{ListenerSet}}, 
+  \code{\link[Proc4]{ListenerSet}},
 
   \code{\link[futile.logger]{flog.logger}}
 
@@ -476,7 +476,7 @@ showClass("EIEngine")
       name of the user database}
     \item{\code{admindbname}:}{Name of the database which contains the
       \code{AuthorizedApps} collection used to start and stop the
-      engine.} 
+      engine.}
     \item{\code{adminDB}:}{Object of class \code{\linkS4class{MongoDB}} referencing
       the \code{AuthorizedApps} collection used to start and stop the
       engine. This field should not be referenced directly, instead,
@@ -489,10 +489,10 @@ showClass("EIEngine")
     \item{\code{rules}:}{Object of class \code{\linkS4class{RuleTable}} giving the
       rule set for the application}
     \item{\code{contexts}:}{Object of class
-      \code{\linkS4class{ContextSet}} giving the 
+      \code{\linkS4class{ContextSet}} giving the
       set of contexts supported by the application.}
     \item{\code{events}:}{Object of class \code{\linkS4class{MongoDB}} a
-      mongo DB 
+      mongo DB
       connection which allows access to events.  Note that this is
       created when first requested, so should be accessed using the
       eventsdb() method. }
@@ -516,7 +516,7 @@ showClass("EIEngine")
       collection in the Proc4 database.  Initializes if needed.}
     \item{\code{isActivated()}:}{Returns true if the active flag is set
       on this applicaiton (\code{app}) in the \code{AuthorizedApps}
-      collection.} 
+      collection.}
     \item{\code{activate()}:}{Sets the active flag to true for this
       \code{app} in the \code{AuthorizedApps} collection.}
     \item{\code{deactivate()}:}{Clears the active flag to true for this
@@ -533,14 +533,14 @@ showClass("EIEngine")
       (Call to \code{\linkS4class{UserRecordSet}$newStudent()})}
     \item{\code{getStatus(uid)}:}{ Feteches the current status for a
       student from the database.  (Call to
-      \code{\linkS4class{UserRecordSet}$getStatus()})} 
+      \code{\linkS4class{UserRecordSet}$getStatus()})}
     \item{\code{saveStatus(state)}:}{ Saves an updated status to the
       database. (Call to \code{\linkS4class{UserRecordSet}$saveStatus()})  }
     \item{\code{clearStatusRecords(clearDefault)}:}{Clears the status
-      records, including the default record if the argument is TRUE.  
+      records, including the default record if the argument is TRUE.
       (Call to \code{\linkS4class{UserRecordSet}$clearAll()}).}
     \item{\code{getContext(id)}:}{ This is a call to
-      \code{\link{matchContext}}. } 
+      \code{\link{matchContext}}. }
     \item{\code{addContexts(conmat)}:}{ This is a call to
       \code{\link{loadContexts}}. }
     \item{\code{clearContexts()}:}{ This is a call to

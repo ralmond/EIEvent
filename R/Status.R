@@ -505,7 +505,7 @@ UserRecordSet <-
               methods = list(
                   initialize =
                     function(app="default",
-                             db = MongoDB("States","EIRecords")
+                             db = MongoDB("States","EIRecords"),
                              ...)
                       callSuper(app=app,db=db,...)
               ))
@@ -560,6 +560,6 @@ newUserRecordSet <- function(app="default",colname="States",
                           noMongo=length(dburi)==0L,
                           mongoverbose=FALSE,
                           db=MongoDB(colname,dbname,dburi,
-                                     verbose,noMongo,sslops)) {
+                                     mongoverbose,noMongo,sslops)) {
   UserRecordSet$new(app,db)
 }

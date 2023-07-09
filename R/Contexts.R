@@ -2,13 +2,14 @@
 ## This defines a context object
 
 setClass("Context",
-         slots=c("_id"="character",    #Mongo ID
+         slots=c(
                  cid="character",       #Context ID
                  name="character",      #Longer name
                  number="integer",       #Context #
                  belongsTo="character",  #Contexts to which this belongs
                  doc="character",
-                 app="character"))
+                 app="character"),
+         contains="MongoRec")
 Context <- function (cid,name,number,belongsTo=character(),
                      doc="", app="default") {
   new("Context","_id"=c(oid=NA_character_),cid=cid,

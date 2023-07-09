@@ -85,10 +85,10 @@ parseStatusOrMessage <- function (rec) {
   ## Trick is to figure out which.
   if (is.null(rec$uid)) {
     ## List of messages.
-    lapply(rec,parseMessage)
+    lapply(rec,buildMessage)
   } else {
     if (!is.null(rec$sender)) {
-      parseMessage(rec)
+      buildMessage(rec)
     } else {
       parseStatus(rec)
     }

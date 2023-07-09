@@ -11,7 +11,7 @@
 
   A rule along with a test case for verifying the rule.
   This is a special case of the more general
-  \code{\linkS4class{EITest}}. 
+  \code{\linkS4class{EITest}}.
 
 }
 \section{Objects from the Class}{
@@ -44,7 +44,7 @@ or from JSON through \code{\link{parseRuleTest}}.
     \item{\code{event}:}{Object of class \code{\linkS4class{Event}}
       which describes the incoming event to which the rule is reacting. }
     \item{\code{rule}:}{Object of class \code{\linkS4class{Rule}}, the
-      rule being tested. } 
+      rule being tested. }
     \item{\code{queryResult}:}{Object of class \code{"logical"} which
       specifies whether or not the rule \code{\link{Conditions}} are met. }
     \item{\code{final}:}{Object of class \code{\linkS4class{Status}}
@@ -56,7 +56,7 @@ or from JSON through \code{\link{parseRuleTest}}.
 \section{Extends}{
 
 Class \code{"\linkS4class{EITest}"}, directly.  This difference is two
-extra slots:  One for 
+extra slots:  One for
 
 
 }
@@ -64,7 +64,7 @@ extra slots:  One for
   \describe{
     \item{as.jlist}{\code{signature(obj = "RuleTest", ml = "list")}:
       helper function for converting the test into a JSON object, see
-      \code{\link[Proc4]{as.json}}. }
+      \code{\link[mongo]{as.json}}. }
     \item{queryResult}{\code{signature(x = "RuleTest")}: Returns the
       expected value of the \code{\link{Conditions}} part of the rule.}
     \item{rule}{\code{signature(x = "RuleTest")}: Returns the rule being
@@ -77,7 +77,7 @@ extra slots:  One for
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the rule system.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
 }
 \author{Russell G. Almond}
@@ -96,7 +96,7 @@ extra slots:  One for
 
   The \code{\linkS4class{TestSet}} maintains a collection of tests for a
   particular application.
-  
+
 }
 \examples{
 showClass("RuleTest")

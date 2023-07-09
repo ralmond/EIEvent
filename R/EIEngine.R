@@ -15,12 +15,18 @@ EIEngine <-
                      function(app="default",
                               waittime=.25,processN=Inf,
                               listenerSet=NULL,
-                              events=new("ListQueue",app),
+                              eidbname="EARecords",
+                              dburi=mongo::makeDBuri(),
+                              admindbname="Proc4",
+                              events=new("MongoQueue",app,
+                                         messDB=MongoDB("Events",eidbname),
+                                         parseEvent),
                               adminDB = MongoDB("AuthorizedApps","Proc4"),
                               rules = newRuleTable(app),
-                              userRecords = newUserRecordSet$new(app),
-                              contexts <- newContextSet(app),
-                              ruleTests = newTestSet(app),
+                              userRecords = newUserRecordSet(app),
+                              contexts = newContextSet(app),
+                              ruleTests = newTestSet(app, rules=rules,
+                                                     contexts=contexts),
                               ...){
                        callSuper(app=app,waittime=waittime,
                                  processN=processN,
@@ -197,8 +203,8 @@ newEngine <- function(app="default",
 
 ## Listener notification.
 setMethod("notifyListeners","EIEngine",
-           function(sender,mess) {
-             sender$listenerSet$notifyListeners(mess)
+           function(sender,message) {
+             sender$listenerSet$notifyListeners(message)
            })
 
 

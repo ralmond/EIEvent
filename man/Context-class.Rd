@@ -17,7 +17,7 @@
   which events a rule is applicable.  The \code{belongsTo} allows
   designers of an evidence rule system to define context groups for
   rules which are applicable in multiple contexts.
-  
+
 }
 \section{Objects from the Class}{
 
@@ -40,7 +40,7 @@ parents (direct and indirect) need to be listed).
 
   When the \code{\linkS4class{EIEngine}} processes an
   \code{\linkS4class{Event}}, it checks the context of the current
-  \code{\linkS4class{Status}} object.  It then 
+  \code{\linkS4class{Status}} object.  It then
   searches the rule table for all rules which match on the \code{verb}
   and \code{object} fields of the event and the \code{context} field of
   the status.  A rule is considered applicable if one of the following
@@ -60,7 +60,7 @@ parents (direct and indirect) need to be listed).
   \code{applicableContexts} which creates a list of the current context
   and all of the context groups that it matches.  The
   \code{\linkS4class{EIEngine}} then grabs from the rule table all rules
-  which match one of the applicable contexts (including \dQuote{ANY}). 
+  which match one of the applicable contexts (including \dQuote{ANY}).
 
   This should seem similar to the way that method dispatch works for S4
   classes (see \link[methods]{Introduction} to the methods package).
@@ -98,7 +98,7 @@ parents (direct and indirect) need to be listed).
   \describe{
     \item{as.jlist}{\code{signature(obj = "Context", ml = "list")}: Used
       in converting the object to JSON for storing in a Mongo database,
-      see \code{\link[Proc4]{as.json}}.}
+      see \code{\link[mongo]{as.json}}.}
     \item{belongsTo}{\code{signature(c = "Context")}: Returns the value
       of the \code{belongsTo} field }
     \item{belongsTo<-}{\code{signature(c = "Context")}: Sets the value
@@ -126,7 +126,7 @@ parents (direct and indirect) need to be listed).
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.

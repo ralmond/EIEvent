@@ -19,7 +19,7 @@ export(checkCondition,"?eq","?ne","?gt","?gte","?lt","?lte",
        "?any","?all","?not","?and","?or")
 
 ## Context
-export(Context,ContextSet,doc,cid, belongsTo, "belongsTo<-",
+export(Context,newContextSet,doc,cid, belongsTo, "belongsTo<-",
        number, "number<-",applicableContexts,parseContext,matchContext,
        clearContexts,loadContexts,updateContext,"name")
 exportClasses(Context,ContextSet)

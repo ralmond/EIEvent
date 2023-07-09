@@ -4,14 +4,14 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
   ruledir <- file.path(config.dir,
                        ifelse(!is.null(EI.config$ruledir),EI.config$ruledir,
                               "rules"))
-  sapp <- basename(appid)
-  dburi <- EAeng.local$dburi
+  sapp <- basename(app)
+  dburi <- EIeng.local$dburi
   if (!is.null(dburi) && dburi == "") dburi <- NULL
-  sslops <- EAeng.local$ssloptions
+  sslops <- EIeng.local$ssloptions
   if (is.null(sslops)) sslops <- mongolite::ssl_options()
-  dbname <- EAeng.local$dbname
+  dbname <- EIeng.local$dbname
   if (is.null(dbname)) dbname<-"EIRecords"
-  admindbname <- EAeng.local$admindbname
+  admindbname <- EIeng.local$admindbname
   if (is.null(admindbname)) admindbname<-"Proc4"
   cl <- new("CaptureListener")
 
@@ -20,10 +20,12 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
     c(EI.config$EIEngine,
       EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
 
+  ## Build a listener set with no listeners as we need to register our output file,
+  ## but not do any other processing.
   EIeng.params$listenerSet <-
     withFlogging({
-      buildListenerSet(sender= sub("<app>",sappid,EI.config$sender),
-                        EI.config$listeners,appid,
+      buildListenerSet(sender= sub("<app>",sapp,EI.config$sender),
+                        list(),app,
                         EI.config$colnames$listenerSetLog,
                         dburi,sslops,EI.config$colnames$registry,
                         admindbname,mongoverbose=FALSE)
@@ -32,19 +34,7 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
       flog.fatal("Could not build listener set: %s",EIeng.params$listenerSet)
       stop(EIeng.params$listenerSet)
     }
-    if (nchar(logfile)>0L) {
-      registerOutput(EIeng.params$listenerSet,basename(logfile),logfile,
-                     appid,"EI","log")
-    }
 
-    listeners <- lapply(EI.config$listeners, buildListener,app,dburi)
-  names(listeners) <- sapply(listeners,listenerName)
-
-  EIeng.params$listenerSet <-
-    ListenerSet(sender= sub("<app>",sapp,EI.config$sender),
-                dbname=EIeng.local$dbname, dburi=EIeng.local$dburi,
-                listeners=listeners,
-                colname=EI.config$lscolname)
   EIeng.params$app <- app
   eng <- do.call(EIEngine,EIeng.params)
 
@@ -107,22 +97,36 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
                        ifelse(!is.null(EI.config$ruledir),EI.config$ruledir,
                               "Rules"))
   sapp <- basename(app)
+  dburi <- EIeng.local$dburi
+  if (!is.null(dburi) && dburi == "") dburi <- NULL
+  sslops <- EIeng.local$ssloptions
+  if (is.null(sslops)) sslops <- mongolite::ssl_options()
+  dbname <- EIeng.local$dbname
+  if (is.null(dbname)) dbname<-"EIRecords"
+  admindbname <- EIeng.local$admindbname
+  if (is.null(admindbname)) admindbname<-"Proc4"
   flog.info("Building and configuring engine.")
-  listeners <- lapply(EI.config$listeners, buildListener,app,dburi)
-  names(listeners) <- sapply(listeners,listenerName)
 
   EIeng.params <-
     c(EI.config$EIEngine,
       EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
   EIeng.params$listenerSet <-
-    ListenerSet(sender= sub("<app>",sapp,EI.config$sender),
-                dbname=EIeng.local$dbname, dburi=EIeng.local$dburi,
-                listeners=listeners,admindbname=EIeng.local$admindbname,
-                colname=EI.config$lscolname)
+    withFlogging({
+      buildListenerSet(sender= sub("<app>",sapp,EI.config$sender),
+                       EI.config$listeners,app,
+                       EI.config$colnames$listenerSetLog,
+                       dburi,sslops,EI.config$colnames$registry,
+                       admindbname,mongoverbose=FALSE)
+    }, context="Building listener set.")
+  if (is(EIeng.params$listenerSet,'try-error')) {
+    flog.fatal("Could not build listener set: %s",EIeng.params$listenerSet)
+    stop(EIeng.params$listenerSet)
+  }
+  if (nchar(logfile)>0L) {
+    registerOutput(EIeng.params$listenerSet,basename(logfile),logfile,
+                   app,"EI","log")
+  }
 
-  if (nchar(logfile)>0L)
-    EIeng.params$listenerSet$registerOutput(basename(logfile),logfile,
-                                              app,"EI","log")
   EIeng.params$app <- app
   eng <- do.call(EIEngine,EIeng.params)
 
@@ -134,54 +138,26 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   if (dburi != "" && !noprep) {
     flog.info("Preparing Database.")
     if (isTRUE(EI.config$filter$doRemove)) {
-      flog.debug("Clearing old events.")
-      remquery <- EI.config$filter$remove
-      if (!is.null(names(remquery)))
-        remquery <- list(remquery)      #Single query make it multiple.
-      for (rq in remquery) {
-        rquery <- do.call(buildJQuery,c(list(app=app),rq))
-        flog.trace("Removing %s",rquery)
-        eng$eventdb()$remove(rquery)
-      }
+      cleanMessageQueue(eng$eventq(),EI.config$filter$remove)
     }
     if (isTRUE(EI.config$SRreset)) {
       flog.debug("Clearing old student records.")
       eng$userRecords()$clearAll(FALSE)   #Don't clear default
     }
-    for (fil in EI.config$importFile) {
-      flog.info("Importing from file  %s.", EI.config$importFile)
-      impf <- file.path(config.dir,fil)
-      if (!file.exists(impf)) {
-        flog.warn("File %s does not exist, skipping import.",
-                  EI.config$importFile)
-      } else {
-        status <-
-          system2("mongoimport",c("--jsonArray",
-                                  "-d",EIeng.local$dbname,
-                                  "-c","Events",
-                                  impf), stdout=TRUE, stderr=TRUE)
-        if (!is.null(attr(status,"status"))) {
-          flog.error("Got error when loading import file.")
-          flog.error("Error:",status,capture=TRUE)
-        }
-      }
-    }
+
+    ## Import
+    data.dir <- EI.config$dataDir
+    if (is.null(data.dir)) data.dir <- config.dir
+    importMessages(eng$evidenceSets(),EI.config$importFile,data.dir)
+
+    ## Purging Unused message
     if (isTRUE(EI.config$filter$doPurge)) {
-      flog.debug("Purging Unused events.")
-      purquery <- EI.config$filter$purge
-      if (!is.null(names(purquery)))
-        purquery <- list(purquery)      #Single query make it multiple.
-      for (pq in purquery) {
-        pquery <- do.call(buildJQuery,c(list(app=app),pq))
-        flog.trace("Purging %s",pquery)
-        eng$eventdb()$remove(pquery)
-      }
+      cleanMessageQueue(eng$eventq(),EI.config$filter$purge)
     }
+
+    ## Clearing Processed Flag
     if (isTRUE(EI.config$filter$doReprocess)) {
-      flog.debug("Clearing reprocessed flags.")
-      rquery <- buildJQuery(c(list(app=app,EI.config$filter$update)))
-      eng$eventdb()$update(rquery,'{"$set":{"processed":false,"pError":null}}',
-                           multiple=TRUE)
+      resetProcessedMessages(eng$eventq(),EI.config$filter$reprocess)
     }
   }
   if (!is.null(EI.config$listenerReset) && !noprep) {
@@ -190,8 +166,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   }
 
   if (EI.config$limitNN=="ALL") {
-    eng$processN <- eng$eventdb()$count(buildJQuery(app=app,
-                                                         processed=FALSE))
+    eng$processN <- eng$eventq()$count()
   } else {
     eng$processN <- as.numeric(EI.config$limitNN)
   }
@@ -207,13 +182,8 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
     eng$deactivate()
   })
 
-  for (tl in listeners) {
-    if (!is(tl,"TableListener")) next
-    flog.info("Building output Table for %s.",listenerName(tl))
-    tab <- tl$returnDF()
-    fname <- file.path(outdir,paste(listenerName(tl),"csv",sep="."))
-    write.csv(tab, fname)
-    EIeng.params$listenerSet$registerOutput(listenerName(tl),fname,app,"EI")
-  }
+ Proc4::generateListenerExports(eng$listenerSet,EI.config$listenerExports,
+                          app,outdir)
+
   invisible(eng)
 }

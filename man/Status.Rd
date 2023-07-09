@@ -9,12 +9,13 @@
   \code{\linkS4class{Status}} (or state) object.  As Status objects are
   usually read from a database or other input stream, the
   \code{parseStatus} function is recreates an event from a JSON
-  list and \code{\link[Proc4]{as.jlist}} encodes them into a list to be
+  list and \code{\link[mongo]{as.jlist}} encodes them into a list to be
   saved as JSON.
 
 }
 \usage{
-Status(uid, context, timerNames = character(), flags = list(), observables = list(), timestamp = Sys.time(), app = "default")
+Status(uid, context, timerNames = character(), flags = list(),
+       observables = list(), timestamp = Sys.time(), app = "default")
 parseStatus(rec)
 \S4method{as.jlist}{Status,list}(obj, ml, serialize = TRUE)
 }
@@ -26,7 +27,7 @@ parseStatus(rec)
     created calling \code{\link{Timer}} with each name as an argument.}
   \item{flags}{A named list containing internal details about the
     event.  The necessary fields will depend on the \code{app} and the
-    \code{context}.} 
+    \code{context}.}
   \item{observables}{A named list containing external details about the
     event.  The necessary fields will depend on the \code{app} and the
     \code{context}.}
@@ -44,7 +45,7 @@ parseStatus(rec)
   \item{serialize}{A logical flag. If true,
     \code{\link[jsonlite]{serializeJSON}} is used to protect the
     \code{data} field (and other objects which might contain complex R
-    code.} 
+    code.}
 }
 \details{
 
@@ -57,12 +58,12 @@ parseStatus(rec)
 
   The function \code{as.jlist} converts the \code{obj} into a named
   list. It is usually called from the function
-  \code{\link[Proc4]{as.json}}.  
+  \code{\link[mongo]{as.json}}.
 
   The \code{parseStatus} function is the inverse of \code{as.jlist}
   applied to a status object.  It is designed to be given as an argument
-  to \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}}.   
+  to \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}}.
 
 }
 \value{
@@ -76,13 +77,13 @@ parseStatus(rec)
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the JSON layout of the Status/State objects.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   Almond, R. G., Steinberg, L. S., and Mislevy, R.J. (2002).  Enhancing
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.
@@ -104,11 +105,11 @@ parseStatus(rec)
 
   \code{\linkS4class{Status}} describes the state object.
 
-  \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
-  describe the JSON conversion system.  
+  \code{\link[Proc4]{buildMessage}} and \code{\link[mongo]{as.json}}
+  describe the JSON conversion system.
 
-  The functions \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}} use \code{parseStatus} to extract
+  The functions \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}} use \code{parseStatus} to extract
   events from a database.
 
 }

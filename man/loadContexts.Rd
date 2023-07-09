@@ -9,7 +9,7 @@
   \code{name} and \code{doc}).  The other columns are logical variables
   that refer to context sets, which take on a true value when the
   context represented by the row belongs to the set represented by the
-  column. 
+  column.
 
 }
 \usage{
@@ -32,7 +32,7 @@ loadContexts(conmat, set, app)
   they serve as indexes for the \code{\linkS4class{ContextSet}} object.
   The \code{name} column if omitted defaults to the \code{cid} (the
   difference is that the name is designed to be more human readable).
-  The \code{doc} if omitted produces an empty documentation string.  
+  The \code{doc} if omitted produces an empty documentation string.
   The remaining columns are logical and are indicators for set
   membership.
 
@@ -54,7 +54,7 @@ loadContexts(conmat, set, app)
     [,6] \tab Task2 \tab 200 \tab "Second Task" \tab
          "A task beloning to Set 2" \tab 0 \tab 0 \tab 1 \cr
        }
-  
+
   A couple things to note about this matrix.  First, both actual
   contexts and context sets are represented (the are both represented
   internally by \code{\link{Context}} objects.  The names of the extra
@@ -79,7 +79,7 @@ loadContexts(conmat, set, app)
 
   The matrix is to represent the entire context set, calling
   \code{\link{clearContexts}} before loading the matrix should eliminate
-  conflicts. 
+  conflicts.
 
 }
 \value{
@@ -92,7 +92,7 @@ loadContexts(conmat, set, app)
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the context system:
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
 
 }
@@ -113,7 +113,7 @@ loadContexts(conmat, set, app)
 
   The functions \code{\link{matchContext}}, \code{\link{updateContext}}
   and \code{\link{clearContexts}} are used to manipulate context sets.
-  
+
 }
 \examples{
 
@@ -121,11 +121,11 @@ conmat <- read.csv(file.path(library(help="EIEvent")$path,"testScripts",
                 "SampleContextSheet.csv"))
 
 conmat1 <- conmat
-conmat1$Number <- 1:nrow(conmat) ## List style needs small integer indexes. 
+conmat1$Number <- 1:nrow(conmat) ## List style needs small integer indexes.
 setlist <- loadContexts(conmat1,list(),"ecd://epls.coe.fsu.edu/rga/test")
 stopifnot(all.equal(names(setlist),as.character(conmat$CID)))
 
-testSet <- ContextSet$new(app="ecd://epls.coe.fsu.edu/rga/test",
+testSet <- newContextSet(app="ecd://epls.coe.fsu.edu/rga/test",
                       dbname="test",dburi="mongodb://localhost")
 
 clearContexts(testSet)

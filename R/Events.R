@@ -51,7 +51,9 @@ parseEvent<- function (rec) {
   rec <- cleanMessageJlist(rec)
   if (is.null(rec$verb) || length(rec$verb)==0L) rec$verb <- ""
   if (is.null(rec$object) || length(rec$object)==0L) rec$object <- ""
-  new("Event","_id"=ununboxer(rec$"_id"),
+  mid <- ununboxer(rec$"_id")
+  if (is.null(mid)) mid <- c("oid"=NA_character_)
+  new("Event","_id"=mid,
       app=as.vector(rec$app),
       uid=as.vector(rec$uid),
       context=as.vector(rec$context),

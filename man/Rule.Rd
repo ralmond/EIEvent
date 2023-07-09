@@ -13,7 +13,11 @@
 
 }
 \usage{
-Rule(context = "ALL", verb = "ALL", object = "ALL", ruleType = c("Status", "Observable", "Context", "Trigger", "Reset"), priority = 5, doc = "", name = paste("When in", context, ",", verb, object, ruleType), condition = list(), predicate = list(), app = "default")
+Rule(context = "ALL", verb = "ALL", object = "ALL",
+     ruleType = c("Status", "Observable", "Context", "Trigger", "Reset"),
+     priority = 5, doc = "",
+     name = paste("When in", context, ",", verb, object, ruleType),
+     condition = list(), predicate = list(), app = "default")
 parseRule(rec)
 \S4method{as.jlist}{Rule,list}(obj, ml, serialize = TRUE)
 }
@@ -59,7 +63,7 @@ parseRule(rec)
   \item{serialize}{A logical flag. If true,
     \code{\link[jsonlite]{serializeJSON}} is used to protect the
     \code{data} field (and other objects which might contain complex R
-    code.} 
+    code.}
 }
 \details{
 
@@ -68,16 +72,16 @@ parseRule(rec)
 
   The function \code{as.jlist} converts the \code{obj} into a named
   list. It is usually called from the function
-  \code{\link[Proc4]{as.json}}.  
+  \code{\link[mongo]{as.json}}.
 
   The \code{parseRule} function is the inverse of \code{as.jlist}
   applied to an event object.  It is designed to be given as an argument
-  to \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}}.
+  to \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}}.
 
   Soon to come.  A \code{loadRule} function which will load in rules.
   These operate on JSON files, usually part of a test suite.
-  
+
 }
 \value{
 
@@ -90,13 +94,13 @@ parseRule(rec)
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the rule system.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   Almond, R. G., Steinberg, L. S., and Mislevy, R.J. (2002).  Enhancing
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.
@@ -111,27 +115,27 @@ parseRule(rec)
 \author{Russell Almond}
 \seealso{
 
-  The rule object is described in \code{\linkS4class{Rule}} and 
+  The rule object is described in \code{\linkS4class{Rule}} and
   \link{Conditions} and \link{Predicates} each have detailed
-  descriptions. 
+  descriptions.
   The functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.
   The functions \code{\link{testPredicate}} and
   \code{\link{testPredicateScript}} can be used to test that rule
-  conditions function properly. 
+  conditions function properly.
   The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
   properly together.  The class \code{\linkS4class{RuleTest}} stores a
-  rule test. 
+  rule test.
 
-  \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
-  describe the JSON conversion system. 
+  \code{\link[Proc4]{buildMessage}} and \code{\link[mongo]{as.json}}
+  describe the JSON conversion system.
 
-  The functions \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}} use \code{parseEvent} to extract
+  The functions \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}} use \code{parseEvent} to extract
   events from a database.
 
-  
+
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},
   \code{\linkS4class{Status}}, \code{\linkS4class{Event}},

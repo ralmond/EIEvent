@@ -17,8 +17,8 @@
   id.  The function \code{updateContext} adds a new context to a set or
   replaces an existing one (see details).  The function
   \code{clearContext} clears all contexts associated with this
-  application. 
-  
+  application.
+
 }
 \usage{
 matchContext(id, set)
@@ -36,7 +36,7 @@ clearContexts(set)
 \arguments{
   \item{id}{This should be either a character or numeric scalar giving
     the \code{\link{cid}} or \code{\link{number}} of the desired
-    context.} 
+    context.}
   \item{con}{This should be an object of type
     \code{\linkS4class{Context}} to be added or replaced.}
   \item{set}{This should either be an object of type
@@ -116,7 +116,7 @@ conmat <- read.csv(file.path(library(help="EIEvent")$path,"testScripts",
                 "SampleContextSheet.csv"))
 
 conmat1 <- conmat
-conmat1$Number <- 1:nrow(conmat) ## List style needs small integer indexes. 
+conmat1$Number <- 1:nrow(conmat) ## List style needs small integer indexes.
 setlist <- loadContexts(conmat1,list(),"ecd://epls.coe.fsu.edu/rga/test")
 stopifnot(all.equal(names(setlist),as.character(conmat$CID)))
 
@@ -124,7 +124,7 @@ matchContext(3L,setlist)
 matchContext("Stairs",setlist)
 
 
-testSet <- ContextSet$new(app="ecd://epls.coe.fsu.edu/rga/test",
+testSet <- newContextSet(app="ecd://epls.coe.fsu.edu/rga/test",
                       dbname="test",dburi="mongodb://localhost")
 
 clearContexts(testSet)
