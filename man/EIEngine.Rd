@@ -6,17 +6,19 @@
   The \code{\linkS4class{EIEngine}} is the prime mover for the EIEvent
   class.  This command constructs the engine.  The engine
   stores most of its information in a database, so the constructor
-  mainly consists of the database location and credentials.  
+  mainly consists of the database location and credentials.
 }
 \usage{
-EIEngine(app = "default", dburi = makeDBuri(), listenerSet = NULL, dbname = "EIRecords", admindbname = "Proc4", processN = Inf, waittime=.25,...)
+EIEngine(app = "default", dburi = makeDBuri(), listenerSet = NULL,
+         dbname = "EIRecords", admindbname = "Proc4", processN = Inf,
+         waittime=.25,...)
 }
 \arguments{
   \item{app}{The application ID for the engine.  See Details.}
   \item{listenerSet}{A \code{\link[Proc4]{ListenerSet}} which contains the
     listeners for clients of the engine's messages.}
   \item{dburi}{A character scalar giving the login information for the
-    mongo database.  See \code{\link[Proc4]{makeDBuri}}.}
+    mongo database.  See \code{\link[mongo]{makeDBuri}}.}
   \item{dbname}{This the name of the database.  The default name is
     \dQuote{EIRecords}.}
   \item{admindbname}{Database used for checking if the EIEngine should
@@ -36,21 +38,21 @@ EIEngine(app = "default", dburi = makeDBuri(), listenerSet = NULL, dbname = "EIR
 
   \describe{
     \item{Events}{Incomming events (\code{\linkS4class{Event}} objects).
-      Accessed through \code{$eventdb()} method.} 
+      Accessed through \code{$eventdb()} method.}
     \item{Messages}{Outgoing messages (\code{\linkS4class{P4Message}}
-      objects).  Accessed through 
+      objects).  Accessed through
       \code{\linkS4class{ListenerSet}} (\code{$listenerSet}) object.}
     \item{Rules}{Rule collection (\code{\linkS4class{Rule}} objects).
-      Accessed through 
+      Accessed through
       \code{\linkS4class{RuleTable}} (\code{$rules}) object.}
     \item{States}{Collection of saved statuses
       (\code{\linkS4class{Status}} objects).  Accessed through
       \code{\linkS4class{UserRecordSet}} (\code{$userRecords}) object.}
     \item{Contexts}{Context collection (\code{\linkS4class{Context}}
-      objects).  Accessed through 
+      objects).  Accessed through
       \code{\linkS4class{ContextSet}} (\code{$contexts}) object.}
     \item{Tests}{Self-test collection (\code{\linkS4class{EITest}}
-      objects).  Accessed through 
+      objects).  Accessed through
       \code{\linkS4class{TestSet}} (\code{$tests}) object.}
   }
 
@@ -73,13 +75,13 @@ EIEngine(app = "default", dburi = makeDBuri(), listenerSet = NULL, dbname = "EIR
 \references{
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the rule system.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   Almond, R. G., Steinberg, L. S., and Mislevy, R.J. (2002).  Enhancing
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.
@@ -112,7 +114,7 @@ EIEngine(app = "default", dburi = makeDBuri(), listenerSet = NULL, dbname = "EIR
   The EIEngine class is a container for the following classes:
   \code{\linkS4class{UserRecordSet}}, \code{\linkS4class{RuleTable}},
   \code{\linkS4class{ContextSet}},  \code{\linkS4class{TestSet}} and
-  \code{\link[Proc4]{ListenerSet}}, 
+  \code{\link[Proc4]{ListenerSet}},
 
   \code{\link[futile.logger]{flog.logger}}
 
@@ -123,7 +125,7 @@ EIEngine(app = "default", dburi = makeDBuri(), listenerSet = NULL, dbname = "EIR
 cl <- new("CaptureListener")
 app <- "ecd://epls.coe.fsu.edu/EItest"
 lset <- ListenerSet(sender=paste(basename(app),"process"),
-                    dburi="mongod://localhost",dbname="Messages",
+                    db=mongo::MongoDB("Messages",noMongo=TRUE),
                     listeners=list(cl))
 eng <- EIEngine(app=app,listenerSet=lset)
 

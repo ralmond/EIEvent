@@ -13,13 +13,14 @@
   \code{\linkS4class{RuleTest}} objects.  As test objects are
   usually read from a database or other input stream, the
   \code{parseEITest} and \code{parseRuleTest} functions recreate test
-  objects from a JSON list and \code{\link[Proc4]{as.jlist}} encodes
+  objects from a JSON list and \code{\link[mongo]{as.jlist}} encodes
   them into a list to be saved as JSON.
 
 }
 \usage{
 EITest(name, doc = "", app = "default", initial, event, final)
-RuleTest(name = paste("Test of Rule", rule), doc = "", app = "default", initial, event, rule, queryResult, final)
+RuleTest(name = paste("Test of Rule", rule), doc = "",
+         app = "default", initial, event, rule, queryResult, final)
 parseEITest(rec)
 parseRuleTest(rec)
 \S4method{as.jlist}{EITest,list}(obj, ml, serialize = TRUE)
@@ -53,34 +54,34 @@ parseRuleTest(rec)
 
   Most of the details about the \code{\linkS4class{EITest}} and
   \code{\linkS4class{RuleTest}}  objects is documented under the class
-  page. 
+  page.
 
   The function \code{as.jlist} converts the \code{obj} into a named
   list. It is usually called from the function
-  \code{\link[Proc4]{as.json}}.  
+  \code{\link[mongo]{as.json}}.
 
   The \code{parseEITest} function is the inverse of \code{as.jlist}
   applied to an EITest object, and \code{parseRuleTest} is for a
   RuleTest object. They are designed to be given as an argument
-  to \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}}.   
+  to \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}}.
 
 }
 \value{
 
   The functions \code{EITest} and \code{parseEITest} return objects
   of class \code{\linkS4class{EITest}}.   The functions
-  \code{RuleTest} and \code{parseRuleTest} return objects 
+  \code{RuleTest} and \code{parseRuleTest} return objects
   of class \code{\linkS4class{RuleTest}}.  The function \code{as.jlist}
   produces a named list suitable for passing to
-  \code{\link[jsonlite]{toJSON}}. 
+  \code{\link[jsonlite]{toJSON}}.
 
 }
 \references{
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the context system:
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
 }
 \author{Russell Almond}
@@ -92,13 +93,13 @@ parseRuleTest(rec)
   The functions \code{\link{testQuery}}, \code{\link{testPredicate}},
   and \code{\link{testRule}} are used to actually execute the tests.
 
-  \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
-  describe the JSON conversion system.  
+  \code{\link[Proc4]{buildMessage}} and \code{\link[mongo]{as.json}}
+  describe the JSON conversion system.
 
-  The functions \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}} use \code{parseStatus} to extract
+  The functions \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}} use \code{parseStatus} to extract
   events from a database.
-  
+
 }
 \examples{
 

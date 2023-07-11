@@ -10,7 +10,7 @@
   and context set objects (which are identical).  As Context objects are
   usually read from a database or other input stream, the
   \code{parseContext} function is recreates an event from a JSON list
-  and \code{\link[Proc4]{as.jlist}} encodes them into a list to be saved
+  and \code{\link[mongo]{as.jlist}} encodes them into a list to be saved
   as JSON.
 
 }
@@ -37,22 +37,22 @@ parseContext(rec)
   \item{serialize}{A logical flag. If true,
     \code{\link[jsonlite]{serializeJSON}} is used to protect the
     \code{data} field (and other objects which might contain complex R
-    code).} 
+    code).}
 }
 \details{
 
   Most of the details about the \code{\linkS4class{Context}} object, and
   how it works is documented under \link{Context-class}.  Note that
   context sets and contexts are represented with the same object.
-  
+
   The function \code{as.jlist} converts the \code{obj} into a named
   list. It is usually called from the function
-  \code{\link[Proc4]{as.json}}.  
+  \code{\link[mongo]{as.json}}.
 
   The \code{parseContext} function is the inverse of \code{as.jlist}
   applied to a context object.  It is designed to be given as an argument
-  to \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}}.   
+  to \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}}.
 
 }
 \value{
@@ -60,20 +60,20 @@ parseContext(rec)
   The functions \code{Context} and \code{parseContext} return objects of
   class \code{\linkS4class{Context}}.  The function \code{as.jlist}
   produces a named list suitable for passing to
-  \code{\link[jsonlite]{toJSON}}. 
+  \code{\link[jsonlite]{toJSON}}.
 
 }
 \references{
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the context system:
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   Almond, R. G., Steinberg, L. S., and Mislevy, R.J. (2002).  Enhancing
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.
@@ -96,11 +96,11 @@ parseContext(rec)
   \code{\linkS4class{Context}} describes the context object,  and
   \code{\linkS4class{ContextSet}} describes the context set object.
 
-  \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
-  describe the JSON conversion system.  
+  \code{\link[Proc4]{buildMessage}} and \code{\link[mongo]{as.json}}
+  describe the JSON conversion system.
 
-  The functions \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}} use \code{parseStatus} to extract
+  The functions \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}} use \code{parseStatus} to extract
   events from a database.
 
 }

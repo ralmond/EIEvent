@@ -2,7 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{ContextSet-class}
-\alias{ContextSet}
+\alias{newContextSet}
 
 \title{Class \code{"ContextSet"}}
 \description{
@@ -16,7 +16,7 @@
 \section{Extends}{
 
 All reference classes extend and inherit methods from
-\code{"\linkS4class{envRefClass}"}.  
+\code{"\linkS4class{envRefClass}"}.
 
 }
 \section{Methods}{
@@ -43,7 +43,7 @@ All reference classes extend and inherit methods from
 \references{
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the context system:
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
 }
 \author{Russell Almond}
@@ -62,11 +62,13 @@ All reference classes extend and inherit methods from
 
   The functions \code{\link{matchContext}}, \code{\link{updateContext}}
   \code{\link{clearContexts}}, and \code{\link{loadContexts}} are used
-  to manipulate context sets. 
+  to manipulate context sets.
 
 }
 \examples{
 showClass("ContextSet")
+newContextSet(app="default",colname="test",
+dbname="test", dburi=character())
 }
 \keyword{classes}
 \section{Fields}{

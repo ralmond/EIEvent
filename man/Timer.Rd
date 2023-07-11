@@ -9,7 +9,7 @@
   \code{\linkS4class{Timer}} object.  Timer objects are usually part of
   a \code{\linkS4class{Status}} object.  The \code{parseTimer} function
   recreates a timer from a JSON list and is used as part of
-  \code{\link{parseStatus}}. 
+  \code{\link{parseStatus}}.
 
 }
 \usage{
@@ -29,7 +29,7 @@ parseTimer(rec)
   \item{serialize}{A logical flag. If true,
     \code{\link[jsonlite]{serializeJSON}} is used to protect the
     \code{data} field (and other objects which might contain complex R
-    code.} 
+    code.}
 }
 \details{
 
@@ -41,12 +41,12 @@ parseTimer(rec)
   The function \code{as.jlist} converts the \code{obj} into a named
   list. It is usually called from the \code{as.jlist} function applied
   to a \code{\linkS4class{Status}} object, which is in turn usually
-  called from   \code{\link[Proc4]{as.json}}.  
+  called from   \code{\link[mongo]{as.json}}.
 
   The \code{parseTimer} function is the inverse of \code{as.jlist}
   applied to atimer object.  It is designed to be called by the
   function, \code{\link{parseStatus}}, which is given as an argument to
-  \code{\link[Proc4]{getOneRec}}, \code{\link[Proc4]{getManyRecs}}
+  \code{\link[mongo]{getOneRec}}, \code{\link[mongo]{getManyRecs}}
 
 
 }
@@ -67,7 +67,7 @@ parseTimer(rec)
 \seealso{
   \code{\linkS4class{Timer}} describes the timer object, and
   \code{\linkS4class{Status}} describes the status object which contains
-  it. 
+  it.
 
   Methods for mainpulating timers:
   \code{\link{start}}, \code{\link{pause}}, \code{\link{resume}},
@@ -78,11 +78,11 @@ parseTimer(rec)
   \code{\link{timer}}, \code{\link{timerTime}}, and
   \code{\link{timerRunning}}
 
-  \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
-  describe the JSON conversion system.  
+  \code{\link[Proc4]{buildMessage}} and \code{\link[mongo]{as.json}}
+  describe the JSON conversion system.
 
-  The functions \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}} use \code{parseEvent} to extract
+  The functions \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}} use \code{parseEvent} to extract
   events from a database.
 
 

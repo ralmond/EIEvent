@@ -20,7 +20,7 @@
 }
 \section{Objects from the Class}{
 
-An EITest object consists of a test.  The test case has an \emph{initial} 
+An EITest object consists of a test.  The test case has an \emph{initial}
 \code{\linkS4class{Status}}, a triggering \code{\linkS4class{Event}},
 and an expected \emph{result} \code{Status}.  If the goal is
 intead to check output messages, the result can be a
@@ -54,7 +54,7 @@ or from JSON through \code{\link{parseEITest}}.
   \describe{
     \item{as.jlist}{\code{signature(obj = "EITest", ml = "list")}:
       helper function for converting the test into a JSON object, see
-      \code{\link[Proc4]{as.json}}. }
+      \code{\link[mongo]{as.json}}. }
     \item{doc}{\code{signature(x = "EITest")}: Returns the
       documenation string. }
     \item{event}{\code{signature(x = "EITest")}: Returns the
@@ -75,23 +75,23 @@ or from JSON through \code{\link{parseEITest}}.
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the rule system.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
 }
 \author{Russell G. Almond}
 \seealso{
 
-  The functions \code{\link{EITest}} and \code{\link{parseEITest}} 
+  The functions \code{\link{EITest}} and \code{\link{parseEITest}}
   are used to construct the rule.
 
   The functions \code{\link{name}}, \code{\link{doc}},
-  \code{\link{initial}}, \code{\link{event}}, 
+  \code{\link{initial}}, \code{\link{event}},
   and \code{\link{final}} access the
   components of the test.
 
   The \code{\linkS4class{TestSet}} maintains a collection of tests for a
   particular application.
-  
+
 }
 \examples{
 showClass("EITest")

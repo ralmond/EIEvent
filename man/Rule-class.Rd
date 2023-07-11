@@ -96,7 +96,7 @@
 
   Note that the \code{ruleType} field should be one of the five keywords
   \dQuote{Status}, \dQuote{Observable}, \dQuote{Context},
-  \dQuote{Trigger} or \dQuote{Reset}. 
+  \dQuote{Trigger} or \dQuote{Reset}.
 
   The \code{\linkS4class{EIEngine}} runs these rules in sequence.
 
@@ -107,7 +107,7 @@
   It is however, guarenteed that status rules will be run before
   observable rules so that the status rule can be used to calculate
   intermediate variables which are used in calculating the final
-  observables. 
+  observables.
 
   After the observables have been updated, the context rules are run to
   find out if the context is changed.  The context rules are run until
@@ -125,7 +125,7 @@
   time, the value of \code{oldContext(\linkS4class{Status})} is set to
   \code{context(\linkS4class{Status})} and the \code{EIEngine} is ready
   to process the next event.
-    
+
 }
 \section{Rule Selection and Sequencing}{
 
@@ -133,7 +133,7 @@
   according to the rule types.  In each round, the
   \code{\linkS4class{RuleTable}} is searched to find all applicable
   rules.  A rule is applicable if all of the following conditions are
-  met: 
+  met:
   \enumerate{
     \item{The value of \code{ruleType(Rule)} matches the current round.}
     \item{The value of \code{verb(Rule)} is equal to the value of
@@ -181,7 +181,7 @@
     \item{\code{state.oldContext} The the context of the state at
       the end of the previous event.  In particular, this can be
       compared to the context to check if the context has changed as a
-      result of the event.} 
+      result of the event.}
     \item{\code{state.observables.}\emph{field} The value of the
       observable named \emph{field}.}
     \item{\code{state.timers.}\emph{field} The the timer named
@@ -262,9 +262,9 @@
   \code{\linkS4class{Event}} in dot notation.
 
   See \link{Predicates} a list of supported operations and  more
-  information about predicate handling. 
+  information about predicate handling.
 
-  
+
 }
 \section{Rule Testing}{
 
@@ -280,20 +280,20 @@
   can be used to test that rule conditions and predicates function
   properly together.
 
-  
+
 }
 \section{Methods}{
   \describe{
     \item{as.jlist}{\code{signature(obj = "Rule", ml = "list")}: helper
       function for coverting the rule into a JSON object, see
-      \code{\link[Proc4]{as.json}}.} 
+      \code{\link[mongo]{as.json}}.}
     \item{condition}{\code{signature(x = "Rule")}: Returns a list giving
       the conditions for the rule.  }
     \item{app}{\code{signature(x = "Rule")}: Returns a character
       scalar giving the ID of the application this rule belongs to.}
     \item{context}{\code{signature(x = "Rule")}: Returns a character
       scalar giving the ID of the context or context group to which the
-      rule is applicable. } 
+      rule is applicable. }
     \item{object}{\code{signature(x = "Rule")}: Returns a character
       scalar giving the object to which the rule is applicable. }
     \item{predicate}{\code{signature(x = "Rule")}: Returns a list giving
@@ -306,7 +306,7 @@
       scalar giving the verb to which the rule is applicable. }
     \item{show}{\code{signature(object = "Rule")}: Prints rule object. }
     \item{toString}{\code{signature(x = "Rule")}: Produces <>
-      representation of object. } 
+      representation of object. }
     \item{all.equal.Rule}{\code{(target, current, ..., checkTimestamp=FALSE,
         check_ids=TRUE)}:  (S3 method) Checks for equality.}
   }
@@ -315,13 +315,13 @@
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the rule system.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   Almond, R. G., Steinberg, L. S., and Mislevy, R.J. (2002).  Enhancing
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.
@@ -348,13 +348,13 @@
   The functions \code{\link{testQuery}} and \code{\link{testQueryScript}}
   can be used to test that rule conditions function properly.
   The functions \code{\link{testPredicate}} and
-  \code{\link{testPredicateScript}} 
+  \code{\link{testPredicateScript}}
   can be used to test that predicates function properly.
   The functions \code{\link{testRule}} and \code{\link{testRuleScript}}
   can be used to test that rule conditions and predicates function
   properly together.  The class \code{\linkS4class{RuleTest}} stores a
-  rule test. 
-  
+  rule test.
+
   Other classes in the EIEvent system:
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},
   \code{\linkS4class{Status}}, \code{\linkS4class{Event}},

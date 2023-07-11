@@ -12,7 +12,8 @@
 
 }
 \usage{
-Event(uid, verb, object = "", timestamp = Sys.time(), details = list(), app = "default", context = "", processed = FALSE)
+Event(uid, verb, object = "", timestamp = Sys.time(), details = list(),
+      app = "default", context = "", processed = FALSE)
 parseEvent(rec)
 \S4method{as.jlist}{Event,list}(obj, ml, serialize = TRUE)
 }
@@ -53,12 +54,12 @@ parseEvent(rec)
 
   The function \code{as.jlist} converts the \code{obj} into a named
   list. It is usually called from the function
-  \code{\link[Proc4]{as.json}}.  
+  \code{\link[mongo]{as.json}}.
 
   The \code{parseEvent} function is the inverse of \code{as.jlist}
   applied to an event object.  It is designed to be given as an argument
-  to \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}}.   
+  to \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}}.
 
 }
 \value{
@@ -71,13 +72,13 @@ parseEvent(rec)
 
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the JSON layout of the Event objects.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   Almond, R. G., Steinberg, L. S., and Mislevy, R.J. (2002).  Enhancing
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.
@@ -100,14 +101,14 @@ parseEvent(rec)
   \code{\linkS4class{Event}} describes the event object.
 
 
-  \code{\link[Proc4]{parseMessage}} and \code{\link[Proc4]{as.json}}
+  \code{\link[Proc4]{buildMessage}} and \code{\link[mongo]{as.json}}
   describe the JSON conversion system.  In particular, as
   \code{\linkS4class{Event}} extends
   \code{\link[Proc4]{P4Message}}, the Event method for
   \code{as.jlist} calls the P4Message method.
 
-  The functions \code{\link[Proc4]{getOneRec}} and 
-  \code{\link[Proc4]{getManyRecs}} use \code{parseEvent} to extract
+  The functions \code{\link[mongo]{getOneRec}} and
+  \code{\link[mongo]{getManyRecs}} use \code{parseEvent} to extract
   events from a database.
 
 }
@@ -139,7 +140,7 @@ testcol <- mongolite::mongo("Messages",
 ## Port = 27017 -- Mongo default
 ## db = test
 ## collection = Messages
-testcol$remove('{}')  ## Clear everything for test.                  
+testcol$remove('{}')  ## Clear everything for test.
 
 ev1 <- saveRec(ev1,testcol)
 ev2 <- saveRec(ev2,testcol)

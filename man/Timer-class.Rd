@@ -38,7 +38,7 @@ when called with names for the timer objects.
   \describe{
     \item{as.jlist}{\code{signature(obj = "Timer", ml = "list")}:
       converts the Timer object into a form to be serialized as a JSON
-      object.  See \code{\link[Proc4]{as.jlist}}. }
+      object.  See \code{\link[mongo]{as.jlist}}. }
     \item{isRunning}{\code{signature(timer = "Timer")}: returns
       \code{TRUE} if the timer is running and \code{FALSE} if not. }
     \item{pause}{\code{signature(timer = "Timer", time = "POSIXct")}:
@@ -78,7 +78,7 @@ when called with names for the timer objects.
   setting it to \code{TRUE} will cause the timer to \code{\link{start}}
   or \code{\link{resume}}.  The \code{.time} or \code{.value} field
   returns the \code{\link{timeSoFar}} field of the timer.  Setting it
-  adjusts the \code{totalTime} without affecting the running state.  
+  adjusts the \code{totalTime} without affecting the running state.
 }
 \author{Russell Almond}
 \note{
@@ -99,7 +99,7 @@ when called with names for the timer objects.
   between the current time (passed as an argument) and the
   \code{startTime}. The setter \dQuote{\code{timeSoFar<-}} will adjust
   \code{startTime} to the current \code{time} argument if the timer is
-  running. 
+  running.
 
   The \code{\link{setJS}} function gets the current time from the
   current \code{\linkS4class{Event}} object being processed, and thus

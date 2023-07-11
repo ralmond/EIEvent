@@ -85,10 +85,10 @@ parseStatusOrMessage <- function (rec) {
   ## Trick is to figure out which.
   if (is.null(rec$uid)) {
     ## List of messages.
-    lapply(rec,parseMessage)
+    lapply(rec,buildMessage)
   } else {
     if (!is.null(rec$sender)) {
-      parseMessage(rec)
+      buildMessage(rec)
     } else {
       parseStatus(rec)
     }
@@ -445,36 +445,47 @@ testRuleScript <- function (filename, suiteName=basename(filename),
 TestSet <-
   setRefClass("TestSet",
               fields=c(app="character",
-                       dbname="character",
-                       dburi="character",
                        contexts="ContextSet",
                        rules="RuleTable",
-                       db="ANY"),
+                       db="JSONDB"),
               methods = list(
                   initialize =
                     function(app="default",
-                             dbname="EIRecords",
-                             dburi="mongodb://localhost",
-                             contexts=ContextSet$new(app,dburi),
-                             rules=RuleTable$new(app,dbname,dburi),
-                             db = NULL,
+                             contexts=newContextSet(app),
+                             rules=newRuleTable(app),
+                             db = MongoDB("Tests","EIRecords"),
                              ...) {
-                      callSuper(app=app,db=db,dbname=dbname,dburi=dburi,
+                      callSuper(app=app,db=db,
                                 contexts=contexts,rules=rules,...)
                     },
                   testdb = function () {
-                    if (is.null(db)) {
-                      db <<- mongo("Tests",dbname,dburi)
-                    }
                     db
                   },
                   clearAll = function () {
                     flog.info("Clearing Test database for %s",app)
-                    testdb()$remove(buildJQuery(app=app),TRUE)
+                    mdbRemove(testdb(),buildJQuery(app=app),TRUE)
                   }
 
 
               ))
+
+newTestSet <- function(app="default",colname="Tests",
+                          dbname="EIRecords",
+                          dburi=character(),
+                          sslops=mongolite::ssl_options(),
+                          noMongo=length(dburi)==0L,
+                          mongoverbose=FALSE,
+                          db=MongoDB(colname,dbname,dburi,
+                                     mongoverbose,noMongo,sslops),
+                       rulecol="Rules",
+                       rules=newRuleTable(app,rulecol,dbname,dburi,
+                                          mongoverbose,noMongo,sslops),
+                       contextcol="Contexts",
+                       contexts=newContextSet(app,contextcol,dbname,dburi,
+                                              mongoverbose,noMongo,sslops)
+                       ) {
+  TestSet$new(app,contexts,rules,db)
+}
 
 ############################################################
 ## Outside-in tests.

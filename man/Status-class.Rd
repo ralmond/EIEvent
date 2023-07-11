@@ -17,7 +17,7 @@
   simulation.  In particular, it provides lists of \code{flags},
   \code{timers} and \code{observables} whose values are updated by the
   \code{\linkS4class{Rule}} objects after an
-  \code{\linkS4class{Event}}.  
+  \code{\linkS4class{Event}}.
 
 }
 \section{Objects from the Class}{
@@ -34,7 +34,7 @@ for every student in the system.
       identifier for the application. }
     \item{\code{uid}:}{Object of class \code{"character"} giving an
       identifier for the user or student.}
-    \item{\code{context}:}{Object of class \code{"character"} giving 
+    \item{\code{context}:}{Object of class \code{"character"} giving
       an identifier for the scoring context the student is currently in.}
     \item{\code{oldContext}:}{Object of class \code{"character"} giving
       an identifier for the previous scoring context.  In particluar, if
@@ -57,7 +57,7 @@ for every student in the system.
   \describe{
     \item{as.jlist}{\code{signature(obj = "Status", ml = "list")}:
       preprocessing method used to conver the \code{Status} into a JSON
-      string.  See \code{\link[Proc4]{as.jlist}}. }
+      string.  See \code{\link[mongo]{as.jlist}}. }
     \item{app}{\code{signature(x = "Status")}: returns the value of
       the \code{context} field. }
     \item{context}{\code{signature(x = "Status")}: returns the value of
@@ -77,12 +77,12 @@ for every student in the system.
     \item{timer<-}{\code{signature(x = "Status", name = "character")}:
       sets the named timer object. }
     \item{timerRunning}{\code{signature(x = "Status", name =
-        "character")}: returns the running status of the named timer.} 
+        "character")}: returns the running status of the named timer.}
     \item{timerRunning<-}{\code{signature(x = "Status", name =
         "character")}: sets the running status of the named timer. }
     \item{timerTime}{\code{signature(x = "Status", name = "character")}:
       returns the elapsed time of the named timer.}
-    \item{timerTime<-}{\code{signature(x = "Status", name = "character")}: 
+    \item{timerTime<-}{\code{signature(x = "Status", name = "character")}:
       sets the elapsed time of the named timer.}
     \item{all.equal.Status}{\code{(target, current, ..., checkTimestamp=FALSE,
         check_ids=TRUE)}:  (S3 method) Checks for equality.  The
@@ -153,7 +153,7 @@ for every student in the system.
   \sQuote{.} operator (which operates similarly to the R \sQuote{$}
   operator).  These all start with \code{state.} to distringuish them
   from fields in the event.  In particular, the follwing fields are
-  recognized. 
+  recognized.
 
   \itemize{
     \item{\code{state.context} The current context that the state
@@ -161,7 +161,7 @@ for every student in the system.
     \item{\code{state.oldContext} The the context of the state at
       the end of the previous event.  In particular, this can be
       compared to the context to check if the context has changed as a
-      result of the event.  (This field should not be set by user code).} 
+      result of the event.  (This field should not be set by user code).}
     \item{\code{state.observables.}\emph{field} The value of the
       observable named \emph{field}.}
     \item{\code{state.timers.}\emph{field} The the timer named
@@ -182,13 +182,13 @@ for every student in the system.
 }
   The document \dQuote{Rules Of Evidence} gives extensive documentation
   for the rule system.
-  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}. 
+  \url{https://pluto.coe.fsu.edu/Proc4/RulesOfEvidence.pdf}.
 
   Almond, R. G., Steinberg, L. S., and Mislevy, R.J. (2002).  Enhancing
   the design and delivery of Assessment Systems:  A Four-Process
   Architecture.  \emph{Journal of Technology, Learning, and Assessment},
   \bold{1},
-  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}. 
+  \url{http://ejournals.bc.edu/ojs/index.php/jtla/article/view/1671}.
 
   Almond, R. G., Shute, V. J., Tingir, S. and Rahimi,
   S. (2018). Identifying Observable Outcomes in Game-Based Assessments.
@@ -207,10 +207,10 @@ for every student in the system.
   \code{\linkS4class{EIEngine}}, \code{\linkS4class{Context}},
   \code{\linkS4class{Rule}}, \code{\linkS4class{Event}},
   \code{\linkS4class{RuleTable}}, \code{\linkS4class{Timer}}.
-  
+
   The functions \code{\link{setJS}}, \code{\link{getJS}} and
   \code{\link{removeJS}} have details
-  about using the dot notation to reference fields in the status.  Rule 
+  about using the dot notation to reference fields in the status.  Rule
   \link{Conditions} and \link{Predicates} also reference fields in the
   status object.
 
@@ -218,8 +218,8 @@ for every student in the system.
   \code{\link{timer}}, \code{\link{timerTime}},
   \code{\link{timerRunning}}, \code{\link{flag}}, \code{\link{obs}},
   \code{\link{app}}, \code{\link{context}},\code{\link{oldContext}},
-  \code{\link{timestamp}}, 
-  \code{\link{parseStatus}},  
+  \code{\link{timestamp}},
+  \code{\link{parseStatus}},
 
 }
 \examples{
