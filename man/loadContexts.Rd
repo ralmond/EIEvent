@@ -116,7 +116,7 @@ loadContexts(conmat, set, app)
 
 }
 \examples{
-
+\dontrun{ # Requires Mongo DB
 conmat <- read.csv(file.path(library(help="EIEvent")$path,"testScripts",
                 "SampleContextSheet.csv"))
 
@@ -133,7 +133,7 @@ loadContexts(conmat,testSet,"ecd://epls.coe.fsu.edu/rga/test")
 c1 <- matchContext(28L,testSet)
 c2 <- matchContext("Stairs",testSet)
 stopifnot(all.equal(c1,c2))
-
+}
 }
 \keyword{ manip}
 \keyword{ interface }
