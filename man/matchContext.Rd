@@ -112,6 +112,7 @@ clearContexts(set)
   \code{\link{loadContexts}}
 }
 \examples{
+\dontrun{ # Requires Mongo DB
 conmat <- read.csv(file.path(library(help="EIEvent")$path,"testScripts",
                 "SampleContextSheet.csv"))
 
@@ -131,7 +132,7 @@ clearContexts(testSet)
 loadContexts(conmat,testSet,"ecd://epls.coe.fsu.edu/rga/test")
 matchContext(28L,testSet)
 matchContext("Stairs",testSet)
-
+}
 }
 \keyword{ manip }
 \keyword{ interface }
