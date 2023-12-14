@@ -470,12 +470,12 @@ TestSet <-
               ))
 
 newTestSet <- function(app="default",colname="Tests",
-                          dbname="EIRecords",
-                          dburi=character(),
-                          sslops=mongolite::ssl_options(),
-                          noMongo=length(dburi)==0L,
-                          mongoverbose=FALSE,
-                          db=MongoDB(colname,dbname,dburi,
+                       dbname="EIRecords",
+                       dburi=character(),
+                       sslops=mongolite::ssl_options(),
+                       noMongo=length(dburi)==0L,
+                       mongoverbose=FALSE,
+                       db=MongoDB(colname,dbname,dburi,
                                      mongoverbose,noMongo,sslops),
                        rulecol="Rules",
                        rules=newRuleTable(app,rulecol,dbname,dburi,

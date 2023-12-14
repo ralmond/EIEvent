@@ -246,9 +246,15 @@ newRuleTable <- function(app="default",colname="Rules",
                           sslops=mongolite::ssl_options(),
                           noMongo=length(dburi)==0L,
                           mongoverbose=FALSE,
-                          db=MongoDB(colname,dbname,dburi,
-                                     mongoverbose,noMongo,sslops),
-                         stoponduplicate=FALSE) {
+                          db=NULL,
+                          stoponduplicate=FALSE) {
+  flog.trace("Database = %s:%s:%s, verbose=%s,noMongo=%s",
+             dburi,dbname,colname,mongoverbose,noMongo)
+  flog.trace("SSLops:",sslops,capture=TRUE)
+  if (missing(db) || ! is(db,"MongoDB")) {
+    db <- MongoDB(colname,dbname,dburi,
+                  mongoverbose,noMongo,sslops)
+  }
   RuleTable$new(app,db,stoponduplicate)
 }
 

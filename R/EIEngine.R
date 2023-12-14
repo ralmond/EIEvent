@@ -177,28 +177,61 @@ newEngine <- function(app="default",
                       mongoverbose=FALSE,
                       listenerSet=NULL,
                       eventcol="Events",
-                      events=new("MongoQueue",app,
-                                 MongoDB(eventcol,dbname,dburi,
-                                         mongoverbose,noMongo,sslops)),
+                      eventparser=parseEvent,
+                      events=NULL,
                       aacol="AuthorizedAppps",
-                      adminDB=MongoDB(aacol,admindbname,dburi,
-                                      mongoverbose,noMongo,sslops),
+                      adminDB=NULL,
                       rulecol="Rules",
-                      rules=newRuleTable(app,rulecol,dbname,dburi,
-                                         mongoverbose,noMongo,sslops),
+                      rules=NULL,
                       urcol="States",
-                      userRecords=newUserRecordSet(app,urcol,dbname,dburi,
-                                                   mongoverbose,noMongo,sslops),
+                      userRecords=NULL,
                       contextcol="Contexts",
-                      contexts=newContextSet(app,contextcol,dbname,dburi,
-                                             mongoverbose,noMongo,sslops),
+                      contexts=NULL,
                       testcol="Tests",
-                      ruleTests=newTestSet(app,testcol,dbname,dburi,
-                                           mongoverbose,noMongo,sslops)
+                      ruleTests=NULL
                       ) {
+  flog.trace("Database = %s:%s, verbose=%s,noMongo=%s",
+             dburi,dbname,mongoverbose,noMongo)
+  flog.trace("SSLops:",sslops,capture=TRUE)
+
+  if (missing(events) || ! is(events,"MongoQueue")) {
+    events=new("MongoQueue",app,
+               MongoDB(eventcol,dbname,dburi,
+                       verbose=mongoverbose,
+                       noMongo=noMongo,options=sslops),
+               eventparser)
+  }
+  if (missing(adminDB) || ! is(adminDB,"MongoDB")) {
+    adminDB=MongoDB(aacol,admindbname,dburi,
+                       verbose=mongoverbose,
+                       noMongo=noMongo,options=sslops)
+  }
+  if (missing(rules) || ! is(rules,"RuleTable")) {
+    rules=newRuleTable(app,rulecol,dbname,dburi,
+                       mongoverbose=mongoverbose,
+                       noMongo=noMongo,sslops=sslops)
+  }
+  if (missing(userRecords) || ! is(userRecords,"UserRecordSet")) {
+    userRecords=newUserRecordSet(app,urcol,dbname,dburi,
+                       mongoverbose=mongoverbose,
+                       noMongo=noMongo,sslops=sslops)
+  }
+  if (missing(contexts) || ! is(contexts,"ContextSet")) {
+    contexts=newContextSet(app,contextcol,dbname,dburi,
+                       mongoverbose=mongoverbose,
+                       noMongo=noMongo,sslops=sslops)
+  }
+  if (missing(ruleTests) || ! is(ruleTests,"TestSet")) {
+    ruleTests=newTestSet(app,testcol,dbname,dburi,
+                       mongoverbose=mongoverbose,
+                       noMongo=noMongo,sslops=sslops,
+                       rules=rules,contexts=contexts)
+  }
+  
   new("EIEngine",app,waittime,processN,listenerSet,
-              events,adminDB,rules,userRecords,contexts,
-              ruleTests)
+      events=events,adminDB=adminDB,rules=rules,
+      userRecords=userRecords,contexts=contexts,
+      ruleTests=ruleTests)
 }
 
 ## Listener notification.

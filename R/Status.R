@@ -561,5 +561,8 @@ newUserRecordSet <- function(app="default",colname="States",
                           mongoverbose=FALSE,
                           db=MongoDB(colname,dbname,dburi,
                                      mongoverbose,noMongo,sslops)) {
+  flog.trace("Database = %s:%s:%s, verbose=%s,noMongo=%s",
+             dburi,dbname,colname,mongoverbose,noMongo)
+  flog.trace("SSLops:",sslops,capture=TRUE)
   UserRecordSet$new(app,db)
 }

@@ -13,12 +13,36 @@ doLoad <- function(app, EI.config,EIeng.local, config.dir,override=FALSE) {
   if (is.null(dbname)) dbname<-"EIRecords"
   admindbname <- EIeng.local$admindbname
   if (is.null(admindbname)) admindbname<-"Proc4"
+  lscolName <- EIeng.local$lscolName
+  if (is.null(lscolName)) lscolName <- "Messages"
+  registrycol <- EIeng.local$registrycol
+  if (is.null(registrycol)) registrycol <- "OutputFiles"
   cl <- new("CaptureListener")
 
   flog.info("Building Engine for application %s.",sapp)
   EIeng.params <-
-    c(EI.config$EIEngine,
-      EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
+    c(EI.config$EIEngine,app=app,dbname=dbname,admindbname=admindbname,
+      dburi=dburi)
+  EIeng.params$sslops <- sslops # Don't want R unlisting this
+  EIeng.params$aacol <- ifelse(is.null(EIeng.local$aacol),
+                               "AuthorizedApps",
+                               EIEng.local$aacol)
+  EIeng.params$eventcol <- ifelse(is.null(EIeng.local$eventcol),
+                                  "Events",
+                                  EIEng.local$eventcol)
+  EIeng.params$rulecol <- ifelse(is.null(EIeng.local$rulecol),
+                                 "Rules",
+                                 EIEng.local$rulecol)
+  EIeng.params$urcol <- ifelse(is.null(EIeng.local$urcol),
+                               "States",
+                               EIEng.local$urcol)
+  EIeng.params$contextcol <- ifelse(is.null(EIeng.local$contextcol),
+                               "Contexts",
+                               EIEng.local$contextcol)
+  EIeng.params$testcol <- ifelse(is.null(EIeng.local$testcol),
+                               "Tests",
+                               EIEng.local$testcol)
+  EIeng.params$mongoverbose <- isTRUE(EIeng.local$mongoverbose)
 
   ## Build a listener set with no listeners as we need to register our output file,
   ## but not do any other processing.
@@ -105,18 +129,50 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   if (is.null(dbname)) dbname<-"EIRecords"
   admindbname <- EIeng.local$admindbname
   if (is.null(admindbname)) admindbname<-"Proc4"
+  lscolName <- EIeng.local$lscolName
+  if (is.null(lscolName)) lscolName <- "Messages"
+  registrycol <- EIeng.local$registrycol
+  if (is.null(registrycol)) registrycol <- "OutputFiles"
   flog.info("Building and configuring engine.")
 
+
   EIeng.params <-
-    c(EI.config$EIEngine,
-      EIeng.local[setdiff(names(EIeng.local),names(EI.config$EIEngine))])
+    c(EI.config$EIEngine,app=app,dbname=dbname,admindbname=admindbname,
+      dburi=dburi)
+  EIeng.params$sslops <- sslops # Don't want R unlisting this
+  EIeng.params$aacol <- ifelse(is.null(EIeng.local$aacol),
+                               "AuthorizedApps",
+                               EIEng.local$aacol)
+  EIeng.params$eventcol <- ifelse(is.null(EIeng.local$eventcol),
+                                  "Events",
+                                  EIEng.local$eventcol)
+  EIeng.params$rulecol <- ifelse(is.null(EIeng.local$rulecol),
+                                 "Rules",
+                                 EIEng.local$rulecol)
+  EIeng.params$urcol <- ifelse(is.null(EIeng.local$urcol),
+                               "States",
+                               EIEng.local$urcol)
+  EIeng.params$contextcol <- ifelse(is.null(EIeng.local$contextcol),
+                               "Contexts",
+                               EIEng.local$contextcol)
+  EIeng.params$testcol <- ifelse(is.null(EIeng.local$testcol),
+                               "Tests",
+                               EIEng.local$testcol)
+  EIeng.params$mongoverbose <- isTRUE(EIeng.local$mongoverbose)
+
+
   EIeng.params$listenerSet <-
     withFlogging({
       buildListenerSet(sender= sub("<app>",sapp,EI.config$sender),
-                       EI.config$listeners,app,
-                       EI.config$colnames$listenerSetLog,
-                       dburi,sslops,EI.config$colnames$registry,
-                       admindbname,mongoverbose=FALSE)
+                       config=EI.config$listeners,
+                       appid=app,
+                       lscol=lscolName,
+                       dbname=dbname,
+                       dburi=dburi,
+                       sslops=sslops,
+                       registrycol=registrycol,
+                       registrydbname=admindbname,
+                       mongoverbose=FALSE)
     }, context="Building listener set.")
   if (is(EIeng.params$listenerSet,'try-error')) {
     flog.fatal("Could not build listener set: %s",EIeng.params$listenerSet)
@@ -128,7 +184,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   }
 
   EIeng.params$app <- app
-  eng <- do.call(EIEngine,EIeng.params)
+  eng <- do.call(newEngine,EIeng.params)
 
   if (eng$isActivated()) {
     flog.warn("EI Engine for application %s already running.",sapp)
@@ -148,7 +204,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
     ## Import
     data.dir <- EI.config$dataDir
     if (is.null(data.dir)) data.dir <- config.dir
-    importMessages(eng$evidenceSets(),EI.config$importFile,data.dir)
+    importMessages(eng$eventq(),EI.config$importFile,data.dir)
 
     ## Purging Unused message
     if (isTRUE(EI.config$filter$doPurge)) {
