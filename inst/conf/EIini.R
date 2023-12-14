@@ -13,8 +13,13 @@ logpath <- "/usr/local/share/Proc4/logs"
 
 
 ## These are application generic parameters
-EIeng.local <- list(dburi=dburi,
-                    dbname="EIRecords",admindbname="Proc4")
+EIeng.local <- list(dburi=dburi,sslops=mongolite::ssl_options(),
+                    dbname="EIRecords",admindbname="Proc4",
+                    lscolName="Messages",registrycol="OutputFiles",
+                    aacol="AuthorizedApps", eventcol="Events",
+                    rulecol="Rules", urcol="States",
+                    contextcol="Contexts",testcol="Tests",
+                    mongoverbose=FALSE)
 
 trophy2json <- function(dat) {
   thall <- ""
