@@ -133,6 +133,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
   if (is.null(lscolName)) lscolName <- "Messages"
   registrycol <- EIeng.local$registrycol
   if (is.null(registrycol)) registrycol <- "OutputFiles"
+  mongoverbose <- isTRUE(EAeng.local$mongoverbose)
   flog.info("Building and configuring engine.")
 
 
@@ -172,7 +173,7 @@ doRunrun <- function (app, EI.config,  EIeng.local, config.dir,
                        sslops=sslops,
                        registrycol=registrycol,
                        registrydbname=admindbname,
-                       mongoverbose=FALSE)
+                       mongoverbose=mongoverbose)
     }, context="Building listener set.")
   if (is(EIeng.params$listenerSet,'try-error')) {
     flog.fatal("Could not build listener set: %s",EIeng.params$listenerSet)
